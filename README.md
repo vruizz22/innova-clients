@@ -8,22 +8,50 @@
 
 ## Tabla de contenidos
 
-- [1. Visión general](#1-visión-general)
-- [2. Arquitectura](#2-arquitectura)
-- [3. Apps y plataformas](#3-apps-y-plataformas)
-- [4. Stack tecnológico](#4-stack-tecnológico)
-- [5. Estructura del monorepo](#5-estructura-del-monorepo)
-- [6. Metodología y flujo de trabajo](#6-metodología-y-flujo-de-trabajo)
-- [7. Variables de entorno](#7-variables-de-entorno)
-- [8. Setup local](#8-setup-local)
-- [9. Tests y cobertura](#9-tests-y-cobertura)
-- [10. Despliegue](#10-despliegue)
-- [11. Decisión de deploy: AWS Amplify vs Vercel](#11-decisión-de-deploy-aws-amplify-vs-vercel)
-- [12. Diseño y UI/UX](#12-diseño-y-uiux)
-- [13. Privacidad y cumplimiento NNA](#13-privacidad-y-cumplimiento-nna)
-- [14. Roadmap](#14-roadmap)
-- [15. Recursos](#15-recursos)
-- [16. Licencia](#16-licencia)
+- [innova-clients](#innova-clients)
+  - [Tabla de contenidos](#tabla-de-contenidos)
+  - [1. Visión general](#1-visión-general)
+  - [2. Arquitectura](#2-arquitectura)
+  - [3. Apps y plataformas](#3-apps-y-plataformas)
+    - [apps/practice (Expo Router)](#appspractice-expo-router)
+    - [apps/teacher (Next.js 14 App Router)](#appsteacher-nextjs-14-app-router)
+    - [apps/parent (Expo Router)](#appsparent-expo-router)
+    - [apps/landing (Astro)](#appslanding-astro)
+  - [4. Stack tecnológico](#4-stack-tecnológico)
+  - [5. Estructura del monorepo](#5-estructura-del-monorepo)
+  - [6. Metodología y flujo de trabajo](#6-metodología-y-flujo-de-trabajo)
+    - [6.1 GSD / BMAD](#61-gsd--bmad)
+    - [6.2 AI usage logs](#62-ai-usage-logs)
+    - [6.3 Gitflow](#63-gitflow)
+    - [6.4 Quality gates](#64-quality-gates)
+    - [6.5 Reglas obligatorias](#65-reglas-obligatorias)
+  - [7. Variables de entorno](#7-variables-de-entorno)
+    - [Next.js apps (apps/teacher)](#nextjs-apps-appsteacher)
+    - [Expo apps (apps/practice, apps/parent)](#expo-apps-appspractice-appsparent)
+  - [8. Setup local](#8-setup-local)
+    - [Prerrequisitos](#prerrequisitos)
+    - [Instalación](#instalación)
+    - [Correr apps individualmente](#correr-apps-individualmente)
+    - [Comandos globales (Turborepo)](#comandos-globales-turborepo)
+  - [9. Tests y cobertura](#9-tests-y-cobertura)
+    - [Suites clave](#suites-clave)
+    - [Configuración MSW (Mock Service Worker)](#configuración-msw-mock-service-worker)
+  - [10. Despliegue](#10-despliegue)
+    - [Web apps (apps/teacher) → AWS Amplify](#web-apps-appsteacher--aws-amplify)
+    - [Astro landing → Cloudflare Pages](#astro-landing--cloudflare-pages)
+    - [Mobile apps (apps/practice, apps/parent) → Expo EAS](#mobile-apps-appspractice-appsparent--expo-eas)
+    - [Re-deploy tras cambios](#re-deploy-tras-cambios)
+    - [CI/CD (GitHub Actions)](#cicd-github-actions)
+  - [11. Decisión de deploy: AWS Amplify vs Vercel](#11-decisión-de-deploy-aws-amplify-vs-vercel)
+    - [Por qué Amplify sobre Vercel](#por-qué-amplify-sobre-vercel)
+  - [12. Diseño y UI/UX](#12-diseño-y-uiux)
+    - [Stack visual](#stack-visual)
+    - [Tokens de diseño](#tokens-de-diseño)
+    - [Accesibilidad](#accesibilidad)
+  - [13. Privacidad y cumplimiento NNA](#13-privacidad-y-cumplimiento-nna)
+  - [14. Roadmap](#14-roadmap)
+  - [15. Recursos](#15-recursos)
+  - [16. Licencia](#16-licencia)
 
 ---
 
@@ -110,6 +138,7 @@ flowchart LR
 ### apps/practice (Expo Router)
 
 Flujos principales:
+
 1. Alumno entra a asignación → selecciona ejercicio.
 2. **Input digital**: `packages/math-input` renderiza teclado numérico + filas de steps. Cada step se guarda en telemetry buffer.
 3. Submit final → `POST /api/attempts` con `rawSteps[]`.
@@ -119,6 +148,7 @@ Flujos principales:
 ### apps/teacher (Next.js 14 App Router)
 
 Vistas:
+
 1. **Heatmap de classroom**: grilla (alumno × skill) con color por `p_known`. Verde ≥0.7, amarillo 0.4–0.7, rojo <0.4.
 2. **Panel de alertas**: `TeacherAlert` sin resolver, ordenados por urgencia. Botón "Marcar resuelto".
 3. **Drill-down alumno**: historial de intentos, frecuencia de errores por tipo, evolución de `p_known`.
@@ -127,6 +157,7 @@ Vistas:
 ### apps/parent (Expo Router)
 
 Vistas:
+
 1. Lista de `PracticeAssignment` activas del hijo.
 2. Barras de progreso de dominio por skill (sin mostrar números crudos — solo colores y etiquetas amigables).
 3. Push notification cuando se crea nueva asignación (`expo-notifications`).
@@ -480,15 +511,18 @@ eas submit --platform all
 ### CI/CD (GitHub Actions)
 
 `.github/workflows/ci.yml` — en cada PR:
+
 1. `pnpm -r run type-check` → `pnpm -r run lint` → `pnpm -r run test:coverage`
 2. `pnpm -r run build` (verifica sin errores de build)
 3. Playwright E2E (en push)
 
 `.github/workflows/deploy-web.yml` — en merge a main:
+
 1. Build teacher app
 2. Deploy a AWS Amplify via Amplify CLI
 
 `.github/workflows/deploy-mobile.yml` — en merge a main:
+
 1. `eas update --branch main` para OTA a practice + parent
 
 ---
@@ -509,10 +543,12 @@ eas submit --platform all
 | DX (Developer Experience) | ✅ buena, CLI maduro | ✅ excelente |
 
 **Por qué Cloudflare Pages para Astro:**
+
 - Sitio 100% estático → zero cold starts, global CDN, literalmente free.
 - Amplify cobraría por requests de CDN en un sitio que no necesita SSR.
 
 **Por qué EAS para mobile:**
+
 - OTA updates sin re-submit a stores → iteración más rápida en MVP.
 - EAS Build provee builds reproducibles en cloud (sin necesitar Mac propio para iOS).
 
@@ -536,6 +572,7 @@ Documentado como ADR-011 en `docs/architecture.md`.
 ### Tokens de diseño
 
 Definidos en `packages/ui/src/tokens.css`:
+
 - `--color-mastery-high`: verde (#16a34a) — p_known ≥ 0.7
 - `--color-mastery-mid`: amarillo (#ca8a04) — p_known 0.4–0.7
 - `--color-mastery-low`: rojo (#dc2626) — p_known < 0.4
@@ -591,4 +628,4 @@ Los alumnos son menores de edad. Aplica:
 
 ## 16. Licencia
 
-MIT
+Innova - Team 23. Internal GPL-3.0 License.
