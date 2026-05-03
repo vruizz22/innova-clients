@@ -1,0 +1,114 @@
+---
+// HowItWorks — numbered steps
+
+interface Step {
+  number: string;
+  title: string;
+  description: string;
+  detail: string;
+  color: 'sky' | 'mint' | 'amber';
+}
+
+const steps: Step[] = [
+  {
+    number: '01',
+    title: 'El alumno resuelve un ejercicio',
+    description: 'Ingresa los pasos de una operación matemática directamente en la app, o sube una foto de su cuaderno.',
+    detail: 'Entrada matemática paso a paso · Foto de cuaderno (OCR)',
+    color: 'sky',
+  },
+  {
+    number: '02',
+    title: 'El sistema detecta el error específico',
+    description: 'El motor de reglas analiza cada paso en menos de 100ms. No solo marca "incorrecto", identifica el procedimiento exacto que falló.',
+    detail: 'BORROW_OMITTED_TENS · CARRY_ERROR · WRONG_COLUMN',
+    color: 'amber',
+  },
+  {
+    number: '03',
+    title: 'El profesor ve el diagnóstico',
+    description: 'El dashboard muestra el heatmap actualizado y una alerta AT_RISK_SKILL cuando el patrón de error se repite.',
+    detail: 'Heatmap de dominio · Alertas priorizadas · Vista por grupo',
+    color: 'mint',
+  },
+  {
+    number: '04',
+    title: 'Práctica focalizada automática',
+    description: 'El sistema asigna ejercicios específicos al error detectado. El alumno practica exactamente lo que necesita sin esperar.',
+    detail: 'Asignación automática · Progreso BKT · Feedback inmediato',
+    color: 'sky',
+  },
+];
+---
+
+<section id="como-funciona" class="bg-white py-20 md:py-28">
+  <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-10">
+    <!-- Section header -->
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--sky-600)]">
+        Cómo funciona
+      </p>
+      <h2 class="text-3xl font-bold tracking-tight text-[var(--slate-800)] md:text-4xl">
+        De la respuesta del alumno al diagnóstico, en segundos
+      </h2>
+      <p class="mt-4 text-base leading-relaxed text-[var(--fg-2)] md:text-lg">
+        Un flujo pensado para que el profesor intervenga en el momento correcto, no el lunes después de la prueba del viernes.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="relative">
+      <!-- Connector line (desktop) -->
+      <div class="absolute left-[calc(50%-1px)] top-12 hidden h-[calc(100%-6rem)] w-px bg-gradient-to-b from-[var(--sky-200)] via-[var(--mint-200)] to-transparent lg:block" aria-hidden="true"></div>
+
+      <div class="grid gap-8 lg:gap-12">
+        {steps.map((step, i) => (
+          <div class={`flex items-start gap-6 lg:gap-12 ${i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}>
+            <!-- Content side -->
+            <div class="flex-1 lg:max-w-[calc(50%-3rem)]">
+              <div class={`rounded-2xl border p-6 md:p-8 transition-all ${
+                step.color === 'sky' ? 'border-[var(--sky-100)] bg-[var(--sky-50)]' :
+                step.color === 'mint' ? 'border-[var(--mint-100)] bg-[var(--mint-50)]' :
+                'border-[var(--error-border)] bg-[var(--error-bg)]'
+              }`}>
+                <div class="mb-4 flex items-center gap-4">
+                  <div class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white ${
+                    step.color === 'sky' ? 'bg-[var(--sky-600)]' :
+                    step.color === 'mint' ? 'bg-[var(--mint-600)]' :
+                    'bg-[var(--mastery-medium)]'
+                  }`}>
+                    {step.number}
+                  </div>
+                  <h3 class="text-lg font-semibold text-[var(--slate-800)]">{step.title}</h3>
+                </div>
+                <p class="mb-4 text-sm leading-relaxed text-[var(--fg-2)]">{step.description}</p>
+                <div class={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] font-semibold ${
+                  step.color === 'sky' ? 'bg-[var(--sky-100)] text-[var(--sky-800)]' :
+                  step.color === 'mint' ? 'bg-[var(--mint-100)] text-[var(--mint-800)]' :
+                  'bg-[var(--error-border)] text-[var(--error-fg)]'
+                }`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  {step.detail}
+                </div>
+              </div>
+            </div>
+
+            <!-- Center number (desktop) -->
+            <div class="hidden lg:flex lg:shrink-0 lg:w-12 lg:flex-col lg:items-center lg:pt-6">
+              <div class={`z-10 flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg ${
+                step.color === 'sky' ? 'bg-[var(--sky-600)]' :
+                step.color === 'mint' ? 'bg-[var(--mint-600)]' :
+                'bg-[var(--mastery-medium)]'
+              }`}>
+                {step.number}
+              </div>
+            </div>
+
+            <!-- Empty side spacer (desktop) -->
+            <div class="hidden flex-1 lg:block lg:max-w-[calc(50%-3rem)]"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,106 @@
+---
+// Testimonials — fictional Chilean teachers
+
+interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  school: string;
+  initials: string;
+  avatarColor: string;
+}
+
+const testimonials: Testimonial[] = [
+  {
+    quote: 'Antes me enteraba de los errores al corregir la prueba. Ahora sé qué está fallando el lunes en la mañana. Es la diferencia entre remediar y prevenir.',
+    name: 'Claudia Fernández',
+    role: 'Profesora de 4° básico',
+    school: 'Colegio San Agustín, Providencia',
+    initials: 'CF',
+    avatarColor: 'var(--sky-600)',
+  },
+  {
+    quote: 'El heatmap me permite ver de un vistazo quiénes están en riesgo. En 30 segundos tengo el diagnóstico completo del curso. Nunca había tenido esa visibilidad.',
+    name: 'Roberto Araya',
+    role: 'Jefe de UTP',
+    school: 'Colegio Las Condes',
+    initials: 'RA',
+    avatarColor: 'var(--mint-600)',
+  },
+  {
+    quote: 'Mis alumnos mejoraron en resta con reagrupación en 3 semanas. El sistema les asignó exactamente la práctica que necesitaban. Yo solo tuve que revisar el dashboard.',
+    name: 'Marcela Soto',
+    role: 'Profesora de 5° básico',
+    school: 'Colegio Santa María, Ñuñoa',
+    initials: 'MS',
+    avatarColor: 'var(--sky-700)',
+  },
+];
+---
+
+<section class="bg-white py-20 md:py-28">
+  <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-10">
+    <!-- Section header -->
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--sky-600)]">
+        Testimonios
+      </p>
+      <h2 class="text-3xl font-bold tracking-tight text-[var(--slate-800)] md:text-4xl">
+        Lo que dicen los profesores
+      </h2>
+    </div>
+
+    <!-- Testimonials grid -->
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {testimonials.map((t) => (
+        <blockquote class="flex flex-col gap-6 rounded-2xl border border-[var(--border)] bg-[var(--slate-50)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-pop)]">
+          <!-- Quote icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="var(--sky-100)" stroke="var(--sky-300)" stroke-width="1" aria-hidden="true">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+          </svg>
+
+          <p class="flex-1 text-sm leading-relaxed text-[var(--fg-1)]">{t.quote}</p>
+
+          <!-- Author -->
+          <footer class="flex items-center gap-3 border-t border-[var(--border)] pt-5">
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+              style={`background: ${t.avatarColor}`}
+              aria-hidden="true"
+            >
+              {t.initials}
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-[var(--slate-800)]">{t.name}</p>
+              <p class="text-xs text-[var(--fg-2)]">{t.role} · {t.school}</p>
+            </div>
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+
+    <!-- Social proof bar -->
+    <div class="mt-12 flex flex-wrap items-center justify-center gap-8 rounded-2xl border border-[var(--border)] bg-[var(--slate-50)] px-6 py-5">
+      <div class="flex flex-col items-center">
+        <span class="text-2xl font-bold text-[var(--sky-700)]">20+</span>
+        <span class="text-xs text-[var(--fg-2)]">colegios en piloto</span>
+      </div>
+      <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
+      <div class="flex flex-col items-center">
+        <span class="text-2xl font-bold text-[var(--sky-700)]">5.000+</span>
+        <span class="text-xs text-[var(--fg-2)]">alumnos activos</span>
+      </div>
+      <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
+      <div class="flex flex-col items-center">
+        <span class="text-2xl font-bold text-[var(--sky-700)]">92%</span>
+        <span class="text-xs text-[var(--fg-2)]">profesores recomendarían</span>
+      </div>
+      <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
+      <div class="flex flex-col items-center">
+        <span class="text-2xl font-bold text-[var(--sky-700)]">+31%</span>
+        <span class="text-xs text-[var(--fg-2)]">mejora en dominio promedio</span>
+      </div>
+    </div>
+  </div>
+</section>
