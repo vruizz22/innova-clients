@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SuperProfes · Demo</title>
+  <link rel="stylesheet" href="../SuperProfes-Design-System/colors_and_type.css" />
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg-canvas); color: var(--fg-1); padding: 48px; }
+    .card { max-width: 900px; margin: 40px auto; background: white; border-radius: 12px; padding: 28px; box-shadow: 0 6px 20px rgba(17,24,39,0.06); }
+    header { display:flex; align-items:center; gap:16px; }
+    .logo { width:56px; height:56px; border-radius:12px; background:var(--mint-500); display:grid; place-items:center; color:#fff; font-weight:800; }
+    h1 { margin:0 0 8px 0; }
+    .lead { color:var(--fg-2); margin-bottom:18px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    a.cta { display:inline-block; margin-top:12px; padding:10px 14px; border-radius:8px; background:var(--sky-600); color:white; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <div class="logo">SP</div>
+      <div>
+        <h1>SuperProfes</h1>
+        <div class="lead">Plataforma demo — detección de errores procedurales en matemáticas (3°–6° básico).</div>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div>
+        <h3>Qué hay listo</h3>
+        <ul>
+          <li>Practice UI kit (componentes).</li>
+          <li>Error renderer visual.</li>
+          <li>Teacher heatmap UI kit.</li>
+          <li>Auth demo flow (local).</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Próximos pasos</h3>
+        <ul>
+          <li>Integrar API client OpenAPI (generar SDK).</li>
+          <li>Habilitar uploads y OCR end-to-end.</li>
+          <li>Polish landing y marketing copy.</li>
+        </ul>
+        <a class="cta" href="/docs/prompt-claude-front.md">Ver TODOs & prompts</a>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
