@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "allowJs": false,
+    "noEmit": true,
+    "incremental": true,
+    "ignoreDeprecations": "6.0",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@components": ["./components"],
+      "@shared/*": ["../../components/*"],
+      "@app/*": ["./app/*"],
+      "@app": ["./app"]
+    }
+  },
+  "include": ["next-env.d.ts", "app/**/*.ts", "app/**/*.tsx", "app/**/*.d.ts", "components/**/*.ts", "components/**/*.tsx", "components/**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
