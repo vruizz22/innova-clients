@@ -8,14 +8,8 @@ on:
 
 jobs:
   quality:
-    name: Build and validate client apps
+    name: Build, lint, and test monorepo
     runs-on: ubuntu-latest
-
-    env:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
-      NEXT_PUBLIC_COGNITO_USER_POOL_ID: us-east-1_TESTPOOL
-      NEXT_PUBLIC_COGNITO_CLIENT_ID: testclientid
-
     steps:
       - uses: actions/checkout@v4
 
@@ -31,80 +25,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Download InterVariable.woff2
-        run: |
-          mkdir -p SuperProfes-Design-System/fonts
-          curl -L "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHAPUxCKVtQZA.woff2" \
-            -o SuperProfes-Design-System/fonts/InterVariable.woff2 || echo "Warning: Could not download InterVariable.woff2"
-        continue-on-error: true
+      - name: Validate repo setup
+        run: bash innova-clients/scripts/verify-setup.sh
 
-      - name: Generate OpenAPI TypeScript client
-        if: always()
-        run: |
-          echo "Generating OpenAPI client into packages/api-client"
-          npx @openapitools/openapi-generator-cli generate -i https://raw.githubusercontent.com/vruizz22/innova-backend-serverless/main/docs/openapi.json -g typescript-axios -o packages/api-client || true
-        env:
-          NEXT_TELEMETRY_DISABLED: '1'
-
-      - name: Build
-        run: pnpm build
-        env:
-          NEXT_TELEMETRY_DISABLED: '1'
+      - name: Validate absolute paths
+        run: node innova-clients/scripts/check-absolute-paths.js innova-clients
 
       - name: Lint
         run: pnpm lint
 
-      - name: Run tests
+      - name: Test
         run: pnpm test
 
-  deploy-vercel:
-    name: Deploy to Vercel (if secrets set)
-    runs-on: ubuntu-latest
-    needs: quality
-    if: github.event_name != 'pull_request' && secrets.VERCEL_TOKEN
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - name: Install
-        run: pnpm install --frozen-lockfile
-      - name: Vercel Deploy
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-  deploy-cloudflare:
-    name: Deploy to Cloudflare Pages (if secret set)
-    runs-on: ubuntu-latest
-    needs: quality
-    if: github.event_name != 'pull_request' && secrets.CF_PAGES_API_TOKEN
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Publish to Cloudflare Pages
-        run: |
-          echo "Triggering Cloudflare Pages deployment"
-          curl -X POST "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/pages/projects/${{ secrets.CF_PAGES_PROJECT_NAME }}/deployments" \
-            -H "Authorization: Bearer ${{ secrets.CF_PAGES_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{}'
-
+      - name: Build
+        run: pnpm build
