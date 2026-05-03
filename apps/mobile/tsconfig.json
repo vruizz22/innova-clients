@@ -3,7 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "noEmit": true,
-    "ignoreDeprecations": "6.0",
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
@@ -11,6 +10,16 @@
       "@design": ["../../SuperProfes-Design-System"]
     }
   },
-  "include": ["App.tsx", "src/**/*.ts", "src/**/*.tsx", "expo-env.d.ts"],
+  "include": [
+    "App.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "lib/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "expo-env.d.ts"
+  ],
   "exclude": ["node_modules"]
 }
