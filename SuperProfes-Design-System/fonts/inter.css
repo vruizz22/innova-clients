@@ -1,0 +1,23 @@
+/* Inter — self-hosted shim
+   Drop your local .woff2 files into this folder to fully self-host. The current
+   src urls point at rsms.me/inter (the canonical Inter CDN by the typeface author)
+   which is stable and CORS-friendly. To go fully offline-capable, replace each
+   url() with a relative path to the local file. */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/InterVariable.woff2') format('woff2-variations'),
+       url('./InterVariable.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/InterVariable-Italic.woff2') format('woff2-variations'),
+       url('./InterVariable-Italic.woff2') format('woff2-variations');
+}
