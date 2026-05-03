@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Mastery heatmap</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { padding: 24px; }
+  table { border-collapse: separate; border-spacing: 4px; font-size: 12px; }
+  th, td { padding: 0; }
+  th.sk { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 600; color: var(--fg-2); padding: 4px; height: 90px; }
+  td.name { font-weight: 600; padding-right: 8px; text-align: right; min-width: 110px; }
+  td.cell { width: 36px; height: 36px; border-radius: 6px; text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .strong { background: color-mix(in oklch,#3DAA72 28%,white); color:#0F3322; }
+  .strong-2 { background: color-mix(in oklch,#3DAA72 22%,white); color:#0F3322; }
+  .medium { background: color-mix(in oklch,#E8A33D 24%,white); color:#6B4400; }
+  .weak { background: color-mix(in oklch,#D86060 22%,white); color:#5A1F1F; }
+</style></head>
+<body>
+<table>
+  <tr>
+    <td></td>
+    <th class="sk">Resta c/reserva</th>
+    <th class="sk">Suma c/llevadas</th>
+    <th class="sk">Fracciones m.d.</th>
+    <th class="sk">Multipl. 1d</th>
+    <th class="sk">División larga</th>
+  </tr>
+  <tr><td class="name">Antonia P.</td><td class="cell strong">.84</td><td class="cell strong-2">.71</td><td class="cell medium">.55</td><td class="cell weak">.32</td><td class="cell weak">.28</td></tr>
+  <tr><td class="name">Benjamín O.</td><td class="cell medium">.62</td><td class="cell strong-2">.74</td><td class="cell medium">.48</td><td class="cell medium">.50</td><td class="cell weak">.35</td></tr>
+  <tr><td class="name">Camila R.</td><td class="cell strong">.91</td><td class="cell strong">.88</td><td class="cell strong-2">.76</td><td class="cell strong-2">.72</td><td class="cell medium">.61</td></tr>
+  <tr><td class="name">Diego V.</td><td class="cell weak">.31</td><td class="cell medium">.44</td><td class="cell weak">.29</td><td class="cell weak">.22</td><td class="cell weak">.18</td></tr>
+  <tr><td class="name">Elena S.</td><td class="cell strong-2">.75</td><td class="cell strong">.82</td><td class="cell medium">.58</td><td class="cell medium">.49</td><td class="cell medium">.46</td></tr>
+</table>
+</body></html>
