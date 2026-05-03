@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from 'react'
 
-import { createApiClient, type ApiResponse, type AttemptInput } from '../../../components/api-client'
+import { createApiClient, type ApiResponse, type AttemptInput } from '@shared/api-client'
 import { VisualErrorRenderer } from './VisualErrorRenderer'
 
 export function AttemptWorkbench(): JSX.Element {

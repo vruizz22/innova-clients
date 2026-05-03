@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { createApiClient } from '../../../components/api-client'
+import { createApiClient } from '@shared/api-client'
 
 describe('api-client', () => {
   const client = createApiClient({ baseUrl: 'http://localhost' })

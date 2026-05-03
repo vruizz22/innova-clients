@@ -1,5 +1,5 @@
-@import url('../../SuperProfes-Design-System/colors_and_type.css');
-@import url('../../../components/auth/authStyles.css');
+@import url('/design-system/colors_and_type.css');
+@import url('/design-system/ui_kits/auth/styles.css');
 
 :root { --app-max-width: 920px; }
 

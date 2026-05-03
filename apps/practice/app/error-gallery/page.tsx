@@ -1,4 +1,4 @@
-import { VisualErrorRenderer } from '../../components/VisualErrorRenderer'
+import { VisualErrorRenderer } from '@components/VisualErrorRenderer'
 
 const ERROR_SLUGS = ['BORROW_OMITTED_TENS', 'CARRY_OMITTED', 'ZERO_TIMES_X_NONZERO', 'COMMON_DENOMINATOR_MISSED'] as const
 

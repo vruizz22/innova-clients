@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { VisualErrorRenderer } from '../VisualErrorRenderer'
+import { VisualErrorRenderer } from '@components/VisualErrorRenderer'
 
 describe('VisualErrorRenderer', () => {
   it('renders known error title and example', () => {

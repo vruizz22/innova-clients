@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from 'react'
 
-import { createApiClient, type ConfirmForgotPasswordInput, type ForgotPasswordInput, type LoginInput, type RegisterInput } from '../../../components/api-client'
+import { createApiClient, type ConfirmForgotPasswordInput, type ForgotPasswordInput, type LoginInput, type RegisterInput } from '@shared/api-client'
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
 

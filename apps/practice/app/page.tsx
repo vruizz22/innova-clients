@@ -1,4 +1,4 @@
-import { AttemptWorkbench } from '../components/AttemptWorkbench'
+import { AttemptWorkbench } from '@components/AttemptWorkbench'
 
 export default function Page(): JSX.Element {
   return (
