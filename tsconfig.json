@@ -1,4 +1,23 @@
 {
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@design/*": ["SuperProfes-Design-System/*"],
+      "@design": ["SuperProfes-Design-System"],
+      "@components/*": ["components/*"],
+      "@components": ["components"],
+      "@shared/*": ["components/*"],
+      "@shared": ["components"],
+      "@app/*": ["apps/*"],
+      "@app": ["apps"]
+    },
+    "ignoreDeprecations": "6.0"
+  },
+  "include": ["apps/**/*", "components/**/*", "SuperProfes-Design-System/**/*", "landing/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+{
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
