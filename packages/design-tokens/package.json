@@ -1,0 +1,25 @@
+{
+  "name": "@innova/design-tokens",
+  "version": "0.1.0",
+  "description": "Innova Design System - Tokens and Variables",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./colors": "./src/colors.ts",
+    "./spacing": "./src/spacing.ts",
+    "./typography": "./src/typography.ts",
+    "./shadows": "./src/shadows.ts",
+    "./breakpoints": "./src/breakpoints.ts"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
