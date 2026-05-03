@@ -1,14 +1,30 @@
+Inter fonts for SuperProfes
+
+Place `InterVariable.woff2` here if you prefer the variable font. The repository already vendors several OTF static files (Regular/Italic/Medium/SemiBold/Bold).
+
+To auto-download a variable font into this folder, from the repo root run:
+
+```bash
+INTER_VARIABLE_URL=https://example.com/InterVariable.woff2 ./scripts/download-fonts.sh
+```
+
+If you don't want to download automatically, upload a `InterVariable.woff2` file into this folder before deployment.
 # fonts/
 
-Inter Variable, the project font.
+Inter, the project font.
 
-`inter.css` declares two `@font-face` rules (regular + italic) that try a local
-`./InterVariable.woff2` first and fall back to rsms.me — the canonical Inter CDN
-by the typeface author. To go fully offline-capable for production:
+This folder vendors static OTF files copied from the system Inter install:
 
-1. Download `InterVariable.woff2` and `InterVariable-Italic.woff2` from
-   https://rsms.me/inter/ → "Download Inter".
-2. Drop them in this folder.
-3. Optionally remove the rsms.me fallback URL in `inter.css`.
+- `Inter-Regular.otf`
+- `Inter-Italic.otf`
+- `Inter-Medium.otf`
+- `Inter-MediumItalic.otf`
+- `Inter-SemiBold.otf`
+- `Inter-SemiBoldItalic.otf`
+- `Inter-Bold.otf`
+- `Inter-BoldItalic.otf`
+
+`inter.css` points only to local files, so the Design System does not depend on
+an external font CDN at runtime.
 
 License: SIL Open Font License 1.1 — https://github.com/rsms/inter/blob/master/LICENSE.txt
