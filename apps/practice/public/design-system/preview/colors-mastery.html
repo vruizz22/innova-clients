@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Mastery scale</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { padding: 24px; font-family: var(--font-sans); }
+  .scale { display: grid; grid-template-columns: repeat(11, 1fr); gap: 6px; align-items: end; }
+  .cell { aspect-ratio: 1; border-radius: 8px; display:flex; align-items:center; justify-content:center; font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .legend { margin-top: 16px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--fg-1); }
+  .swatch-dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; margin-right: 6px; vertical-align: -2px; }
+</style></head>
+<body>
+  <div class="scale">
+    <!-- 0 -> 1.0 in steps of 0.1 -->
+    <div class="cell" style="background:color-mix(in oklch,#D86060 22%,white);color:#5A1F1F">0.0</div>
+    <div class="cell" style="background:color-mix(in oklch,#D86060 22%,white);color:#5A1F1F">0.1</div>
+    <div class="cell" style="background:color-mix(in oklch,#D86060 22%,white);color:#5A1F1F">0.2</div>
+    <div class="cell" style="background:color-mix(in oklch,#D86060 22%,white);color:#5A1F1F">0.3</div>
+    <div class="cell" style="background:color-mix(in oklch,#E8A33D 24%,white);color:#6B4400">0.4</div>
+    <div class="cell" style="background:color-mix(in oklch,#E8A33D 24%,white);color:#6B4400">0.5</div>
+    <div class="cell" style="background:color-mix(in oklch,#E8A33D 24%,white);color:#6B4400">0.6</div>
+    <div class="cell" style="background:color-mix(in oklch,#3DAA72 22%,white);color:#0F3322">0.7</div>
+    <div class="cell" style="background:color-mix(in oklch,#3DAA72 28%,white);color:#0F3322">0.8</div>
+    <div class="cell" style="background:color-mix(in oklch,#3DAA72 36%,white);color:#0F3322">0.9</div>
+    <div class="cell" style="background:color-mix(in oklch,#3DAA72 50%,white);color:#0F3322">1.0</div>
+  </div>
+  <div class="legend">
+    <span><span class="swatch-dot" style="background:#3DAA72"></span>≥ 0.7 · dominado</span>
+    <span><span class="swatch-dot" style="background:#E8A33D"></span>0.4 – 0.7 · en proceso</span>
+    <span><span class="swatch-dot" style="background:#D86060"></span>&lt; 0.4 · necesita práctica</span>
+  </div>
+</body></html>

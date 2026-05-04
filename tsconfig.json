@@ -1,15 +1,18 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["DOM", "ES2022"],
-    "jsx": "react-jsx",
-    "moduleResolution": "Node",
     "baseUrl": ".",
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "paths": {
+      "@design/*": ["SuperProfes-Design-System/*"],
+      "@design": ["SuperProfes-Design-System"],
+      "@components/*": ["components/*"],
+      "@components": ["components"],
+      "@shared/*": ["components/*"],
+      "@shared": ["components"],
+      "@app/*": ["apps/*"],
+      "@app": ["apps"]
+    }
   },
-  "include": ["apps/**/*", "SuperProfes-Design-System/**/*", "components/**/*"]
+  "include": ["apps/**/*", "components/**/*", "SuperProfes-Design-System/**/*", "landing/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -10,12 +10,24 @@ Para que los workflows CI/CD funcionen correctamente, agrega estos secrets en el
 - `VERCEL_PROJECT_ID_PRACTICE`: ID del proyecto Vercel para practice
 - `VERCEL_PROJECT_ID_TEACHER`: ID del proyecto Vercel para teacher
 
-## Cloudflare Pages Secrets (para `deploy.yml`)
+## Expo EAS Secrets (para `deploy-expo.yml`)
 
-- `CF_API_TOKEN`: API token de Cloudflare con permisos `Pages:Edit`
-- `CF_PAGES_PROJECT_LANDING`: Nombre del proyecto Cloudflare Pages para landing
+- `EAS_TOKEN`: Token de Expo/EAS para build no interactivo
+
+## AWS Landing Secrets (para `deploy-landing-s3.yml`)
+
+- `AWS_ACCESS_KEY_ID`: IAM key con permisos para S3 y CloudFront
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`: normalmente `us-east-1`
+- `S3_BUCKET_NAME`: bucket estático de la landing
+- `CLOUDFRONT_DISTRIBUTION_ID`: distribución para invalidación opcional
 
 ## Environment Variables (Next.js - required en `.env.production`)
+
+- `NEXT_PUBLIC_API_URL`
+- `NEXT_PUBLIC_COGNITO_CLIENT_ID`
+- `NEXT_PUBLIC_COGNITO_USER_POOL_ID`
+- `SENTRY_DSN`
 
 Estos se setean en Vercel/Cloudflare panels o via secrets:
 

@@ -1,6 +1,55 @@
-@import url('../../SuperProfes-Design-System/colors_and_type.css');
-@import url('../../../components/auth/authStyles.css');
+@import url('/design-system/colors_and_type.css');
+@import url('/design-system/ui_kits/auth/styles.css');
+@import url('/design-system/ui_kits/teacher/styles.css');
 
-body { margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background: var(--bg-canvas); color: var(--fg-1); }
+body { margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background: var(--bg-subtle, #F7F8FA); color: var(--fg-1); }
 .container { max-width: 1100px; margin: 40px auto; padding: 16px; }
-.card { background:#fff; border-radius:12px; padding:18px; }
+
+/* Tailwind-style utilities used by dashboard page */
+.space-y-8 > * + * { margin-top: 2rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.font-semibold { font-weight: 600; }
+.mb-4 { margin-bottom: 1rem; }
+.bg-white { background-color: #ffffff; }
+.rounded-2xl { border-radius: 1rem; }
+.border { border-width: 1px; border-style: solid; }
+.p-6 { padding: 1.5rem; }
+
+/* ── Mobile sidebar ── */
+@media (max-width: 768px) {
+  .t-app {
+    grid-template-columns: 1fr;
+    grid-template-areas: "top" "main";
+  }
+
+  .t-sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 260px;
+    z-index: 10;
+    transform: translateX(-100%);
+    transition: transform 200ms var(--ease-standard, ease);
+    box-shadow: var(--shadow-pop);
+  }
+
+  .t-sidebar[data-open="true"] {
+    transform: translateX(0);
+  }
+
+  /* Show mobile close button inside sidebar */
+  .t-sidebar [data-testid="sidebar-close-btn"] {
+    display: flex !important;
+  }
+
+  /* Show overlay when sidebar is open */
+  .t-app [data-testid="sidebar-overlay"] {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide hamburger on desktop */
+  [data-testid="sidebar-open-btn"] {
+    display: none;
+  }
+}

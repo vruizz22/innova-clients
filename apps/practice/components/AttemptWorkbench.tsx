@@ -1,21 +1,30 @@
 'use client'
 
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 
-import { createApiClient, type ApiResponse, type AttemptInput } from '../../../components/api-client'
+import { getAccessToken, getStoredSession } from '@shared/auth-session'
+import { createApiClient, type AttemptInput, type AttemptResponse } from '@components/api-client'
 import { VisualErrorRenderer } from './VisualErrorRenderer'
 
 export function AttemptWorkbench(): JSX.Element {
   const apiBaseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', [])
-  const apiClient = useMemo(() => createApiClient({ baseUrl: apiBaseUrl }), [apiBaseUrl])
+  const apiClient = useMemo(
+    () => createApiClient({ baseUrl: apiBaseUrl, getAccessToken }),
+    [apiBaseUrl],
+  )
+  const [hasSession, setHasSession] = useState(false)
 
-  const [studentId, setStudentId] = useState('student-001')
+  useEffect(() => {
+    setHasSession(getStoredSession() !== null)
+  }, [])
+
+  const [studentId, setStudentId] = useState(process.env.NEXT_PUBLIC_STUDENT_ID ?? 'seed-student-001')
   const [skillKey, setSkillKey] = useState('subtraction_borrow')
   const [expectedAnswer, setExpectedAnswer] = useState(27)
   const [studentAnswer, setStudentAnswer] = useState(33)
   const [minuend, setMinuend] = useState(53)
   const [subtrahend, setSubtrahend] = useState(26)
-  const [result, setResult] = useState<ApiResponse | null>(null)
+  const [result, setResult] = useState<AttemptResponse | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -40,25 +49,38 @@ export function AttemptWorkbench(): JSX.Element {
       setResult(response)
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'Unknown attempt error')
-      setResult({ suggestedSlug: 'BORROW_OMITTED_TENS', errorType: 'BORROW_OMITTED_TENS' })
     } finally {
       setLoading(false)
     }
   }
 
-  const rendererSlug = (result?.suggestedSlug ?? result?.errorType ?? 'BORROW_OMITTED_TENS') as
+  const normalizedErrorType = result?.errorType === 'BORROW_OMITTED'
+    ? 'BORROW_OMITTED_TENS'
+    : result?.errorType
+
+  const rendererSlug = (normalizedErrorType ?? 'BORROW_OMITTED_TENS') as
     | 'BORROW_OMITTED_TENS'
     | 'CARRY_OMITTED'
     | 'ZERO_TIMES_X_NONZERO'
     | 'COMMON_DENOMINATOR_MISSED'
 
+  if (!hasSession) {
+    return (
+      <section className="auth-form" style={{ marginTop: 20 }}>
+        <h3>Sesión requerida</h3>
+        <p>Inicia sesión para enviar intentos al backend local.</p>
+        <a className="auth-submit" href="/login">Ir a login</a>
+      </section>
+    )
+  }
+
   return (
     <>
       <section style={{marginTop:20}}>
-        <h3>Attempt submission</h3>
+        <h3>Enviar intento</h3>
         <form onSubmit={submitAttempt} style={{display:'grid', gap:12}}>
           <label>
-            Student UUID
+            Student ID
             <input value={studentId} onChange={(event) => setStudentId(event.target.value)} />
           </label>
           <label>
@@ -81,15 +103,21 @@ export function AttemptWorkbench(): JSX.Element {
             Subtrahend
             <input type="number" value={subtrahend} onChange={(event) => setSubtrahend(Number(event.target.value))} />
           </label>
-          <button type="submit" disabled={loading}>{loading ? 'Submitting...' : 'Submit attempt'}</button>
+          <button type="submit" disabled={loading}>{loading ? 'Enviando...' : 'Enviar intento'}</button>
         </form>
       </section>
 
       <section style={{marginTop:20}}>
-        <h3>Visual Error Renderer (example)</h3>
-        <VisualErrorRenderer slug={rendererSlug} />
+        <h3>Feedback</h3>
+        {result ? <VisualErrorRenderer slug={rendererSlug} /> : null}
+        {result ? (
+          <p className="auth-message">
+            {result.isCorrect
+              ? 'Respuesta correcta.'
+              : `Error detectado: ${result.errorType} (${Math.round(result.confidence * 100)}% confianza).`}
+          </p>
+        ) : null}
         {error ? <p className="auth-message">{error}</p> : null}
-        {result?.message ? <p className="auth-message">{result.message}</p> : null}
       </section>
     </>
   )

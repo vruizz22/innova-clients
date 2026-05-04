@@ -1,3 +1,5 @@
+import React from 'react'
+
 type FractionExample = {
   a: string
   b?: string
@@ -60,6 +62,10 @@ const ERROR_LIBRARY: Record<string, ErrorDefinition> = {
 type VisualErrorRendererProps = {
   slug: keyof typeof ERROR_LIBRARY | string
   compact?: boolean
+}
+
+function isFractionExample(example: ErrorExample): example is FractionExample {
+  return example !== null && example.kind === 'frac'
 }
 
 function FracStack({ value }: { value: string }): JSX.Element {
@@ -126,7 +132,7 @@ export function VisualErrorRenderer({ slug, compact = false }: VisualErrorRender
   }
 
   const example = definition.example
-  const isFraction = example !== null && 'kind' in example && example.kind === 'frac'
+  const isFraction = isFractionExample(example)
 
   return (
     <article className={`vex ${compact ? 'vex-compact' : ''}`}>

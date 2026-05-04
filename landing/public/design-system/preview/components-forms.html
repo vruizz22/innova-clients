@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Form inputs</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { padding: 24px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--fg-1); margin-bottom: 6px; }
+  .input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: 8px; font: inherit; color: var(--fg-1); background: #fff; }
+  .input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-color: var(--focus-ring); }
+  .checkbox { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .help { font-size: 12px; color: var(--fg-2); margin-top: 6px; }
+  .err { color: var(--error-fg); }
+</style></head>
+<body>
+  <div class="grid">
+    <div>
+      <div class="field">
+        <label for="a">Nombre del curso</label>
+        <input id="a" class="input" value="4° A · Sra. González"/>
+      </div>
+      <div class="field">
+        <label for="b">Topic</label>
+        <select class="input" id="b"><option>subtraction_borrow</option><option>addition_carry</option></select>
+      </div>
+      <label class="checkbox"><input type="checkbox" checked/> Notificar al apoderado</label>
+    </div>
+    <div>
+      <div class="field">
+        <label for="c">Email apoderado</label>
+        <input id="c" class="input" placeholder="apoderado@ejemplo.cl"/>
+        <div class="help">Lo usamos sólo para enviar el resumen semanal.</div>
+      </div>
+      <div class="field">
+        <label for="d">Item ID</label>
+        <input id="d" class="input math" value="53 − 26" style="border-color:var(--error-border);background:var(--error-bg);color:var(--error-fg)"/>
+        <div class="help err">Faltan los pasos intermedios.</div>
+      </div>
+    </div>
+  </div>
+</body></html>

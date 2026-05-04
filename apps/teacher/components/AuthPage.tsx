@@ -2,7 +2,20 @@
 
 import { useMemo, useState, type FormEvent } from 'react'
 
-import { createApiClient, type ConfirmForgotPasswordInput, type ForgotPasswordInput, type LoginInput, type RegisterInput } from '../../../components/api-client'
+import { clearStoredSession, getDashboardUrl, storeSession } from '@shared/auth-session'
+import {
+  createApiClient,
+  type ConfirmForgotPasswordInput,
+  type ForgotPasswordInput,
+  type LoginInput,
+  type RegisterInput,
+} from './api-client'
+
+type InputChangeEvent = {
+  target: {
+    value: string
+  }
+}
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
 
@@ -18,7 +31,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
   const [loading, setLoading] = useState(false)
 
   const [loginData, setLoginData] = useState<LoginInput>({ email: '', password: '' })
-  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: 'TEACHER' })
+  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: 'teacher' })
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
   const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
 
@@ -30,13 +43,15 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
     try {
       if (mode === 'login') {
         const result = await authClient.login(loginData)
-        setMessage(result.accessToken ? 'Login success. Token received.' : 'Login completed.')
+        storeSession(result)
+        window.location.href = getDashboardUrl(result.user.role)
         return
       }
 
       if (mode === 'register') {
         const result = await authClient.register(registerData)
-        setMessage(result.message ?? 'Registration completed.')
+        storeSession(result)
+        window.location.href = getDashboardUrl(result.user.role)
         return
       }
 
@@ -59,7 +74,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
     <main className="container">
       <section className="card auth-shell">
         <div className="auth-head">
-          <p className="auth-eyebrow">SuperProfes auth</p>
+          <p className="auth-eyebrow">SuperProfes profesores</p>
           <h1>{title}</h1>
           <p>
             Base URL: <strong>{baseUrl}</strong>
@@ -71,11 +86,11 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
             <>
               <label>
                 Email
-                <input value={loginData.email} onChange={(event) => setLoginData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input value={loginData.email} onChange={(event: InputChangeEvent) => setLoginData((current: LoginInput) => ({ ...current, email: event.target.value }))} type="email" required />
               </label>
               <label>
                 Password
-                <input value={loginData.password} onChange={(event) => setLoginData((current) => ({ ...current, password: event.target.value }))} type="password" required />
+                <input value={loginData.password} onChange={(event: InputChangeEvent) => setLoginData((current: LoginInput) => ({ ...current, password: event.target.value }))} type="password" required />
               </label>
             </>
           ) : null}
@@ -84,17 +99,25 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
             <>
               <label>
                 Email
-                <input value={registerData.email} onChange={(event) => setRegisterData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input value={registerData.email} onChange={(event: InputChangeEvent) => setRegisterData((current: RegisterInput) => ({ ...current, email: event.target.value }))} type="email" required />
               </label>
               <label>
                 Password
-                <input value={registerData.password} onChange={(event) => setRegisterData((current) => ({ ...current, password: event.target.value }))} type="password" required />
+                <input value={registerData.password} onChange={(event: InputChangeEvent) => setRegisterData((current: RegisterInput) => ({ ...current, password: event.target.value }))} type="password" required />
               </label>
               <label>
-                Role
-                <select value={registerData.role} onChange={(event) => setRegisterData((current) => ({ ...current, role: event.target.value === 'TEACHER' ? 'TEACHER' : 'STUDENT' }))}>
-                  <option value="STUDENT">STUDENT</option>
-                  <option value="TEACHER">TEACHER</option>
+                Tipo de cuenta
+                <select
+                  value={registerData.role}
+                  onChange={(event: InputChangeEvent) =>
+                    setRegisterData((current: RegisterInput) => ({
+                      ...current,
+                      role: event.target.value === 'teacher' ? 'teacher' : 'student',
+                    }))
+                  }
+                >
+                  <option value="teacher">Profesor</option>
+                  <option value="student">Alumno</option>
                 </select>
               </label>
             </>
@@ -103,7 +126,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
           {mode === 'forgot' ? (
             <label>
               Email
-              <input value={forgotData.email} onChange={(event) => setForgotData({ email: event.target.value })} type="email" required />
+              <input value={forgotData.email} onChange={(event: InputChangeEvent) => setForgotData({ email: event.target.value })} type="email" required />
             </label>
           ) : null}
 
@@ -111,15 +134,15 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
             <>
               <label>
                 Email
-                <input value={resetData.email} onChange={(event) => setResetData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input value={resetData.email} onChange={(event: InputChangeEvent) => setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, email: event.target.value }))} type="email" required />
               </label>
               <label>
                 Recovery code
-                <input value={resetData.code} onChange={(event) => setResetData((current) => ({ ...current, code: event.target.value }))} type="text" required />
+                <input value={resetData.code} onChange={(event: InputChangeEvent) => setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, code: event.target.value }))} type="text" required />
               </label>
               <label>
                 New password
-                <input value={resetData.newPassword} onChange={(event) => setResetData((current) => ({ ...current, newPassword: event.target.value }))} type="password" required />
+                <input value={resetData.newPassword} onChange={(event: InputChangeEvent) => setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, newPassword: event.target.value }))} type="password" required />
               </label>
             </>
           ) : null}
@@ -129,7 +152,26 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
           </button>
         </form>
 
-        <p className="auth-message">{message || 'Modo demo preparado para backend local y Cognito.'}</p>
+        <p className="auth-message">{message || 'La sesión se valida contra el backend local configurado.'}</p>
+        {mode !== 'login' ? (
+          <p className="auth-message">
+            <a className="auth-link-inline" href="/login">Ya tengo cuenta</a>
+          </p>
+        ) : null}
+        {mode === 'login' ? (
+          <p className="auth-message">
+            <button
+              type="button"
+              className="auth-link-inline"
+              onClick={() => {
+                clearStoredSession()
+                setMessage('Sesión local limpiada.')
+              }}
+            >
+              Limpiar sesión local
+            </button>
+          </p>
+        ) : null}
       </section>
     </main>
   )
