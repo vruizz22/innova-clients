@@ -147,7 +147,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
             </>
           ) : null}
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Enviando...' : 'Continuar'}
           </button>
         </form>
@@ -163,6 +163,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
             <button
               type="button"
               className="auth-link-inline"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}
               onClick={() => {
                 clearStoredSession()
                 setMessage('Sesión local limpiada.')
