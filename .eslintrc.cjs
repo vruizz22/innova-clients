@@ -5,29 +5,20 @@ module.exports = {
         node: true,
         es2022: true,
     },
-    parser: '@typescript-eslint/parser',
     extends: [
         'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:react/recommended',
-        'plugin:react-hooks/recommended'
     ],
     parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
-        ecmaFeatures: {
-            jsx: true,
-        },
-    },
-    settings: {
-        react: {
-            version: 'detect',
-        },
     },
     overrides: [
         {
             files: ['*.ts', '*.tsx'],
             parser: '@typescript-eslint/parser',
+            extends: [
+                'plugin:@typescript-eslint/recommended',
+            ],
             rules: {
                 '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
                 '@typescript-eslint/no-explicit-any': 'warn',
@@ -36,6 +27,5 @@ module.exports = {
     ],
     rules: {
         'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-        'react/react-in-jsx-scope': 'off',
     },
 }
