@@ -1,34 +1,56 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { DashboardLayout } from '@components/DashboardLayout';
-import { mockStudents } from '@lib/mock-data';
+import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { DashboardLayout } from '@components/DashboardLayout'
+import { createApiClient } from '@components/api-client'
+import { getAccessToken } from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
+import type { StudentMastery } from '@lib/types'
 
 function getMasteryColor(p: number): string {
-  if (p >= 0.7) return 'var(--mastery-strong)';
-  if (p >= 0.4) return 'var(--mastery-medium)';
-  return 'var(--mastery-weak)';
+  if (p >= 0.7) return 'var(--mastery-strong)'
+  if (p >= 0.4) return 'var(--mastery-medium)'
+  return 'var(--mastery-weak)'
 }
 
 function getMasteryLabel(p: number): string {
-  if (p >= 0.7) return 'Dominado';
-  if (p >= 0.4) return 'En proceso';
-  return 'En riesgo';
+  if (p >= 0.7) return 'Dominado'
+  if (p >= 0.4) return 'En proceso'
+  return 'En riesgo'
 }
 
 function getMasteryPillClass(p: number): string {
-  if (p >= 0.7) return 'status-pill pill-resolved';
-  if (p >= 0.4) return 'status-pill pill-processing';
-  return 'status-pill pill-at-risk';
+  if (p >= 0.7) return 'status-pill pill-resolved'
+  if (p >= 0.4) return 'status-pill pill-processing'
+  return 'status-pill pill-at-risk'
 }
 
 export default function StudentsPage(): JSX.Element {
-  const [search, setSearch] = useState('');
+  const runtimeConfig = getPublicRuntimeConfig()
+  const apiClient = useMemo(
+    () => createApiClient({ baseUrl: runtimeConfig.apiUrl, getAccessToken }),
+    [runtimeConfig.apiUrl],
+  )
+  const [students, setStudents] = useState<StudentMastery[]>([])
+  const [search, setSearch] = useState('')
+  const [loadError, setLoadError] = useState('')
 
-  const filtered = mockStudents.filter((s) =>
-    s.studentName.toLowerCase().includes(search.toLowerCase()),
-  );
+  useEffect(() => {
+    async function loadStudents(): Promise<void> {
+      try {
+        setStudents(await apiClient.getClassroomMastery(runtimeConfig.classroomId))
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : 'No se pudieron cargar alumnos')
+      }
+    }
+
+    void loadStudents()
+  }, [apiClient, runtimeConfig.classroomId])
+
+  const filtered = students.filter((student) =>
+    student.studentName.toLowerCase().includes(search.toLowerCase()),
+  )
 
   return (
     <DashboardLayout unresolvedAlertCount={0}>
@@ -39,10 +61,14 @@ export default function StudentsPage(): JSX.Element {
             type="search"
             placeholder="Buscar alumno..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
             className="search-input"
           />
         </div>
+
+        {loadError ? (
+          <p style={{ color: 'var(--mastery-weak)', fontSize: 'var(--text-body-sm)' }}>{loadError}</p>
+        ) : null}
 
         <div className="students-table-wrap">
           <table className="students-table">
@@ -58,17 +84,15 @@ export default function StudentsPage(): JSX.Element {
             <tbody>
               {filtered.map((student) => {
                 const avgMastery =
-                  student.skills.reduce((sum, s) => sum + s.pKnown, 0) / student.skills.length;
-                const totalAttempts = student.skills.reduce((sum, s) => sum + s.attemptsCount, 0);
-                const color = getMasteryColor(avgMastery);
-                const label = getMasteryLabel(avgMastery);
-                const pillClass = getMasteryPillClass(avgMastery);
+                  student.skills.reduce((sum, skill) => sum + skill.pKnown, 0) / Math.max(student.skills.length, 1)
+                const totalAttempts = student.skills.reduce((sum, skill) => sum + skill.attemptsCount, 0)
+                const color = getMasteryColor(avgMastery)
+                const label = getMasteryLabel(avgMastery)
+                const pillClass = getMasteryPillClass(avgMastery)
 
                 return (
                   <tr key={student.studentId}>
-                    <td style={{ fontWeight: 'var(--fw-medium)' }}>
-                      {student.studentName}
-                    </td>
+                    <td style={{ fontWeight: 'var(--fw-medium)' }}>{student.studentName}</td>
                     <td>
                       <div className="mastery-bar-wrap">
                         <div className="mastery-bar-track">
@@ -89,20 +113,18 @@ export default function StudentsPage(): JSX.Element {
                       {totalAttempts}
                     </td>
                     <td>
-                      <Link
-                        href={`/dashboard/students/${student.studentId}`}
-                        className="student-link"
-                      >
-                        Ver detalle →
+                      <Link href={`/dashboard/students/${student.studentId}`} className="student-link">
+                        Ver detalle
                       </Link>
                     </td>
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
         </div>
       </div>
     </DashboardLayout>
-  );
+  )
 }
+
