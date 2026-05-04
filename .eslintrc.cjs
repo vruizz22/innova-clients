@@ -5,8 +5,10 @@ module.exports = {
         node: true,
         es2022: true,
     },
+    parser: '@typescript-eslint/parser',
     extends: [
         'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
         'plugin:react/recommended',
         'plugin:react-hooks/recommended'
     ],
@@ -22,7 +24,18 @@ module.exports = {
             version: 'detect',
         },
     },
+    overrides: [
+        {
+            files: ['*.ts', '*.tsx'],
+            parser: '@typescript-eslint/parser',
+            rules: {
+                '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+                '@typescript-eslint/no-explicit-any': 'warn',
+            },
+        },
+    ],
     rules: {
         'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+        'react/react-in-jsx-scope': 'off',
     },
 }
