@@ -7,6 +7,8 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL ?? 'https://superprofes.app'
+
   return (
     <html lang="es">
       <body>
@@ -16,6 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="app-brand-profes">Profes</span>
           </a>
           <nav aria-label="Navegación principal">
+            <a href={landingUrl} className="exercise-back-link" style={{ margin: 0 }}>
+              Inicio
+            </a>
             <a href="/practice" className="exercise-back-link" style={{ margin: 0 }}>
               Ejercicios
             </a>
