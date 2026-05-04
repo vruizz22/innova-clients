@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import LoginScreen from './login';
 import RegisterScreen from './register';
-import type { UserRole } from '../../lib/types';
+import type { AuthSession } from '../../lib/api-client';
 
 type AuthSubScreen = 'login' | 'register';
 
 export interface AuthLayoutProps {
-  onAuthenticated: (role: UserRole) => void;
+  onAuthenticated: (session: AuthSession) => void;
 }
 
 export default function AuthLayout({ onAuthenticated }: AuthLayoutProps): JSX.Element {
@@ -14,12 +14,12 @@ export default function AuthLayout({ onAuthenticated }: AuthLayoutProps): JSX.El
 
   return subScreen === 'login' ? (
     <LoginScreen
-      onLogin={(role) => onAuthenticated(role)}
+      onLogin={onAuthenticated}
       onRegister={() => setSubScreen('register')}
     />
   ) : (
     <RegisterScreen
-      onRegister={(role) => onAuthenticated(role)}
+      onRegister={onAuthenticated}
       onBack={() => setSubScreen('login')}
     />
   );

@@ -9,9 +9,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { login, type AuthSession } from '../../lib/api-client';
 
 export interface LoginScreenProps {
-  onLogin: (role: 'student' | 'parent') => void;
+  onLogin: (session: AuthSession) => void;
   onRegister: () => void;
 }
 
@@ -19,9 +20,26 @@ export default function LoginScreen({ onLogin, onRegister }: LoginScreenProps): 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'student' | 'parent'>('student');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function handleLogin(): void {
-    onLogin(role);
+  async function handleLogin(): Promise<void> {
+    setLoading(true);
+    setMessage('');
+    try {
+      const session = await login(email, password);
+      onLogin({
+        ...session,
+        user: {
+          ...session.user,
+          role: role === 'parent' && session.user.role === 'student' ? 'parent' : session.user.role,
+        },
+      });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo iniciar sesión');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -133,9 +151,13 @@ export default function LoginScreen({ onLogin, onRegister }: LoginScreenProps): 
               className="mt-5 rounded-2xl bg-[#2F8DBA] items-center py-4"
               style={{ minHeight: 52 }}
               onPress={handleLogin}
+              disabled={loading}
             >
-              <Text className="text-white font-bold text-base">Ingresar</Text>
+              <Text className="text-white font-bold text-base">{loading ? 'Ingresando...' : 'Ingresar'}</Text>
             </Pressable>
+            {message.length > 0 && (
+              <Text className="mt-3 text-sm text-red-700 text-center">{message}</Text>
+            )}
 
             {/* Register link */}
             <Pressable

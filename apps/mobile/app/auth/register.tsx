@@ -10,9 +10,10 @@ import {
   View,
 } from 'react-native';
 import type { UserRole } from '../../lib/types';
+import { register, type AuthSession } from '../../lib/api-client';
 
 export interface RegisterScreenProps {
-  onRegister: (role: UserRole) => void;
+  onRegister: (session: AuthSession) => void;
   onBack: () => void;
 }
 
@@ -20,10 +21,21 @@ export default function RegisterScreen({ onRegister, onBack }: RegisterScreenPro
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function handleCreate(): void {
-    if (selectedRole !== null) {
-      onRegister(selectedRole);
+  async function handleCreate(): Promise<void> {
+    if (selectedRole === null) return;
+
+    setLoading(true);
+    setMessage('');
+    try {
+      const session = await register(email, password, selectedRole);
+      onRegister(session);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo crear la cuenta');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -139,14 +151,17 @@ export default function RegisterScreen({ onRegister, onBack }: RegisterScreenPro
             {/* Create button */}
             <Pressable
               className={`mt-6 rounded-2xl items-center py-4 ${
-                selectedRole !== null ? 'bg-[#2F8DBA]' : 'bg-slate-300'
+                selectedRole !== null && !loading ? 'bg-[#2F8DBA]' : 'bg-slate-300'
               }`}
               style={{ minHeight: 52 }}
               onPress={handleCreate}
-              disabled={selectedRole === null}
+              disabled={selectedRole === null || loading}
             >
-              <Text className="text-white font-bold text-base">Crear cuenta</Text>
+              <Text className="text-white font-bold text-base">{loading ? 'Creando...' : 'Crear cuenta'}</Text>
             </Pressable>
+            {message.length > 0 && (
+              <Text className="mt-3 text-sm text-red-700 text-center">{message}</Text>
+            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
