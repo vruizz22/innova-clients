@@ -61,24 +61,22 @@ export default function AlertsPage(): JSX.Element {
 
   return (
     <DashboardLayout unresolvedAlertCount={unresolvedCount}>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold" style={{ color: 'var(--fg-1)' }}>
-            Alertas activas
-          </h2>
+      <div className="page-section">
+        <div className="page-section-head">
+          <h2>Alertas activas</h2>
           {unresolvedCount > 0 ? (
-            <span className="text-xs font-semibold bg-[#fce8e8] text-[#7a1a1a] border border-[#f5b8b8] px-2 py-0.5 rounded-full">
+            <span className="alert-count-badge">
               {unresolvedCount} sin resolver
             </span>
           ) : null}
         </div>
 
         {loadError ? (
-          <p className="text-sm text-[#D86060]">{loadError}</p>
+          <p style={{ color: 'var(--mastery-weak)', fontSize: 'var(--text-body-sm)' }}>{loadError}</p>
         ) : null}
 
         {loading ? (
-          <p className="text-sm text-[#4F5868]">Cargando alertas...</p>
+          <p style={{ color: 'var(--fg-2)', fontSize: 'var(--text-body-sm)' }}>Cargando alertas...</p>
         ) : (
           <AlertsPanel
             alerts={alerts.filter((a) => !a.resolvedAt)}
@@ -87,8 +85,8 @@ export default function AlertsPage(): JSX.Element {
         )}
 
         {!loading && alerts.filter((a) => a.resolvedAt).length > 0 ? (
-          <div className="mt-8">
-            <h3 className="text-base font-semibold mb-3" style={{ color: 'var(--fg-2)' }}>
+          <div style={{ marginTop: 'var(--sp-8)' }}>
+            <h3 style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--fw-semibold)', color: 'var(--fg-2)', marginBottom: 'var(--sp-3)' }}>
               Resueltas
             </h3>
             <AlertsPanel
