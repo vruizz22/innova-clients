@@ -10,7 +10,6 @@
     "allowJs": false,
     "noEmit": true,
     "incremental": true,
-    "ignoreDeprecations": "6.0",
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "plugins": [
