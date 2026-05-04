@@ -6,8 +6,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import SkillBadge from '../../components/SkillBadge';
-import { MOCK_EXERCISES, MOCK_STUDENT_NAME } from '../../lib/mock-data';
+import SkillBadge from '@components/SkillBadge';
+import { MOCK_EXERCISES, MOCK_STUDENT_NAME } from '@lib/mock-data';
 import type { Exercise } from '../../lib/types';
 
 export interface PracticeHomeScreenProps {

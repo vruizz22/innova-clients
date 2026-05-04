@@ -3,9 +3,9 @@ import { Pressable, Text, View } from 'react-native';
 import PracticeHomeScreen from './index';
 import StudentProgressScreen from './progress';
 import PracticeExerciseScreen from './practice/exercise';
-import type { Exercise } from '../../lib/types';
-import { MOCK_EXERCISES } from '../../lib/mock-data';
-import type { AuthSession } from '../../lib/api-client';
+import type { Exercise } from '@lib/types';
+import { MOCK_EXERCISES } from '@lib/mock-data';
+import type { AuthSession } from '@lib/api-client';
 
 type StudentTab = 'practice' | 'progress';
 
