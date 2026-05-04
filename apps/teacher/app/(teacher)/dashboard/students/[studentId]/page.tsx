@@ -14,9 +14,13 @@ export default function StudentDetailPage({ params }: PageProps): JSX.Element {
   if (!student) {
     return (
       <DashboardLayout unresolvedAlertCount={0}>
-        <div className="bg-white rounded-2xl border border-[#E5E9F0] p-8 text-center">
-          <p className="text-[#4F5868]">Alumno no encontrado.</p>
-          <a href="/dashboard/students" className="mt-4 inline-block text-sm text-[#3FA7D6] font-semibold">
+        <div className="card" style={{ padding: 'var(--sp-10)', textAlign: 'center' }}>
+          <p style={{ color: 'var(--fg-2)' }}>Alumno no encontrado.</p>
+          <a
+            href="/dashboard/students"
+            className="btn btn-ghost"
+            style={{ marginTop: 'var(--sp-4)', textDecoration: 'none' }}
+          >
             ← Volver a alumnos
           </a>
         </div>
