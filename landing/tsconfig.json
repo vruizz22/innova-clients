@@ -4,7 +4,6 @@
     "jsx": "preserve",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@design/*": ["../SuperProfes-Design-System/*"],
