@@ -276,6 +276,8 @@ body {
 }
 
 .auth-shell.card {
+  display: block;
+  min-height: auto;
   max-width: 440px;
   margin: var(--sp-10) auto;
 }
