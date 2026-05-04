@@ -18,7 +18,7 @@ export default function ScanPage(): JSX.Element {
         </p>
       </div>
 
-      <PhotoUploadWorkbench studentId="demo-student" />
+      <PhotoUploadWorkbench />
     </main>
   );
 }
