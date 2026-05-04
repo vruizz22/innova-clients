@@ -88,11 +88,17 @@ export default function TeacherDashboard(): JSX.Element {
 
   if (!hasSession) {
     return (
-      <main className="container">
-        <section className="card auth-shell">
-          <h1>Dashboard profesores</h1>
-          <p>Inicia sesión para cargar datos desde el backend local.</p>
-          <a className="auth-submit" href="/login">Ir a login</a>
+      <main className="container" style={{ maxWidth: 480, margin: '80px auto', padding: 'var(--sp-4)' }}>
+        <section className="card">
+          <h1 style={{ fontSize: 'var(--text-h1)', fontWeight: 'var(--fw-bold)', margin: '0 0 var(--sp-2)' }}>
+            Dashboard profesores
+          </h1>
+          <p style={{ color: 'var(--fg-2)', fontSize: 'var(--text-body-sm)', margin: '0 0 var(--sp-4)' }}>
+            Inicia sesión para cargar datos desde el backend local.
+          </p>
+          <a className="btn btn-primary" href="/login" style={{ textDecoration: 'none' }}>
+            Ir a login
+          </a>
         </section>
       </main>
     );
@@ -100,7 +106,12 @@ export default function TeacherDashboard(): JSX.Element {
 
   return (
     <DashboardLayout unresolvedAlertCount={alerts.filter(a => !a.resolvedAt).length}>
-      {loadError ? <p className="auth-message">{loadError}</p> : null}
+      {loadError ? (
+        <p style={{ color: 'var(--mastery-weak)', fontSize: 'var(--text-body-sm)', marginBottom: 'var(--sp-4)' }}>
+          {loadError}
+        </p>
+      ) : null}
+
       {selectedStudent ? (
         <StudentDetail
           studentId={selectedStudent.studentId}
@@ -110,23 +121,26 @@ export default function TeacherDashboard(): JSX.Element {
           onBack={() => setSelectedStudentId(null)}
         />
       ) : (
-        <div className="space-y-8">
+        <div className="dashboard-home">
           <div>
-            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--fg-1)' }}>
-              Dominio por alumno
-            </h2>
-            <div className="bg-white rounded-2xl border p-6" style={{ borderColor: 'var(--border)' }}>
-              <MasteryHeatmap
-                students={students}
-                onStudentClick={setSelectedStudentId}
-              />
+            <div className="t-section-head">
+              <h2>Dominio por alumno</h2>
             </div>
+            <MasteryHeatmap
+              students={students}
+              onStudentClick={setSelectedStudentId}
+            />
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--fg-1)' }}>
-              Alertas activas
-            </h2>
+            <div className="t-section-head">
+              <h2>Alertas activas</h2>
+              {alerts.filter(a => !a.resolvedAt).length > 0 && (
+                <span className="alert-count-badge">
+                  {alerts.filter(a => !a.resolvedAt).length} sin resolver
+                </span>
+              )}
+            </div>
             <AlertsPanel
               alerts={alerts.filter(a => !a.resolvedAt)}
               onResolve={handleResolveAlert}
