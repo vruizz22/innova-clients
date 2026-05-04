@@ -90,7 +90,7 @@ export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLay
       <nav
         className="t-sidebar"
         aria-label="Navegación principal"
-        style={{ display: sidebarOpen || typeof window === 'undefined' ? 'flex' : undefined }}
+        data-open={sidebarOpen ? 'true' : 'false'}
         data-testid="sidebar"
       >
         {/* Brand */}
