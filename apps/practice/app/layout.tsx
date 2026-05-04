@@ -8,8 +8,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className="scroll-smooth">
-      <body className="bg-[var(--bg-student,#F0F7FB)] text-[var(--fg-1,#1F2937)] antialiased min-h-screen font-sans">
+    <html lang="es">
+      <body>
+        <header className="app-header">
+          <a href="/practice" className="app-brand">
+            <span className="app-brand-super">Super</span>
+            <span className="app-brand-profes">Profes</span>
+          </a>
+          <nav aria-label="Navegación principal">
+            <a href="/practice" className="exercise-back-link" style={{ margin: 0 }}>
+              Ejercicios
+            </a>
+          </nav>
+        </header>
         {children}
       </body>
     </html>
