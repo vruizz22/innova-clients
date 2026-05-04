@@ -144,7 +144,6 @@ vite.config.ts.timestamp-*
 .turbo/
 
 # Generated app/build assets
-**/public/design-system/
 landing/dist/
 **/*.tsbuildinfo
 
