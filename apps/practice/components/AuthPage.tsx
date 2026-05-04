@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 
-import { clearStoredSession, getDashboardUrl, storeSession } from '@shared/auth-session'
+import { getAccessToken, getDashboardUrl, getStoredSession, storeSession } from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import {
   createApiClient,
   type ConfirmForgotPasswordInput,
@@ -29,7 +30,8 @@ export function AuthPage({
   defaultRole = 'student',
   allowedRoles = DEFAULT_ALLOWED_ROLES,
 }: AuthPageProps): JSX.Element {
-  const baseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', [])
+  const runtimeConfig = getPublicRuntimeConfig()
+  const baseUrl = runtimeConfig.apiUrl
   const authClient = useMemo(() => createApiClient({ baseUrl }), [baseUrl])
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,6 +40,22 @@ export function AuthPage({
   const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: defaultRole })
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
   const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
+
+  useEffect(() => {
+    if (mode !== 'login') return
+    const session = getStoredSession()
+    if (!session) return
+
+    const meClient = createApiClient({ baseUrl, getAccessToken })
+    void meClient
+      .me()
+      .then((profile) => {
+        window.location.href = getDashboardUrl(profile.user.role)
+      })
+      .catch(() => {
+        setMessage('Tu sesión expiró. Ingresa nuevamente.')
+      })
+  }, [baseUrl, mode])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
@@ -80,9 +98,7 @@ export function AuthPage({
         <div className="auth-head">
           <p className="auth-eyebrow">SuperProfes</p>
           <h1>{title}</h1>
-          <p>
-            Base URL: <strong>{baseUrl}</strong>
-          </p>
+          <p>Ingresa con tu cuenta para continuar.</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -205,26 +221,11 @@ export function AuthPage({
         </form>
 
         <p className="auth-message">
-          {message || 'La sesión se valida contra el backend local configurado.'}
+          {message || 'Tus datos se validan contra SuperProfes.'}
         </p>
         {mode !== 'login' ? (
           <p className="auth-message">
             <a className="auth-link-inline" href="/login">Ya tengo cuenta</a>
-          </p>
-        ) : null}
-        {mode === 'login' ? (
-          <p className="auth-message">
-            <button
-              type="button"
-              className="auth-link-inline"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}
-              onClick={() => {
-                clearStoredSession()
-                setMessage('Sesión local limpiada.')
-              }}
-            >
-              Limpiar sesión local
-            </button>
           </p>
         ) : null}
       </section>
