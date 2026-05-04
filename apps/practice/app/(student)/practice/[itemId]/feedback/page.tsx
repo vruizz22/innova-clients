@@ -18,10 +18,10 @@ function FeedbackContent({ itemId }: { itemId: string }): JSX.Element {
   const confidence = confidenceStr ? parseFloat(confidenceStr) : undefined;
 
   return (
-    <main className="container mx-auto max-w-lg px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1F2937]">Resultado</h1>
-        <p className="text-sm text-[#4F5868] mt-1">
+    <main className="page-wrapper">
+      <div className="feedback-head">
+        <h1>Resultado</h1>
+        <p>
           {isCorrect ? '¡Lo lograste! Tu respuesta fue correcta.' : 'Revisa la explicación para mejorar.'}
         </p>
       </div>
@@ -32,16 +32,16 @@ function FeedbackContent({ itemId }: { itemId: string }): JSX.Element {
         confidence={confidence}
       />
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="feedback-actions">
         <button
+          className="btn btn-primary btn-submit-full"
           onClick={() => router.push('/practice')}
-          className="w-full py-3 rounded-xl font-semibold text-white bg-[#3FA7D6] hover:bg-[#2F8DBA] transition-colors"
         >
           Siguiente ejercicio
         </button>
         <button
+          className="btn btn-secondary btn-submit-full"
           onClick={() => router.push(`/practice/${itemId}`)}
-          className="w-full py-3 rounded-xl font-semibold text-[#4F5868] bg-[#F7F8FA] hover:bg-[#E5E9F0] transition-colors border border-[#E5E9F0]"
         >
           Intentar de nuevo
         </button>
@@ -52,7 +52,7 @@ function FeedbackContent({ itemId }: { itemId: string }): JSX.Element {
 
 export default function FeedbackPage({ params }: PageProps): JSX.Element {
   return (
-    <Suspense fallback={<div className="container mx-auto max-w-lg px-4 py-8 text-[#4F5868]">Cargando...</div>}>
+    <Suspense fallback={<main className="page-wrapper"><p style={{ color: 'var(--fg-2)' }}>Cargando...</p></main>}>
       <FeedbackContent itemId={params.itemId} />
     </Suspense>
   );

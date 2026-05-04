@@ -58,28 +58,19 @@ export default function PracticeItemPage({ params }: PageProps): JSX.Element {
   }
 
   return (
-    <main className="container mx-auto max-w-lg px-4 py-8">
-      <div className="mb-6">
-        <a
-          href="/practice"
-          className="text-sm text-[#3FA7D6] font-semibold hover:text-[#2F8DBA] flex items-center gap-1 mb-4"
-        >
-          ← Volver a ejercicios
-        </a>
-        <p className="text-xs font-semibold text-[#3FA7D6] uppercase tracking-wide mb-1">
-          {item.skillLabel}
-        </p>
-        <h1 className="text-2xl font-bold text-[#1F2937]">Resuelve el problema</h1>
+    <main className="page-wrapper">
+      <a href="/practice" className="exercise-back-link">
+        ← Volver a ejercicios
+      </a>
+      <p className="exercise-skill-label">{item.skillLabel}</p>
+      <h1 className="exercise-title">Resuelve el problema</h1>
+
+      <div className="problem-display">
+        <p className="problem-expr math">{item.problem}</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#E5E9F0] p-5 mb-5 shadow-sm">
-        <p className="text-3xl font-bold text-center text-[#1F2937] font-mono py-4">
-          {item.problem}
-        </p>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-[#E5E9F0] p-5">
-        <h2 className="text-sm font-semibold text-[#4F5868] mb-4">Escribe tu solución paso a paso</h2>
+      <div className="steps-card">
+        <p className="steps-card-title">Escribe tu solución paso a paso</p>
         <MathInput
           stepCount={3}
           stepLabels={['Paso 1 (unidades)', 'Paso 2 (decenas)', 'Respuesta final']}
@@ -87,9 +78,7 @@ export default function PracticeItemPage({ params }: PageProps): JSX.Element {
           loading={loading}
         />
         {error ? (
-          <p className="mt-3 text-sm text-[#D86060]" role="alert">
-            {error}
-          </p>
+          <p className="inline-error" role="alert">{error}</p>
         ) : null}
       </div>
     </main>
