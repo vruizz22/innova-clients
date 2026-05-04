@@ -35,7 +35,7 @@ export default function PracticeItemPage({ params }: PageProps): JSX.Element {
 
       const result = await submitAttempt({
         studentId,
-        itemId: params.itemId,
+        ...(params.itemId.startsWith('item-') ? {} : { itemId: params.itemId }),
         skillKey: item.skillKey,
         rawSteps: steps.map(({ value, stepIndex }) => ({
           expression: value,
