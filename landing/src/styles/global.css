@@ -1,3 +1,9 @@
+/* ============================================================
+   SuperProfes Landing — Global Styles
+   Design System tokens from public/design-system/colors_and_type.css
+   ============================================================ */
+
+@import url('/design-system/colors_and_type.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

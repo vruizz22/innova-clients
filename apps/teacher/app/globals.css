@@ -1,15 +1,15 @@
-/* ============================================================
+/* ════════════════════════════════════════════════════════════
    SuperProfes — Teacher App Global Styles
-   Design System tokens + UI kits imported from public/design-system
-   ============================================================ */
+   Slate palette (grounded, data-first design)
+   ═════════════════════════════════════════════════════════════ */
 
 @import url('/design-system/colors_and_type.css');
 @import url('/design-system/ui_kits/auth/styles.css');
 @import url('/design-system/ui_kits/teacher/styles.css');
 
-/* ── Body ──────────────────────────────────────────────────── */
+/* ── Body: Teacher slate palette ────────────────────────────── */
 body {
-  background: var(--bg-subtle);
+  background: var(--slate-50);
   color: var(--fg-1);
 }
 
