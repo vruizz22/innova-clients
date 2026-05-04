@@ -2,23 +2,40 @@
 
 import { useMemo, useState, type FormEvent } from 'react'
 
-import { createApiClient, type ConfirmForgotPasswordInput, type ForgotPasswordInput, type LoginInput, type RegisterInput } from '@shared/api-client'
+import { clearStoredSession, getDashboardUrl, storeSession } from '@shared/auth-session'
+import {
+  createApiClient,
+  type ConfirmForgotPasswordInput,
+  type ForgotPasswordInput,
+  type LoginInput,
+  type RegisterInput,
+  type UserRole,
+} from '@components/api-client'
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
 
 type AuthPageProps = {
   title: string
   mode: AuthMode
+  defaultRole?: RegisterInput['role']
+  allowedRoles?: RegisterInput['role'][]
 }
 
-export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
+const DEFAULT_ALLOWED_ROLES: RegisterInput['role'][] = ['student', 'parent']
+
+export function AuthPage({
+  title,
+  mode,
+  defaultRole = 'student',
+  allowedRoles = DEFAULT_ALLOWED_ROLES,
+}: AuthPageProps): JSX.Element {
   const baseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', [])
   const authClient = useMemo(() => createApiClient({ baseUrl }), [baseUrl])
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   const [loginData, setLoginData] = useState<LoginInput>({ email: '', password: '' })
-  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: 'STUDENT' })
+  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: defaultRole })
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
   const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
 
@@ -30,13 +47,15 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
     try {
       if (mode === 'login') {
         const result = await authClient.login(loginData)
-        setMessage(result.accessToken ? 'Login success. Token received.' : 'Login completed.')
+        storeSession(result)
+        window.location.href = getDashboardUrl(result.user.role)
         return
       }
 
       if (mode === 'register') {
         const result = await authClient.register(registerData)
-        setMessage(result.message ?? 'Registration completed.')
+        storeSession(result)
+        window.location.href = getDashboardUrl(result.user.role)
         return
       }
 
@@ -59,7 +78,7 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
     <main className="container">
       <section className="card auth-shell">
         <div className="auth-head">
-          <p className="auth-eyebrow">SuperProfes auth</p>
+          <p className="auth-eyebrow">SuperProfes</p>
           <h1>{title}</h1>
           <p>
             Base URL: <strong>{baseUrl}</strong>
@@ -91,10 +110,21 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
                 <input value={registerData.password} onChange={(event) => setRegisterData((current) => ({ ...current, password: event.target.value }))} type="password" required />
               </label>
               <label>
-                Role
-                <select value={registerData.role} onChange={(event) => setRegisterData((current) => ({ ...current, role: event.target.value === 'TEACHER' ? 'TEACHER' : 'STUDENT' }))}>
-                  <option value="STUDENT">STUDENT</option>
-                  <option value="TEACHER">TEACHER</option>
+                Tipo de cuenta
+                <select
+                  value={registerData.role}
+                  onChange={(event) => {
+                    const nextRole = event.target.value as UserRole
+                    if (nextRole === 'student' || nextRole === 'teacher' || nextRole === 'parent') {
+                      setRegisterData((current) => ({ ...current, role: nextRole }))
+                    }
+                  }}
+                >
+                  {allowedRoles.map((role) => (
+                    <option key={role} value={role}>
+                      {role === 'student' ? 'Alumno' : role === 'teacher' ? 'Profesor' : 'Apoderado'}
+                    </option>
+                  ))}
                 </select>
               </label>
             </>
@@ -129,7 +159,28 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
           </button>
         </form>
 
-        <p className="auth-message">{message || 'Modo demo preparado para backend local y Cognito.'}</p>
+        <p className="auth-message">
+          {message || 'La sesión se valida contra el backend local configurado.'}
+        </p>
+        {mode !== 'login' ? (
+          <p className="auth-message">
+            <a className="auth-link-inline" href="/login">Ya tengo cuenta</a>
+          </p>
+        ) : null}
+        {mode === 'login' ? (
+          <p className="auth-message">
+            <button
+              type="button"
+              className="auth-link-inline"
+              onClick={() => {
+                clearStoredSession()
+                setMessage('Sesión local limpiada.')
+              }}
+            >
+              Limpiar sesión local
+            </button>
+          </p>
+        ) : null}
       </section>
     </main>
   )

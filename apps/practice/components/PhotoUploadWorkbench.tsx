@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, type FormEvent } from 'react'
-import { createApiClient } from '@shared/api-client'
+import { createApiClient } from '@components/api-client'
 
 type PhotoUploadWorkbenchProps = {
   studentId: string
