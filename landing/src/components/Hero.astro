@@ -1,5 +1,7 @@
 ---
 // Hero — full-screen, dark gradient background, mastery heatmap mockup
+const practiceUrl = import.meta.env.PUBLIC_PRACTICE_URL ?? 'http://localhost:3002';
+const teacherUrl = import.meta.env.PUBLIC_TEACHER_URL ?? 'http://localhost:3001';
 ---
 
 <section
@@ -39,20 +41,20 @@
         <!-- CTAs — DS spec -->
         <div class="flex flex-wrap gap-3 pt-2">
           <a
-            href="mailto:innova.grupo23@gmail.com?subject=Solicitud%20piloto%20SuperProfes"
+            href={`${practiceUrl}/login`}
             class="btn btn-primary shadow-lg"
             style="box-shadow: 0 8px 24px rgba(15,42,61,0.25);"
           >
-            Solicitar piloto gratuito
+            Probar como alumno
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </a>
           <a
-            href="#como-funciona"
+            href={`${teacherUrl}/login`}
             class="btn"
             style="border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: white; backdrop-filter: blur(8px);"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Ver demo
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            Ver panel profesor
           </a>
         </div>
 

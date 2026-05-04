@@ -1,5 +1,7 @@
 ---
 // CTA — bottom call-to-action section
+const practiceUrl = import.meta.env.PUBLIC_PRACTICE_URL ?? 'http://localhost:3002';
+const teacherUrl = import.meta.env.PUBLIC_TEACHER_URL ?? 'http://localhost:3001';
 ---
 
 <section
@@ -32,17 +34,17 @@
 
     <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
       <a
-        href="mailto:innova.grupo23@gmail.com?subject=Solicitud%20de%20demo%20SuperProfes"
+        href={`${practiceUrl}/login`}
         class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--sky-500)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-black/25 transition-all hover:bg-[var(--sky-600)] hover:-translate-y-px active:scale-95 sm:w-auto"
       >
-        Solicitar demo
+        Entrar como alumno
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>
       <a
-        href="#precios"
+        href={`${teacherUrl}/login`}
         class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/8 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/14 hover:border-white/30 active:scale-95 sm:w-auto"
       >
-        Ver pricing
+        Entrar como profesor
       </a>
     </div>
 
