@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import ParentAssignmentsScreen from './index';
 import ParentProgressScreen from './progress';
+import type { AuthSession } from '../../lib/api-client';
 
 type ParentTab = 'assignments' | 'progress';
 
 export interface ParentLayoutProps {
+  session: AuthSession | null;
   onLogout?: () => void;
 }
 
