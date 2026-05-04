@@ -41,28 +41,22 @@ export function MathInput({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="math-form">
       {Array.from({ length: stepCount }, (_, i) => (
-        <div key={i} className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-[#1F2937]">
+        <div key={i} className="step-field">
+          <label className="step-label" htmlFor={`step-input-${i}`}>
             {stepLabels?.[i] ?? `Paso ${i + 1}`}
             {i === stepCount - 1 ? ' (respuesta final)' : ''}
           </label>
           <input
+            id={`step-input-${i}`}
             type="number"
             inputMode="numeric"
             value={steps[i]}
             onChange={(e) => updateStep(i, e.target.value)}
             disabled={disabled || loading}
             required={i === stepCount - 1}
-            className={[
-              'w-full rounded-xl border px-4 py-3 text-lg font-bold text-center text-[#1F2937]',
-              'border-[#CDD3DD] focus:border-[#3FA7D6] focus:ring-2 focus:ring-[#3FA7D6] focus:outline-none',
-              'placeholder:text-[#A5ADBC] transition-colors',
-              disabled || loading ? 'opacity-50 cursor-not-allowed bg-[#F7F8FA]' : 'bg-white',
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            className="step-input"
             placeholder="0"
             data-testid={`step-input-${i}`}
           />
@@ -72,14 +66,7 @@ export function MathInput({
       <button
         type="submit"
         disabled={disabled || loading}
-        className={[
-          'w-full py-3 rounded-xl font-semibold text-white transition-all text-base',
-          'bg-[#3FA7D6] hover:bg-[#2F8DBA] active:bg-[#226E94]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3FA7D6]',
-          disabled || loading ? 'opacity-50 cursor-not-allowed' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        className="btn btn-primary btn-submit-full"
       >
         {loading ? 'Enviando...' : 'Verificar respuesta'}
       </button>

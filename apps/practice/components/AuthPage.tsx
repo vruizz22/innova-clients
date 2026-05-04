@@ -61,14 +61,14 @@ export function AuthPage({
 
       if (mode === 'forgot') {
         const result = await authClient.forgotPassword(forgotData)
-        setMessage(result.message ?? 'Recovery code requested.')
+        setMessage(result.message ?? 'Código de recuperación enviado.')
         return
       }
 
       const result = await authClient.confirmForgotPassword(resetData)
-      setMessage(result.message ?? 'Password reset completed.')
+      setMessage(result.message ?? 'Contraseña restablecida correctamente.')
     } catch (requestError) {
-      setMessage(requestError instanceof Error ? requestError.message : 'Unknown auth error')
+      setMessage(requestError instanceof Error ? requestError.message : 'Error de autenticación desconocido')
     } finally {
       setLoading(false)
     }
@@ -90,11 +90,23 @@ export function AuthPage({
             <>
               <label>
                 Email
-                <input value={loginData.email} onChange={(event) => setLoginData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input
+                  value={loginData.email}
+                  onChange={(event) => setLoginData((current) => ({ ...current, email: event.target.value }))}
+                  type="email"
+                  required
+                  placeholder="tu@email.com"
+                />
               </label>
               <label>
-                Password
-                <input value={loginData.password} onChange={(event) => setLoginData((current) => ({ ...current, password: event.target.value }))} type="password" required />
+                Contraseña
+                <input
+                  value={loginData.password}
+                  onChange={(event) => setLoginData((current) => ({ ...current, password: event.target.value }))}
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                />
               </label>
             </>
           ) : null}
@@ -103,11 +115,23 @@ export function AuthPage({
             <>
               <label>
                 Email
-                <input value={registerData.email} onChange={(event) => setRegisterData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input
+                  value={registerData.email}
+                  onChange={(event) => setRegisterData((current) => ({ ...current, email: event.target.value }))}
+                  type="email"
+                  required
+                  placeholder="tu@email.com"
+                />
               </label>
               <label>
-                Password
-                <input value={registerData.password} onChange={(event) => setRegisterData((current) => ({ ...current, password: event.target.value }))} type="password" required />
+                Contraseña
+                <input
+                  value={registerData.password}
+                  onChange={(event) => setRegisterData((current) => ({ ...current, password: event.target.value }))}
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                />
               </label>
               <label>
                 Tipo de cuenta
@@ -133,7 +157,13 @@ export function AuthPage({
           {mode === 'forgot' ? (
             <label>
               Email
-              <input value={forgotData.email} onChange={(event) => setForgotData({ email: event.target.value })} type="email" required />
+              <input
+                value={forgotData.email}
+                onChange={(event) => setForgotData({ email: event.target.value })}
+                type="email"
+                required
+                placeholder="tu@email.com"
+              />
             </label>
           ) : null}
 
@@ -141,20 +171,35 @@ export function AuthPage({
             <>
               <label>
                 Email
-                <input value={resetData.email} onChange={(event) => setResetData((current) => ({ ...current, email: event.target.value }))} type="email" required />
+                <input
+                  value={resetData.email}
+                  onChange={(event) => setResetData((current) => ({ ...current, email: event.target.value }))}
+                  type="email"
+                  required
+                />
               </label>
               <label>
-                Recovery code
-                <input value={resetData.code} onChange={(event) => setResetData((current) => ({ ...current, code: event.target.value }))} type="text" required />
+                Código de recuperación
+                <input
+                  value={resetData.code}
+                  onChange={(event) => setResetData((current) => ({ ...current, code: event.target.value }))}
+                  type="text"
+                  required
+                />
               </label>
               <label>
-                New password
-                <input value={resetData.newPassword} onChange={(event) => setResetData((current) => ({ ...current, newPassword: event.target.value }))} type="password" required />
+                Nueva contraseña
+                <input
+                  value={resetData.newPassword}
+                  onChange={(event) => setResetData((current) => ({ ...current, newPassword: event.target.value }))}
+                  type="password"
+                  required
+                />
               </label>
             </>
           ) : null}
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Enviando...' : 'Continuar'}
           </button>
         </form>
@@ -172,6 +217,7 @@ export function AuthPage({
             <button
               type="button"
               className="auth-link-inline"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit' }}
               onClick={() => {
                 clearStoredSession()
                 setMessage('Sesión local limpiada.')
