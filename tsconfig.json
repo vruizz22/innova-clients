@@ -11,24 +11,8 @@
       "@shared": ["components"],
       "@app/*": ["apps/*"],
       "@app": ["apps"]
-    },
-    "ignoreDeprecations": "6.0"
+    }
   },
   "include": ["apps/**/*", "components/**/*", "SuperProfes-Design-System/**/*", "landing/**/*"],
   "exclude": ["node_modules", "dist"]
-}
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["DOM", "ES2022"],
-    "jsx": "react-jsx",
-    "moduleResolution": "Node",
-    "baseUrl": ".",
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["apps/**/*", "SuperProfes-Design-System/**/*", "components/**/*"]
 }
