@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import LoginScreen from './login';
 import RegisterScreen from './register';
-import type { AuthSession } from '../../lib/api-client';
+import type { AuthSession } from '@lib/api-client';
 
 type AuthSubScreen = 'login' | 'register';
 
