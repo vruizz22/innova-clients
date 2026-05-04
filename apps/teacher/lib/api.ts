@@ -1,4 +1,5 @@
 // Typed API client for the teacher app
+import { getAccessToken } from '@shared/auth-session';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -28,15 +29,21 @@ export interface StudentRecord {
 }
 
 function getAuthHeaders(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  const raw = sessionStorage.getItem('auth_session');
-  if (!raw) return {};
-  try {
-    const session = JSON.parse(raw) as { accessToken?: string };
-    return session.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {};
-  } catch {
-    return {};
+  const token = getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function unwrapApiData<T>(payload: T | { data?: T }): T {
+  if (
+    payload !== null &&
+    typeof payload === 'object' &&
+    'data' in payload &&
+    (payload as { data?: T }).data !== undefined
+  ) {
+    return (payload as { data: T }).data;
   }
+
+  return payload as T;
 }
 
 async function apiGet<T>(path: string): Promise<T> {
@@ -44,7 +51,7 @@ async function apiGet<T>(path: string): Promise<T> {
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
   });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
-  return res.json() as Promise<T>;
+  return unwrapApiData(await res.json() as T | { data?: T });
 }
 
 async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
@@ -54,7 +61,7 @@ async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
     body: body != null ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw new Error(`PATCH ${path} failed: ${res.status}`);
-  return res.json() as Promise<T>;
+  return unwrapApiData(await res.json() as T | { data?: T });
 }
 
 export async function getAlerts(classroomId: string): Promise<AlertRecord[]> {
