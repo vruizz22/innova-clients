@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Privacy badges</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { padding: 24px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--slate-50); border: 1px solid var(--border); font-size: 13px; color: var(--fg-1); font-weight: 500; }
+  .badge svg { color: var(--mint-600); }
+  p { font-size: 12px; color: var(--fg-2); margin-top: 14px; max-width: 60ch; line-height: 1.5; }
+</style></head>
+<body>
+  <div class="row">
+    <span class="badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      EXIF eliminado al subir
+    </span>
+    <span class="badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+      Sin trackers de terceros
+    </span>
+    <span class="badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/></svg>
+      COPPA · Ley 21.180
+    </span>
+  </div>
+  <p>Estos sellos aparecen visiblemente en pantallas de upload de fotos y en el onboarding del apoderado. Tranquilizan a quienes confían sus datos: "no estamos espiando — los archivos llegan limpios y nunca tocan a un tercero".</p>
+</body></html>

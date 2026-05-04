@@ -1,0 +1,41 @@
+# Iconography — Lucide via CDN
+
+The SuperProfes design system uses **Lucide** (https://lucide.dev) as its icon library.
+Substituted because the `innova-clients` repo is currently a stub with no committed icon set.
+MIT licensed. 1.5px stroke, monochrome, inherits `currentColor`.
+
+## CDN
+
+```html
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+```
+
+Or React:
+
+```bash
+pnpm add lucide-react
+```
+
+```tsx
+import { Bell, Camera, BookOpen, BarChart3, AlertTriangle } from "lucide-react";
+<Bell size={20} strokeWidth={1.5} />
+```
+
+## Used in product UI
+
+- `Bell` — alerts badge in teacher header
+- `Camera` — "Scan worksheet" CTA in practice app
+- `BookOpen` — assignments / lessons
+- `BarChart3` — mastery / charts
+- `AlertTriangle` — `AT_RISK_SKILL` alert
+- `TrendingDown` — `STUDENT_DROP` alert
+- `Users` — `COMMON_ERROR_DETECTED` alert (group context)
+- `CheckCircle2` — resolved alert / correct answer
+- `ChevronRight` — list affordance, breadcrumbs
+- `Search`, `Settings`, `Menu`, `X` — chrome
+- `Lock` — privacy badge ("EXIF stripped")
+
+## Substitution flag
+
+If the production client codebase ships its own icon set, swap `lucide-react` for that import. The component API in this kit accepts an `icon` prop typed as a React component, so the swap is mechanical.
