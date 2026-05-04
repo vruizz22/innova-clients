@@ -2,9 +2,11 @@
 
 import { useState, useRef, type FormEvent } from 'react'
 import { createApiClient } from '@components/api-client'
+import { getAccessToken } from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
 
 type PhotoUploadWorkbenchProps = {
-  studentId: string
+  studentId?: string
   apiBaseUrl?: string
 }
 
@@ -32,14 +34,18 @@ const ShieldIcon = () => (
  * PhotoUploadWorkbench — Capture or upload image of math work.
  * Strips EXIF, uploads to S3 (presigned), then polls for OCR result from Gemini.
  */
-export function PhotoUploadWorkbench({ studentId, apiBaseUrl = 'http://localhost:3000' }: PhotoUploadWorkbenchProps) {
+export function PhotoUploadWorkbench({ studentId, apiBaseUrl }: PhotoUploadWorkbenchProps) {
+  void studentId
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [ocrResult, setOcrResult] = useState<{ attemptId?: string; extractedText?: string; steps?: string[] } | null>(null)
+  const [ocrResult, setOcrResult] = useState<{ finalAnswer: string; steps: string[]; confidence: number } | null>(null)
 
-  const apiClient = createApiClient({ baseUrl: apiBaseUrl })
+  const apiClient = createApiClient({
+    baseUrl: apiBaseUrl || getPublicRuntimeConfig().apiUrl,
+    getAccessToken,
+  })
 
   async function stripExifFromImage(file: File): Promise<Blob> {
     const canvas = document.createElement('canvas')
@@ -80,13 +86,14 @@ export function PhotoUploadWorkbench({ studentId, apiBaseUrl = 'http://localhost
       const preview = URL.createObjectURL(file)
       setPreviewUrl(preview)
 
-      await stripExifFromImage(file)
+      const cleanImage = await stripExifFromImage(file)
+      const result = await apiClient.extractOcr(cleanImage)
 
-      setMessage('Mock: Imagen capturada (EXIF eliminado). En producción, se sube a S3 y se analiza con Gemini OCR.')
+      setMessage('Imagen procesada correctamente.')
       setOcrResult({
-        attemptId: `attempt-ocr-mock-${Date.now()}`,
-        extractedText: 'Mock OCR: 53 − 26 = 27',
-        steps: ['53', '− 26', '= 27'],
+        finalAnswer: result.finalAnswer,
+        steps: result.rawSteps.map((step) => step.expression),
+        confidence: result.confidence,
       })
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Error al procesar la imagen')
@@ -138,10 +145,10 @@ export function PhotoUploadWorkbench({ studentId, apiBaseUrl = 'http://localhost
       {ocrResult && (
         <div className="ocr-result">
           <p style={{ margin: '0 0 var(--sp-1)', fontSize: 'var(--text-body-sm)' }}>
-            <strong>ID del intento:</strong> {ocrResult.attemptId}
+            <strong>Respuesta final:</strong> {ocrResult.finalAnswer}
           </p>
           <p style={{ margin: '0 0 var(--sp-1)', fontSize: 'var(--text-body-sm)' }}>
-            <strong>Texto extraído:</strong> {ocrResult.extractedText}
+            <strong>Confianza OCR:</strong> {Math.round(ocrResult.confidence * 100)}%
           </p>
           {ocrResult.steps && (
             <div style={{ fontSize: 'var(--text-body-sm)' }}>
