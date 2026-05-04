@@ -6,12 +6,12 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
-      "@design/*": [
-        "../../SuperProfes-Design-System/*"
-      ],
-      "@design": [
-        "../../SuperProfes-Design-System"
-      ]
+      "@/*": ["./*"],
+      "@lib/*": ["./lib/*"],
+      "@components/*": ["./components/*"],
+      "@app/*": ["./app/*"],
+      "@design/*": ["../../SuperProfes-Design-System/*"],
+      "@design": ["../../SuperProfes-Design-System"]
     }
   },
   "include": [
