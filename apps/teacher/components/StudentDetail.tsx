@@ -1,6 +1,6 @@
 'use client';
 
-import type { AttemptHistory, ErrorFrequency } from '../lib/types';
+import type { AttemptHistory, ErrorFrequency } from '@lib/types';
 
 interface StudentDetailProps {
   studentId: string;
