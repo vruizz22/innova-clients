@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "node ../../scripts/copy-design-system-to-public.js ./public/design-system && astro build",
+    "dev": "node ../scripts/copy-design-system-to-public.js ./public/design-system && astro dev --host 0.0.0.0 --port 3004",
+    "build": "node ../scripts/copy-design-system-to-public.js ./public/design-system && astro build",
     "preview": "astro preview",
     "format": "prettier --write ./src/**/*",
-    "check-paths": "node ../../scripts/check-absolute-paths.js ./"
+    "check-paths": "node ../scripts/check-absolute-paths.js ./"
   },
   "devDependencies": {
     "astro": "^3.5.0",
-    "tailwindcss": "^3.5.0",
+    "tailwindcss": "^3.4.19",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
     "prettier": "^2.8.0"
