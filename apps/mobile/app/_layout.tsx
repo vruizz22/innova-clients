@@ -3,8 +3,8 @@ import { StatusBar } from 'react-native';
 import AuthLayout from './auth/_layout';
 import StudentLayout from './student/_layout';
 import ParentLayout from './parent/_layout';
-import type { UserRole } from '../lib/types';
-import type { AuthSession } from '../lib/api-client';
+import type { UserRole } from '@lib/types';
+import type { AuthSession } from '@lib/api-client';
 
 type AppZone = 'auth' | 'student' | 'parent';
 
