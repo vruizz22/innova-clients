@@ -1,7 +1,8 @@
 // Typed API client for the teacher app
 import { getAccessToken } from '@shared/auth-session';
+import { getPublicRuntimeConfig } from '@shared/runtime-config';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+const BASE_URL = getPublicRuntimeConfig().apiUrl;
 
 export interface MasteryEntry {
   skillKey: string;
@@ -65,15 +66,31 @@ async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
 }
 
 export async function getAlerts(classroomId: string): Promise<AlertRecord[]> {
-  return apiGet<AlertRecord[]>(`/classrooms/${classroomId}/alerts`);
+  return apiGet<AlertRecord[]>(`/alerts?classroomId=${classroomId}`);
 }
 
 export async function getMasteryHeatmap(studentId: string): Promise<MasteryEntry[]> {
-  return apiGet<MasteryEntry[]>(`/students/${studentId}/mastery`);
+  return apiGet<MasteryEntry[]>(`/mastery/${studentId}`);
 }
 
 export async function getStudents(classroomId: string): Promise<StudentRecord[]> {
-  return apiGet<StudentRecord[]>(`/classrooms/${classroomId}/students`);
+  const students = await apiGet<Array<{
+    studentId: string;
+    studentName: string;
+    skills: Array<{ pKnown: number; attemptsCount: number }>;
+  }>>(`/mastery/classroom/${classroomId}`);
+
+  return students.map((student) => {
+    const avgMastery =
+      student.skills.reduce((sum, skill) => sum + skill.pKnown, 0) / Math.max(student.skills.length, 1);
+    return {
+      studentId: student.studentId,
+      studentName: student.studentName,
+      avgMastery,
+      topError: null,
+      attemptsCount: student.skills.reduce((sum, skill) => sum + skill.attemptsCount, 0),
+    };
+  });
 }
 
 export async function resolveAlert(alertId: string): Promise<void> {
