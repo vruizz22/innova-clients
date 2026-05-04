@@ -2,50 +2,59 @@
 <html lang="es-CL">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SuperProfes · Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#18506D" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <title>SuperProfes — Detecta cómo aprende tu alumno, en tiempo real</title>
+  <meta name="description" content="SuperProfes convierte cada ejercicio matemático en datos accionables para docentes: dominio por habilidad, errores procedurales y práctica focalizada." />
+  <link rel="canonical" href="https://superprofes.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_CL" />
+  <meta property="og:site_name" content="SuperProfes" />
+  <meta property="og:url" content="https://superprofes.app/" />
+  <meta property="og:title" content="SuperProfes — Detecta cómo aprende tu alumno, en tiempo real" />
+  <meta property="og:description" content="Diagnóstico matemático para docentes con detección de errores procedurales y seguimiento de dominio por alumno." />
+  <meta property="og:image" content="https://superprofes.app/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SuperProfes — Diagnóstico matemático para docentes" />
+  <meta name="twitter:description" content="Detecta errores procedurales antes de la prueba y asigna práctica focalizada." />
+  <meta name="twitter:image" content="https://superprofes.app/og-image.png" />
   <link rel="stylesheet" href="../SuperProfes-Design-System/colors_and_type.css" />
   <style>
-    body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--bg-canvas); color: var(--fg-1); padding: 48px; }
-    .card { max-width: 900px; margin: 40px auto; background: white; border-radius: 12px; padding: 28px; box-shadow: 0 6px 20px rgba(17,24,39,0.06); }
-    header { display:flex; align-items:center; gap:16px; }
-    .logo { width:56px; height:56px; border-radius:12px; background:var(--mint-500); display:grid; place-items:center; color:#fff; font-weight:800; }
-    h1 { margin:0 0 8px 0; }
-    .lead { color:var(--fg-2); margin-bottom:18px; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-    a.cta { display:inline-block; margin-top:12px; padding:10px 14px; border-radius:8px; background:var(--sky-600); color:white; text-decoration:none; }
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg-canvas); color: var(--fg-1); }
+    .shell { min-height: 100vh; display: grid; place-items: center; padding: 32px; }
+    .panel { width: min(900px, 100%); background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: clamp(28px, 5vw, 56px); box-shadow: var(--shadow-pop); }
+    .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+    .mark { width: 48px; height: 48px; border-radius: 12px; background: var(--sky-500); display: grid; place-items: center; color: #fff; font-weight: 800; }
+    h1 { max-width: 11ch; margin: 0 0 16px; font-size: clamp(44px, 8vw, 76px); line-height: .95; letter-spacing: 0; }
+    p { max-width: 62ch; color: var(--fg-2); font-size: 18px; line-height: 1.6; margin: 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .cta { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 10px; background: var(--sky-600); color: white; font-weight: 700; text-decoration: none; }
+    .secondary { background: transparent; color: var(--sky-700); border: 1px solid var(--border-strong); }
   </style>
 </head>
 <body>
-  <div class="card">
-    <header>
-      <div class="logo">SP</div>
-      <div>
-        <h1>SuperProfes</h1>
-        <div class="lead">Plataforma demo — detección de errores procedurales en matemáticas (3°–6° básico).</div>
+  <main class="shell">
+    <section class="panel" aria-labelledby="title">
+      <div class="brand">
+        <div class="mark">SP</div>
+        <strong>Super<span style="color: var(--sky-500);">Profes</span></strong>
       </div>
-    </header>
-
-    <section class="grid">
-      <div>
-        <h3>Qué hay listo</h3>
-        <ul>
-          <li>Practice UI kit (componentes).</li>
-          <li>Error renderer visual.</li>
-          <li>Teacher heatmap UI kit.</li>
-          <li>Auth demo flow (local).</li>
-        </ul>
-      </div>
-      <div>
-        <h3>Próximos pasos</h3>
-        <ul>
-          <li>Integrar API client OpenAPI (generar SDK).</li>
-          <li>Habilitar uploads y OCR end-to-end.</li>
-          <li>Polish landing y marketing copy.</li>
-        </ul>
-        <a class="cta" href="http://localhost:3002" target="_blank" rel="noopener">Abrir Practice (Alumno)</a>
+      <h1 id="title">Detecta cómo aprende tu alumno.</h1>
+      <p>
+        Diagnóstico matemático para docentes: SuperProfes identifica errores procedurales,
+        actualiza dominio por habilidad y conecta la práctica con datos reales del backend.
+      </p>
+      <div class="actions">
+        <a class="cta" data-register-link href="/register">Comenzar gratis</a>
+        <a class="cta secondary" href="mailto:innova.grupo23@gmail.com?subject=Contacto%20SuperProfes">Contactar</a>
       </div>
     </section>
-  </div>
+  </main>
+  <script>
+    const isLocal = window.location.port !== '' || window.location.protocol === 'file:';
+    const practiceOrigin = isLocal ? `${window.location.protocol}//${window.location.hostname}:3002` : 'https://practice.superprofes.app';
+    document.querySelector('[data-register-link]')?.setAttribute('href', `${practiceOrigin}/register`);
+  </script>
 </body>
 </html>
