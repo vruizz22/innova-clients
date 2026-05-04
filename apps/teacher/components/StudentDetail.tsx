@@ -183,8 +183,8 @@ function AttemptTable({ attempts }: AttemptTableProps): JSX.Element {
               <td style={{ padding: '10px 12px' }}>
                 <span
                   style={{
-                    background: attempt.classifierSource === 'llm' ? '#EDE9FE' : '#DCEDF6',
-                    color:      attempt.classifierSource === 'llm' ? '#5B21B6' : 'var(--info-fg)',
+                    background: attempt.classifierSource === 'LLM' ? '#EDE9FE' : '#DCEDF6',
+                    color:      attempt.classifierSource === 'LLM' ? '#5B21B6' : 'var(--info-fg)',
                     padding: '2px 8px',
                     borderRadius: 'var(--r-pill)',
                     fontSize: 11,
@@ -194,7 +194,7 @@ function AttemptTable({ attempts }: AttemptTableProps): JSX.Element {
                   title={`${attempt.classifierSource}${attempt.confidence != null ? ` (conf. ${(attempt.confidence * 100).toFixed(0)}%)` : ''}`}
                   data-testid="source-badge"
                 >
-                  {attempt.classifierSource === 'llm' ? 'LLM' : 'Regla'}
+                  {attempt.classifierSource === 'LLM' ? 'LLM' : 'Regla'}
                 </span>
               </td>
             </tr>
@@ -271,7 +271,7 @@ export function StudentDetail({ studentId, studentName, attempts, errorFrequency
           style={{ width: '100%' }}
           data-testid="assign-practice-btn"
           aria-label={`Asignar práctica focalizada a ${studentName}`}
-          onClick={() => {/* TODO: wire to API */}}
+          disabled
         >
           Asignar práctica focalizada
         </button>
