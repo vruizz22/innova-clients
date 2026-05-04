@@ -11,6 +11,7 @@ import ErrorFeedback from '../../../components/ErrorFeedback';
 import MathKeypad from '../../../components/MathKeypad';
 import SkillBadge from '../../../components/SkillBadge';
 import type { AttemptResult, ErrorType, Exercise } from '../../../lib/types';
+import { createAttempt, type AuthSession } from '../../../lib/api-client';
 
 const ERROR_CYCLE: Exclude<ErrorType, 'CORRECT'>[] = [
   'BORROW_OMITTED_TENS',
@@ -19,18 +20,22 @@ const ERROR_CYCLE: Exclude<ErrorType, 'CORRECT'>[] = [
 
 export interface PracticeExerciseScreenProps {
   exercise: Exercise;
+  session: AuthSession | null;
   onNext: () => void;
   onBack: () => void;
 }
 
 export default function PracticeExerciseScreen({
   exercise,
+  session,
   onNext,
   onBack,
 }: PracticeExerciseScreenProps): JSX.Element {
   const [answer, setAnswer] = useState('');
   const [result, setResult] = useState<AttemptResult | null>(null);
   const [errorCycleIdx, setErrorCycleIdx] = useState(0);
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   function handleKeyPress(key: string): void {
     if (result !== null) return;
@@ -42,18 +47,46 @@ export default function PracticeExerciseScreen({
     setAnswer((prev) => prev.slice(0, -1));
   }
 
-  function handleSubmit(): void {
+  async function handleSubmit(): Promise<void> {
     if (answer.trim() === '' || result !== null) return;
 
     const userAnswer = parseInt(answer.trim(), 10);
-    const isCorrect = userAnswer === exercise.expectedAnswer;
+    const [minuend, subtrahend] = exercise.problem
+      .replace('−', '-')
+      .split('-')
+      .map((part) => Number(part.trim()));
 
-    if (isCorrect) {
-      setResult({ isCorrect: true, errorType: 'CORRECT' });
-    } else {
-      const errorType = ERROR_CYCLE[errorCycleIdx % ERROR_CYCLE.length] ?? 'BORROW_OMITTED_TENS';
-      setResult({ isCorrect: false, errorType });
-      setErrorCycleIdx((prev) => prev + 1);
+    if (!session?.accessToken) {
+      setMessage('Debes iniciar sesión para enviar el intento.');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+    try {
+      const backendResult = await createAttempt({
+        accessToken: session.accessToken,
+        studentId: process.env.EXPO_PUBLIC_STUDENT_ID ?? 'seed-student-001',
+        skillKey: 'subtraction_borrow',
+        rawSteps: [{ expression: `${exercise.problem} = ${userAnswer}`, isFinal: true }],
+        expectedAnswer: exercise.expectedAnswer,
+        studentAnswer: userAnswer,
+        minuend,
+        subtrahend,
+      });
+
+      const errorType = backendResult.isCorrect
+        ? 'CORRECT'
+        : backendResult.errorType === 'BORROW_OMITTED'
+          ? 'BORROW_OMITTED_TENS'
+          : ERROR_CYCLE[errorCycleIdx % ERROR_CYCLE.length] ?? 'BORROW_OMITTED_TENS';
+
+      setResult({ isCorrect: backendResult.isCorrect, errorType: errorType as ErrorType });
+      if (!backendResult.isCorrect) setErrorCycleIdx((prev) => prev + 1);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo enviar el intento');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -121,20 +154,23 @@ export default function PracticeExerciseScreen({
             {/* Submit button */}
             <Pressable
               className={`mt-4 rounded-2xl items-center py-4 ${
-                answer.trim().length > 0 ? 'bg-[#2F8DBA]' : 'bg-slate-200'
+                answer.trim().length > 0 && !loading ? 'bg-[#2F8DBA]' : 'bg-slate-200'
               }`}
               style={{ minHeight: 52 }}
               onPress={handleSubmit}
-              disabled={answer.trim().length === 0}
+              disabled={answer.trim().length === 0 || loading}
             >
               <Text
                 className={`font-bold text-base ${
-                  answer.trim().length > 0 ? 'text-white' : 'text-slate-400'
+                  answer.trim().length > 0 && !loading ? 'text-white' : 'text-slate-400'
                 }`}
               >
-                Verificar respuesta
+                {loading ? 'Enviando...' : 'Verificar respuesta'}
               </Text>
             </Pressable>
+            {message.length > 0 && (
+              <Text className="mt-3 text-sm text-red-700 text-center">{message}</Text>
+            )}
           </View>
         )}
 

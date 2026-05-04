@@ -5,14 +5,16 @@ import StudentProgressScreen from './progress';
 import PracticeExerciseScreen from './practice/exercise';
 import type { Exercise } from '../../lib/types';
 import { MOCK_EXERCISES } from '../../lib/mock-data';
+import type { AuthSession } from '../../lib/api-client';
 
 type StudentTab = 'practice' | 'progress';
 
 export interface StudentLayoutProps {
+  session: AuthSession | null;
   onLogout?: () => void;
 }
 
-export default function StudentLayout({ onLogout }: StudentLayoutProps): JSX.Element {
+export default function StudentLayout({ session, onLogout }: StudentLayoutProps): JSX.Element {
   const [activeTab, setActiveTab] = useState<StudentTab>('practice');
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
   const [exerciseIdx, setExerciseIdx] = useState(0);
@@ -36,6 +38,7 @@ export default function StudentLayout({ onLogout }: StudentLayoutProps): JSX.Ele
     return (
       <PracticeExerciseScreen
         exercise={activeExercise}
+        session={session}
         onNext={handleNextExercise}
         onBack={handleBackFromExercise}
       />
