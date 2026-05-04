@@ -20,7 +20,7 @@ export const handlers = [
         accessToken: 'mocked-access-token',
         refreshToken: 'mocked-refresh',
         user: { id: 'user-1', email: 'x@y.com', role: 'student' },
-      }),
+      })
     );
   }),
 
