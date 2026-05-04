@@ -165,7 +165,7 @@ Vistas:
 
 ### apps/landing (Astro)
 
-Página institucional estática: propuesta de valor, cómo funciona, contacto. Deployed en Cloudflare Pages.
+Página institucional estática: propuesta de valor, cómo funciona, contacto. Deployed en aws S3 con cloudfront.
 
 ---
 
