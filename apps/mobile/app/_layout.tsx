@@ -4,18 +4,22 @@ import AuthLayout from './auth/_layout';
 import StudentLayout from './student/_layout';
 import ParentLayout from './parent/_layout';
 import type { UserRole } from '../lib/types';
+import type { AuthSession } from '../lib/api-client';
 
 type AppZone = 'auth' | 'student' | 'parent';
 
 export default function RootLayout(): JSX.Element {
-  // For demo: start at auth; after login navigate to appropriate zone
-  const [zone, setZone] = useState<AppZone>('student');
+  const [zone, setZone] = useState<AppZone>('auth');
+  const [session, setSession] = useState<AuthSession | null>(null);
 
-  function handleAuthenticated(role: UserRole): void {
+  function handleAuthenticated(nextSession: AuthSession): void {
+    const role = nextSession.user.role as UserRole;
+    setSession(nextSession);
     setZone(role === 'student' ? 'student' : 'parent');
   }
 
   function handleLogout(): void {
+    setSession(null);
     setZone('auth');
   }
 
@@ -26,10 +30,10 @@ export default function RootLayout(): JSX.Element {
         <AuthLayout onAuthenticated={handleAuthenticated} />
       )}
       {zone === 'student' && (
-        <StudentLayout onLogout={handleLogout} />
+        <StudentLayout session={session} onLogout={handleLogout} />
       )}
       {zone === 'parent' && (
-        <ParentLayout onLogout={handleLogout} />
+        <ParentLayout session={session} onLogout={handleLogout} />
       )}
     </>
   );
