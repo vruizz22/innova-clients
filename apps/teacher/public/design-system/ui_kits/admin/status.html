@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>SuperProfes · System Status</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="../shared.css"/>
+<style>
+  body { background: var(--slate-50); margin: 0; padding: 28px 24px; }
+  .ss-shell { max-width: 1180px; margin: 0 auto; }
+  h1 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+  .ss-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+  .ss-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .ss-card h3 { margin: 0 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); font-weight: 700; }
+  .ss-stat { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .ss-stat .v { font-family: ui-monospace, monospace; font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ss-stat .u { font-size: 13px; color: var(--fg-2); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .pill.ok { background: var(--mint-100); color: var(--mint-700); }
+  .pill.warn { background: #FFEFCD; color: var(--error-fg); }
+  .pill.err { background: #FAD9D9; color: #7A2E2E; }
+  .pill.paused { background: var(--slate-100); color: var(--slate-700); }
+  .ss-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .ss-row:last-child { border-bottom: 0; }
+  .ss-row .nm { font-weight: 600; }
+  .ss-row .meta { color: var(--fg-2); margin-left: auto; font-family: ui-monospace, monospace; font-size: 12px; }
+  .ks { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+  .ks.is-paused { background: #FFF4DB; border-color: #F0D9A0; }
+  .ks .lab { font-weight: 700; font-size: 15px; }
+  .ks .desc { font-size: 12px; color: var(--fg-2); }
+  .toggle { position: relative; width: 44px; height: 24px; background: var(--slate-200); border-radius: 9999px; cursor: pointer; flex-shrink: 0; transition: background .2s; }
+  .toggle.on { background: var(--mint-500); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 9999px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .bar { height: 6px; background: var(--slate-100); border-radius: 9999px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; }
+
+  .spark { width: 100%; height: 56px; }
+  .span2 { grid-column: span 2; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../shared/Icon.jsx"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+function Spark({ data, color = 'var(--sky-500)' }) {
+  const W = 240, H = 56;
+  const max = Math.max(...data), min = Math.min(...data);
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * W;
+    const y = H - ((v - min) / (max - min || 1)) * (H - 4) - 2;
+    return [x, y];
+  });
+  const path = 'M ' + pts.map(p => p.join(',')).join(' L ');
+  const area = path + ` L ${W},${H} L 0,${H} Z`;
+  return (
+    <svg className="spark" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <path d={area} fill={color} fillOpacity="0.12"/>
+      <path d={path} fill="none" stroke={color} strokeWidth="1.5"/>
+    </svg>
+  );
+}
+
+function App() {
+  const [llmPaused, setLlmPaused] = useState(false);
+  const [ocrPaused, setOcrPaused] = useState(false);
+
+  return (
+    <div className="ss-shell" data-screen-label="Admin · System status">
+      <div className="row gap-3" style={{justifyContent:'space-between', alignItems:'flex-end'}}>
+        <div>
+          <h1>System Status</h1>
+          <div className="t-caption">Inferencias en vivo · Lambdas, SQS, killswitches · 03 may 2026, 14:38 CLT</div>
+        </div>
+        <div className="row gap-2">
+          <span className="pill ok">● Operativo</span>
+          <button className="btn btn-ghost"><Icon name="refresh" size={14}/> Refrescar (auto 30s)</button>
+        </div>
+      </div>
+
+      <div className="ss-grid">
+        {/* KPIs */}
+        <div className="ss-card">
+          <h3>Intentos · últimas 24h</h3>
+          <div className="ss-stat"><span className="v">14,820</span><span className="u">/ ~22,000 esperado</span></div>
+          <Spark data={[120,180,220,260,320,410,520,640,580,720,840,920,810,750]}/>
+          <div className="t-caption">p50 latencia rule engine: <strong>3.2 ms</strong></div>
+        </div>
+        <div className="ss-card">
+          <h3>Cobertura del rule engine</h3>
+          <div className="ss-stat"><span className="v">82.4%</span><span className="u">objetivo ≥ 75%</span></div>
+          <div className="bar"><span style={{width:'82.4%', background:'var(--mint-500)'}}/></div>
+          <div className="t-caption" style={{marginTop:8}}>17.6% (~2,600/día) → SQS LLM queue</div>
+        </div>
+        <div className="ss-card">
+          <h3>Costo mes-a-fecha</h3>
+          <div className="ss-stat"><span className="v">$28.40</span><span className="u">USD / $80 budget</span></div>
+          <div className="bar"><span style={{width:'35.5%', background:'var(--sky-500)'}}/></div>
+          <div className="t-caption" style={{marginTop:8}}>LLM $14.20 · OCR $11.80 · Lambda $1.40 · resto $1.00</div>
+        </div>
+
+        {/* Killswitches */}
+        <div className="ss-card span2">
+          <h3>Killswitches (SSM Parameter Store)</h3>
+          <div className={`ks ${llmPaused?'is-paused':''}`}>
+            <div>
+              <div className="lab">LLM Classifier · Claude Haiku 4.5</div>
+              <div className="desc"><code style={{fontFamily:'ui-monospace,monospace'}}>/innova/llm/paused</code> · CloudWatch billing alarm @ $80 → SNS → SSM auto-flip</div>
+            </div>
+            {llmPaused
+              ? <span className="pill paused">PAUSADO · DLQ</span>
+              : <span className="pill ok">activo</span>}
+            <div className={`toggle ${!llmPaused?'on':''}`} onClick={()=>setLlmPaused(p=>!p)}/>
+          </div>
+          <div className={`ks ${ocrPaused?'is-paused':''}`}>
+            <div>
+              <div className="lab">OCR Worker · Gemini 2.0 Flash</div>
+              <div className="desc"><code style={{fontFamily:'ui-monospace,monospace'}}>/innova/ocr/paused</code> · al pausar, fallback a "carga digital obligatoria"</div>
+            </div>
+            {ocrPaused
+              ? <span className="pill paused">PAUSADO · fallback digital</span>
+              : <span className="pill ok">activo · 1.0M free tier</span>}
+            <div className={`toggle ${!ocrPaused?'on':''}`} onClick={()=>setOcrPaused(p=>!p)}/>
+          </div>
+        </div>
+
+        <div className="ss-card">
+          <h3>Cognito · sesiones</h3>
+          <div className="ss-stat"><span className="v">438</span><span className="u">activas</span></div>
+          <div className="ss-row"><span className="nm">Teachers</span><span className="meta">23 / pool teachers</span></div>
+          <div className="ss-row"><span className="nm">Students</span><span className="meta">312 / pool students</span></div>
+          <div className="ss-row"><span className="nm">Parents</span><span className="meta">103 / pool parents</span></div>
+        </div>
+
+        {/* Queues */}
+        <div className="ss-card span2">
+          <h3>SQS · queues</h3>
+          <div className="ss-row"><span className="nm">attempt-stream.fifo</span><span className="pill ok">healthy</span><span className="meta">depth 3 · age 1.2s · oldest 8s</span></div>
+          <div className="ss-row"><span className="nm">llm-classify-queue</span><span className="pill warn">backlog</span><span className="meta">depth 84 · batch 20 · ETA 4 min</span></div>
+          <div className="ss-row"><span className="nm">ocr-queue</span><span className="pill ok">healthy</span><span className="meta">depth 0 · idle</span></div>
+          <div className="ss-row"><span className="nm">llm-classify-queue · DLQ</span><span className="pill ok">empty</span><span className="meta">0 messages · 14d retention</span></div>
+        </div>
+
+        <div className="ss-card">
+          <h3>Storage</h3>
+          <div className="ss-row"><span className="nm">Neon Postgres</span><span className="pill ok">connected</span><span className="meta">42 conn · 18ms p50</span></div>
+          <div className="ss-row"><span className="nm">MongoDB Atlas M0</span><span className="pill ok">connected</span><span className="meta">312 MB / 512 MB</span></div>
+          <div className="ss-row"><span className="nm">S3 uploads</span><span className="pill ok">healthy</span><span className="meta">1.4 GB · 30d lifecycle</span></div>
+          <div className="ss-row"><span className="nm">S3 events lake</span><span className="pill ok">healthy</span><span className="meta">8.2 GB</span></div>
+        </div>
+
+        {/* Nightly jobs */}
+        <div className="ss-card span2">
+          <h3>Nightly calibration</h3>
+          <div className="ss-row">
+            <span className="nm">BKT Calibrator</span>
+            <span className="pill ok">last run OK</span>
+            <span className="meta">07:00 UTC · 11 skills · 132s · grid 130K combos</span>
+          </div>
+          <div className="ss-row">
+            <span className="nm">IRT Calibrator</span>
+            <span className="pill ok">last run OK</span>
+            <span className="meta">07:15 UTC · 84 items recalibrated · 28 skipped (n&lt;50)</span>
+          </div>
+          <div className="ss-row">
+            <span className="nm">Telemetry Persister</span>
+            <span className="pill ok">streaming</span>
+            <span className="meta">14.8K events/24h → MongoDB + S3 lake</span>
+          </div>
+        </div>
+
+        <div className="ss-card">
+          <h3>External APIs</h3>
+          <div className="ss-row"><span className="nm">Anthropic Haiku 4.5</span><span className="pill ok">200</span><span className="meta">cache hit 78%</span></div>
+          <div className="ss-row"><span className="nm">Gemini 2.0 Flash</span><span className="pill ok">200</span><span className="meta">free tier 18%</span></div>
+          <div className="ss-row"><span className="nm">Resend (email)</span><span className="pill ok">200</span><span className="meta">142 / 3000 mes</span></div>
+          <div className="ss-row"><span className="nm">Cognito JWKS</span><span className="pill ok">cached</span><span className="meta">TTL 12h</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

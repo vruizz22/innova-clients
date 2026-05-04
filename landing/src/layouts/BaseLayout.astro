@@ -1,0 +1,54 @@
+---
+import { DESIGN_CSS_PATH } from '@design';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'SuperProfes — Detecta el error antes de la prueba',
+  description = 'Tu asistente de diagnóstico matemático. Ve exactamente qué procedimiento está fallando cada alumno, antes de la evaluación.',
+  ogImage = 'https://superprofes.app/og-image.png',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#18506D" />
+
+    <!-- SEO -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:site_name" content="SuperProfes" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Design tokens + fonts (vendorized Inter) -->
+    <link rel="stylesheet" href={DESIGN_CSS_PATH} />
+
+  </head>
+  <body class="bg-[var(--bg)] text-[var(--fg-1)] antialiased">
+    <slot />
+  </body>
+</html>

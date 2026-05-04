@@ -1,0 +1,25 @@
+/* VisualErrorRenderer styles */
+.vex { background: var(--error-bg); border: 1px solid var(--error-border); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.vex-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.vex-tag { color: var(--error-fg); font-size: 11px; }
+.vex-title { margin: 4px 0 0; font-size: 16px; font-weight: 700; color: var(--error-fg); line-height: 1.3; }
+.vex-slug { font-size: 10px; }
+.vex-msg { margin: 0; font-size: 14px; color: var(--error-fg); line-height: 1.55; }
+.vex-diff { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #fff; border-radius: 8px; padding: 14px; }
+.vex-diff-col { display: flex; flex-direction: column; gap: 6px; }
+.vex-vstack { font-size: 22px; font-weight: 600; text-align: right; padding-right: 8px; }
+.vex-vstack .vex-row { padding: 2px 0; white-space: pre; font-variant-numeric: tabular-nums slashed-zero; letter-spacing: .02em; }
+.vex-vstack hr { border: 0; border-top: 2px solid var(--fg-1); margin: 4px 0; }
+.vex-op { display: inline-block; width: 18px; text-align: left; }
+.vex-ans.is-wrong { color: #5A1F1F; }
+.vex-ans.is-right { color: var(--mint-700); }
+
+.vex-frac-line { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 600; padding: 4px 0; justify-content: center; }
+.vex-eq { font-weight: 400; opacity: .6; }
+.vex-frac { display: inline-flex; align-items: center; gap: 4px; }
+.vex-frac-stack { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+.vex-num { padding: 0 4px; border-bottom: 2px solid currentColor; }
+.vex-den { padding-top: 2px; }
+
+.vex-compact .vex-vstack { font-size: 16px; }
+.vex-compact .vex-title { font-size: 14px; }

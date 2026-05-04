@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Alert items</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { padding: 24px; }
+  .alert { display: grid; grid-template-columns: 36px 1fr auto; gap: 14px; align-items: start; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+  .alert + .alert { margin-top: 10px; }
+  .icon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; font-size: 18px; }
+  .icon.risk  { background: #FCE3E3; color: #5A1F1F; }
+  .icon.common{ background: var(--error-bg); color: var(--error-fg); }
+  .icon.drop  { background: #FCE3E3; color: #5A1F1F; }
+  .meta { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--fg-2); }
+  .title { font-size: 14px; font-weight: 600; color: var(--fg-1); margin: 0 0 4px; }
+  .resolve { font-size: 13px; font-weight: 600; color: var(--fg-1); border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 12px; background: #fff; cursor: pointer; }
+</style></head>
+<body>
+  <div class="alert">
+    <div class="icon risk">⚠</div>
+    <div>
+      <div class="meta"><span class="t-allcaps" style="color:#5A1F1F">AT_RISK_SKILL</span><span>· hace 12 min</span></div>
+      <p class="title">Resta con reserva — 6 alumnos bajo 0.4</p>
+      <p class="t-caption">Ver detalle del cluster · asignar práctica focalizada</p>
+    </div>
+    <button class="resolve">Resolver</button>
+  </div>
+  <div class="alert">
+    <div class="icon common">!</div>
+    <div>
+      <div class="meta"><span class="t-allcaps" style="color:#7A4F00">COMMON_ERROR_DETECTED</span><span>· hace 1 h</span></div>
+      <p class="title"><code style="background:var(--slate-50);padding:1px 5px;border-radius:4px">BORROW_OMITTED_TENS</code> en 9 intentos hoy</p>
+      <p class="t-caption">Recurso pedagógico sugerido: mini-lección "préstamo a las decenas"</p>
+    </div>
+    <button class="resolve">Resolver</button>
+  </div>
+</body></html>

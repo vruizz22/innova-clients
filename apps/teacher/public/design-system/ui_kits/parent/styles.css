@@ -1,0 +1,50 @@
+.pa-app { background: var(--bg-parent); min-height: 100%; display: flex; flex-direction: column; color: var(--fg-1); }
+.pa-header { display: flex; align-items: center; gap: 12px; padding: 56px 16px 12px; background: rgba(255,255,255,.7); }
+.pa-avatar { width: 40px; height: 40px; border-radius: 9999px; background: var(--mint-500); color: #fff; font-weight: 700; display: grid; place-items: center; }
+.pa-icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: #fff; display: grid; place-items: center; cursor: pointer; color: var(--fg-1); }
+.pa-content { padding: 16px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.pa-content h1 { margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+
+.pa-hero { display: flex; gap: 14px; align-items: start; }
+.pa-hero-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--mint-100); color: var(--mint-700); display: grid; place-items: center; flex-shrink: 0; }
+.pa-hero strong { display: block; font-size: 16px; margin: 4px 0 6px; }
+.pa-hero p { margin: 0; color: var(--fg-2); font-size: 14px; line-height: 1.5; }
+
+.pa-section h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; color: var(--fg-2); }
+
+.pa-skill { display: grid; grid-template-columns: 16px 1fr 18px; gap: 12px; align-items: center; padding: 14px; background: #fff; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; }
+.pa-skill + .pa-skill { margin-top: 8px; }
+.pa-skill-dot { width: 12px; height: 12px; border-radius: 9999px; }
+.pa-skill-mint .pa-skill-dot { background: var(--mastery-strong); }
+.pa-skill-amber .pa-skill-dot { background: var(--mastery-medium); }
+.pa-skill-rose .pa-skill-dot { background: var(--mastery-weak); }
+.pa-skill-body strong { display: block; font-size: 14px; }
+.pa-skill-body small { color: var(--fg-2); font-size: 12px; }
+
+.pa-recommend { display: flex; gap: 12px; align-items: center; padding: 14px 16px; }
+.pa-recommend strong { display: block; font-size: 14px; }
+.pa-recommend small { color: var(--fg-2); font-size: 12px; }
+
+.pa-toggle-row { display: flex; align-items: center; gap: 14px; padding: 8px 0; }
+.pa-toggle-row strong { display: block; font-size: 14px; }
+.pa-toggle-row small { color: var(--fg-2); font-size: 12px; }
+.pa-toggle-row > div:first-child { flex: 1; }
+.pa-toggle { width: 44px; height: 26px; border-radius: 9999px; background: var(--slate-200); position: relative; cursor: pointer; transition: background 180ms; }
+.pa-toggle span { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 9999px; background: #fff; transition: transform 180ms; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.pa-toggle.is-on { background: var(--mint-500); }
+.pa-toggle.is-on span { transform: translateX(18px); }
+
+.pa-privacy { display: flex; gap: 10px; padding: 14px; background: var(--sky-50); border: 1px solid #B6DBED; border-radius: 12px; color: var(--sky-800); margin-top: 8px; }
+.pa-privacy strong { display: block; font-size: 13px; margin-bottom: 4px; }
+.pa-privacy p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--sky-800); opacity: .85; }
+
+/* Push lockscreen */
+.pa-pushes { padding: 70px 12px 0; flex: 1; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(180deg, #1F3A52 0%, #0F2A3D 100%); color: #fff; min-height: 100%; }
+.pa-lockscreen-time { font-family: 'Inter', sans-serif; font-weight: 200; font-size: 72px; line-height: 1; text-align: center; margin-bottom: 24px; letter-spacing: -0.04em; }
+.pa-lockscreen-time span { display: block; font-size: 16px; font-weight: 500; opacity: .85; margin-top: 4px; }
+.pa-push { display: grid; grid-template-columns: 36px 1fr; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,.18); backdrop-filter: blur(20px); border-radius: 16px; transform-origin: center top; transition: transform 200ms; }
+.pa-push-icon { width: 36px; height: 36px; border-radius: 9px; background: #fff; display: grid; place-items: center; }
+.pa-push-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; opacity: .85; margin-bottom: 2px; }
+.pa-push-meta strong { font-weight: 600; }
+.pa-push-body strong { display: block; font-size: 14px; font-weight: 600; line-height: 1.2; margin: 2px 0; }
+.pa-push-body p { margin: 0; font-size: 13px; line-height: 1.4; opacity: .9; }

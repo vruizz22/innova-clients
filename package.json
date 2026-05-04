@@ -1,0 +1,47 @@
+{
+  "name": "innova-clients",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.10.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "SuperProfes-Design-System"
+  ],
+  "scripts": {
+    "bootstrap": "pnpm -w install",
+    "dev": "turbo run dev --parallel",
+    "dev:local": "pnpm run assets && turbo run dev --parallel",
+    "dev:landing": "pnpm --filter superprofes-landing dev",
+    "dev:practice": "pnpm --filter @innova/practice dev",
+    "dev:teacher": "pnpm --filter @innova/teacher dev",
+    "dev:mobile": "pnpm --filter @innova/mobile start",
+    "dev:backend": "npm --prefix ../innova-backend-serverless run start:dev",
+    "ai:test": "cd ../innova-ai-engine && uv run pytest",
+    "assets": "node scripts/copy-design-system-to-public.js landing/public/design-system && node scripts/copy-design-system-to-public.js apps/practice/public/design-system && node scripts/copy-design-system-to-public.js apps/teacher/public/design-system",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "lint:fix": "pnpm -r --filter \"@innova/**\" run lint --fix || true",
+    "test:unit": "vitest run",
+    "gen:openapi": "npx @openapitools/openapi-generator-cli generate -i https://raw.githubusercontent.com/vruizz22/innova-backend-serverless/main/docs/openapi.json -g typescript-axios -o packages/api-client",
+    "format": "turbo run format"
+  },
+    "devDependencies": {
+    "turbo": "^1.10.0",
+    "eslint": "^8.50.0",
+    "prettier": "^2.8.8",
+    "vitest": "^1.3.0",
+    "@testing-library/react": "^14.0.0",
+    "jsdom": "^22.0.0",
+    "@types/jsdom": "^21.1.0",
+    "@openapitools/openapi-generator-cli": "^2.4.32",
+    "@types/node": "^24.6.0",
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "msw": "^1.2.1",
+    "typescript": "~5.3.3"
+  }
+}

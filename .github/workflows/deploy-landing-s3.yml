@@ -1,0 +1,63 @@
+name: Deploy Landing to S3 + CloudFront
+
+on:
+    push:
+        branches: [ main ]
+    workflow_dispatch:
+
+jobs:
+    validate:
+        name: Validate paths
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install root deps
+              run: pnpm -w install --frozen-lockfile
+
+            - name: Run path validator
+              run: node innova-clients/scripts/check-absolute-paths.js innova-clients/landing
+
+    build-and-deploy:
+        name: Build and Deploy Landing
+        needs: validate
+        runs-on: ubuntu-latest
+        environment: production
+        env:
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+            S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+            CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install landing deps
+              working-directory: innova-clients/landing
+              run: pnpm install --frozen-lockfile
+
+            - name: Build landing
+              working-directory: innova-clients/landing
+              run: pnpm run build
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Sync to S3
+              run: aws s3 sync innova-clients/landing/dist s3://$S3_BUCKET_NAME --delete
+
+            - name: Invalidate CloudFront
+              if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+              run: aws cloudfront create-invalidation --distribution-id
+                  "$CLOUDFRONT_DISTRIBUTION_ID" --paths '/*'

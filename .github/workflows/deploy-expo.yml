@@ -1,0 +1,30 @@
+name: Expo EAS Build (mobile)
+
+on:
+    push:
+        branches: [ main ]
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        env:
+            EAS_TOKEN: ${{ secrets.EAS_TOKEN }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v3
+              with:
+                  version: 9
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build with EAS
+              working-directory: innova-clients/apps/mobile
+              run: pnpm exec eas build --profile production --platform all --non-interactive

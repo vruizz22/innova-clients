@@ -1,0 +1,160 @@
+---
+// Pricing — 3 tiers
+
+interface PricingFeature {
+  text: string;
+  included: boolean;
+}
+
+interface PricingTier {
+  name: string;
+  price: string;
+  priceSuffix: string;
+  description: string;
+  cta: string;
+  ctaHref: string;
+  highlighted: boolean;
+  badge?: string;
+  features: PricingFeature[];
+}
+
+const tiers: PricingTier[] = [
+  {
+    name: 'Piloto',
+    price: 'Gratis',
+    priceSuffix: '6 meses',
+    description: 'Perfecto para conocer la plataforma y validar el impacto en tu sala.',
+    cta: 'Comenzar piloto',
+    ctaHref: '#contacto',
+    highlighted: false,
+    features: [
+      { text: 'Hasta 50 alumnos', included: true },
+      { text: '1 sala de clases', included: true },
+      { text: 'Detección de errores procedurales', included: true },
+      { text: 'Heatmap de dominio básico', included: true },
+      { text: 'Práctica focalizada automática', included: true },
+      { text: 'LLM asíncrono + feedback detallado', included: false },
+      { text: 'OCR de cuaderno manuscrito', included: false },
+      { text: 'Alertas AT_RISK_SKILL', included: false },
+      { text: 'App apoderado', included: false },
+    ],
+  },
+  {
+    name: 'Estándar',
+    price: '$50.000',
+    priceSuffix: 'CLP / mes / sala',
+    description: 'Para colegios listos para implementar a escala con todas las herramientas de diagnóstico.',
+    cta: 'Solicitar demo',
+    ctaHref: '#contacto',
+    highlighted: true,
+    badge: 'Más popular',
+    features: [
+      { text: 'Alumnos ilimitados', included: true },
+      { text: 'Salas ilimitadas', included: true },
+      { text: 'Detección de errores procedurales', included: true },
+      { text: 'Heatmap de dominio completo', included: true },
+      { text: 'Práctica focalizada automática', included: true },
+      { text: 'LLM asíncrono + feedback detallado', included: true },
+      { text: 'OCR de cuaderno manuscrito', included: true },
+      { text: 'Alertas AT_RISK_SKILL', included: true },
+      { text: 'App apoderado', included: false },
+    ],
+  },
+  {
+    name: 'Premium',
+    price: '$80.000',
+    priceSuffix: 'CLP / mes / sala',
+    description: 'Para establecimientos que quieren involucrar a toda la comunidad escolar.',
+    cta: 'Contactar ventas',
+    ctaHref: '#contacto',
+    highlighted: false,
+    features: [
+      { text: 'Alumnos ilimitados', included: true },
+      { text: 'Salas ilimitadas', included: true },
+      { text: 'Detección de errores procedurales', included: true },
+      { text: 'Heatmap de dominio completo', included: true },
+      { text: 'Práctica focalizada automática', included: true },
+      { text: 'LLM asíncrono + feedback detallado', included: true },
+      { text: 'OCR de cuaderno manuscrito', included: true },
+      { text: 'Alertas AT_RISK_SKILL', included: true },
+      { text: 'App apoderado + analytics avanzado', included: true },
+    ],
+  },
+];
+---
+
+<section id="precios" class="bg-[var(--slate-50)] py-20 md:py-28">
+  <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-10">
+    <!-- Section header -->
+    <div class="mx-auto mb-14 max-w-2xl text-center">
+      <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--sky-600)]">
+        Precios
+      </p>
+      <h2 class="text-3xl font-bold tracking-tight text-[var(--slate-800)] md:text-4xl">
+        Empieza gratis, escala cuando estés listo
+      </h2>
+      <p class="mt-4 text-base leading-relaxed text-[var(--fg-2)] md:text-lg">
+        Sin contrato de permanencia. Sin letra chica. Precios fijos por sala, no por alumno.
+      </p>
+    </div>
+
+    <!-- Pricing grid -->
+    <div class="grid gap-6 md:grid-cols-3 md:items-start">
+      {tiers.map((tier) => (
+        <div class={`relative flex flex-col rounded-2xl p-6 md:p-8 transition-all ${
+          tier.highlighted
+            ? 'border-2 border-[var(--sky-500)] bg-white shadow-[var(--shadow-pop)] scale-[1.02]'
+            : 'border border-[var(--border)] bg-white shadow-[var(--shadow-card)]'
+        }`}>
+          {tier.badge && (
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+              <span class="rounded-full bg-[var(--sky-500)] px-4 py-1.5 text-xs font-bold text-white shadow-sm">
+                {tier.badge}
+              </span>
+            </div>
+          )}
+
+          <div class="mb-6">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wider text-[var(--fg-2)]">{tier.name}</p>
+            <div class="flex items-end gap-1">
+              <span class={`text-4xl font-bold tracking-tight ${tier.highlighted ? 'text-[var(--sky-700)]' : 'text-[var(--slate-800)]'}`}>
+                {tier.price}
+              </span>
+            </div>
+            <p class="mt-1 text-sm text-[var(--fg-2)]">{tier.priceSuffix}</p>
+            <p class="mt-3 text-sm leading-relaxed text-[var(--fg-2)]">{tier.description}</p>
+          </div>
+
+          <a
+            href={tier.ctaHref}
+            class={`mb-7 inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold transition-all hover:-translate-y-px active:scale-95 ${
+              tier.highlighted
+                ? 'bg-[var(--sky-500)] text-white shadow-md hover:bg-[var(--sky-600)]'
+                : 'border border-[var(--border-strong)] bg-transparent text-[var(--fg-1)] hover:bg-[var(--slate-50)]'
+            }`}
+          >
+            {tier.cta}
+          </a>
+
+          <ul class="flex flex-col gap-3">
+            {tier.features.map((feature) => (
+              <li class={`flex items-start gap-2.5 text-sm ${feature.included ? 'text-[var(--fg-1)]' : 'text-[var(--fg-3)] line-through decoration-[var(--fg-3)]/40'}`}>
+                {feature.included ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--mint-600)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--slate-300)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                )}
+                {feature.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- Footer note -->
+    <p class="mt-8 text-center text-sm text-[var(--fg-2)]">
+      Todos los planes incluyen soporte por correo + onboarding inicial. Precio en CLP + IVA.
+    </p>
+  </div>
+</section>
