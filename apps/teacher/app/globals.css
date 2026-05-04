@@ -32,8 +32,7 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Robo
     box-shadow: var(--shadow-pop);
   }
 
-  .t-sidebar[style*="display: flex"],
-  .t-sidebar[style*="display:flex"] {
+  .t-sidebar[data-open="true"] {
     transform: translateX(0);
   }
 
