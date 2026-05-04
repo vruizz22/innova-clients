@@ -1,31 +1,60 @@
-'use client';
+'use client'
 
-import { DashboardLayout } from '@components/DashboardLayout';
-import { StudentDetail } from '@components/StudentDetail';
-import { mockStudents, mockAttempts, mockErrorFrequency } from '@lib/mock-data';
+import { useEffect, useMemo, useState } from 'react'
+import { DashboardLayout } from '@components/DashboardLayout'
+import { StudentDetail } from '@components/StudentDetail'
+import { createApiClient } from '@components/api-client'
+import { getAccessToken } from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
+import type { StudentMastery } from '@lib/types'
 
 interface PageProps {
-  params: { studentId: string };
+  params: { studentId: string }
 }
 
 export default function StudentDetailPage({ params }: PageProps): JSX.Element {
-  const student = mockStudents.find((s) => s.studentId === params.studentId);
+  const runtimeConfig = getPublicRuntimeConfig()
+  const apiClient = useMemo(
+    () => createApiClient({ baseUrl: runtimeConfig.apiUrl, getAccessToken }),
+    [runtimeConfig.apiUrl],
+  )
+  const [student, setStudent] = useState<StudentMastery | null>(null)
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    async function loadStudent(): Promise<void> {
+      try {
+        const students = await apiClient.getClassroomMastery(runtimeConfig.classroomId)
+        setStudent(students.find((item) => item.studentId === params.studentId) ?? null)
+      } catch (error) {
+        setLoadError(error instanceof Error ? error.message : 'No se pudo cargar el alumno')
+      }
+    }
+
+    void loadStudent()
+  }, [apiClient, params.studentId, runtimeConfig.classroomId])
+
+  if (loadError) {
+    return (
+      <DashboardLayout unresolvedAlertCount={0}>
+        <div className="card" style={{ padding: 'var(--sp-10)', textAlign: 'center' }}>
+          <p style={{ color: 'var(--mastery-weak)' }}>{loadError}</p>
+          <a href="/dashboard/students" className="btn btn-ghost" style={{ marginTop: 'var(--sp-4)', textDecoration: 'none' }}>
+            Volver a alumnos
+          </a>
+        </div>
+      </DashboardLayout>
+    )
+  }
 
   if (!student) {
     return (
       <DashboardLayout unresolvedAlertCount={0}>
         <div className="card" style={{ padding: 'var(--sp-10)', textAlign: 'center' }}>
-          <p style={{ color: 'var(--fg-2)' }}>Alumno no encontrado.</p>
-          <a
-            href="/dashboard/students"
-            className="btn btn-ghost"
-            style={{ marginTop: 'var(--sp-4)', textDecoration: 'none' }}
-          >
-            ← Volver a alumnos
-          </a>
+          <p style={{ color: 'var(--fg-2)' }}>Cargando alumno...</p>
         </div>
       </DashboardLayout>
-    );
+    )
   }
 
   return (
@@ -33,12 +62,13 @@ export default function StudentDetailPage({ params }: PageProps): JSX.Element {
       <StudentDetail
         studentId={student.studentId}
         studentName={student.studentName}
-        attempts={mockAttempts[student.studentId] ?? []}
-        errorFrequency={mockErrorFrequency[student.studentId] ?? []}
+        attempts={student.attempts ?? []}
+        errorFrequency={student.errorFrequency ?? []}
         onBack={() => {
-          window.location.href = '/dashboard/students';
+          window.location.href = '/dashboard/students'
         }}
       />
     </DashboardLayout>
-  );
+  )
 }
+
