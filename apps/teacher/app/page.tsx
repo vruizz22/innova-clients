@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { DashboardLayout } from '../components/DashboardLayout';
-import { MasteryHeatmap } from '../components/MasteryHeatmap';
-import { AlertsPanel } from '../components/AlertsPanel';
-import { StudentDetail } from '../components/StudentDetail';
-import { mockStudents, mockAlerts, mockAttempts, mockErrorFrequency } from '../lib/mock-data';
-import type { StudentMastery, TeacherAlert } from '../lib/types';
-import { createApiClient, type TeacherAlertRecord } from '../components/api-client';
+import { DashboardLayout } from '@components/DashboardLayout';
+import { MasteryHeatmap } from '@components/MasteryHeatmap';
+import { AlertsPanel } from '@components/AlertsPanel';
+import { StudentDetail } from '@components/StudentDetail';
+import { mockStudents, mockAttempts, mockErrorFrequency } from '@lib/mock-data';
+import type { StudentMastery, TeacherAlert } from '@lib/types';
+import { createApiClient, type TeacherAlertRecord } from '@components/api-client';
 import { getAccessToken, getStoredSession } from '@shared/auth-session';
 
 const CLASSROOM_ID = process.env.NEXT_PUBLIC_CLASSROOM_ID ?? 'seed-classroom-001';
