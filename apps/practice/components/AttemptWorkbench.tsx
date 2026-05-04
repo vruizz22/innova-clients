@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 
 import { getAccessToken, getStoredSession } from '@shared/auth-session'
 import { createApiClient, type AttemptInput, type AttemptResponse } from '@components/api-client'
-import { VisualErrorRenderer } from './VisualErrorRenderer'
+import { VisualErrorRenderer } from '@components/VisualErrorRenderer'
 
 export function AttemptWorkbench(): JSX.Element {
   const apiBaseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', [])
