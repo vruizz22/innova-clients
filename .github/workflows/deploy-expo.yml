@@ -1,4 +1,6 @@
 name: Expo EAS Build (mobile)
+# EAS_TOKEN = Account Access Token from expo.dev/accounts/[account]/settings/access-tokens
+# NOT the projectId (e1d3ad8c-...) — that lives in app.config.ts extra.eas.projectId
 
 on:
   push:
@@ -13,8 +15,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -25,18 +25,29 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Setup EAS
-        # EAS_TOKEN must be an Account Access Token from:
-        # expo.dev/accounts/[your-account]/settings/access-tokens
-        # This is NOT the projectId (found in app.config.ts as extra.eas.projectId).
-        # Generate a token with "publish" scope at minimum for EAS Build + Update.
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EAS_TOKEN }}
 
-      - name: Build with EAS
+      - name: Build with EAS (both platforms)
         working-directory: apps/mobile
         env:
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_COGNITO_CLIENT_ID }}
         run: eas build --profile production --platform all --non-interactive
+
+  # EAS Workflow alternative — uses eas.yml workflow file
+  # Uncomment to use: npx eas-cli@latest workflow:run create-production-builds.yml
+  # workflow:
+  #   name: EAS Workflow (create-production-builds)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: expo/expo-github-action@v8
+  #       with:
+  #         eas-version: latest
+  #         token: ${{ secrets.EAS_TOKEN }}
+  #     - name: Run EAS workflow
+  #       working-directory: apps/mobile
+  #       run: eas workflow:run .eas/workflows/create-production-builds.yml --non-interactive
