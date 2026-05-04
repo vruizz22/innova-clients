@@ -1,7 +1,8 @@
 // Typed API client for the practice app
 import { getAccessToken } from '@shared/auth-session';
+import { getPublicRuntimeConfig } from '@shared/runtime-config';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+const BASE_URL = getPublicRuntimeConfig().apiUrl;
 
 // ---- Types ---------------------------------------------------------------
 
@@ -12,6 +13,8 @@ export interface PracticeItem {
   skillLabel: string;
   content: {
     problem: string;
+    prompt?: string;
+    expectedAnswer?: number | null;
     canonicalSolution?: string;
     minuend?: number;
     subtrahend?: number;
@@ -72,7 +75,7 @@ function unwrapApiData<T>(payload: T | { data?: T }): T {
 }
 
 async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(new URL(path, BASE_URL).toString(), {
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
   });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
@@ -80,7 +83,7 @@ async function apiGet<T>(path: string): Promise<T> {
 }
 
 async function apiPost<TBody, TResult>(path: string, body: TBody): Promise<TResult> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(new URL(path, BASE_URL).toString(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(body),
