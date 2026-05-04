@@ -1,7 +1,6 @@
 ---
 // Hero — full-screen, dark gradient background, mastery heatmap mockup
-const practiceUrl = import.meta.env.PUBLIC_PRACTICE_URL ?? 'http://localhost:3002';
-const teacherUrl = import.meta.env.PUBLIC_TEACHER_URL ?? 'http://localhost:3001';
+import { registerUrl } from '../config/urls';
 ---
 
 <section
@@ -41,20 +40,12 @@ const teacherUrl = import.meta.env.PUBLIC_TEACHER_URL ?? 'http://localhost:3001'
         <!-- CTAs — DS spec -->
         <div class="flex flex-wrap gap-3 pt-2">
           <a
-            href={`${practiceUrl}/login`}
+            href={registerUrl}
             class="btn btn-primary shadow-lg"
             style="box-shadow: 0 8px 24px rgba(15,42,61,0.25);"
           >
-            Probar como alumno
+            Comenzar gratis
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
-          <a
-            href={`${teacherUrl}/login`}
-            class="btn"
-            style="border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: white; backdrop-filter: blur(8px);"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-            Ver panel profesor
           </a>
         </div>
 

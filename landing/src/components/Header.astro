@@ -1,11 +1,6 @@
 ---
 // Header — sticky, semi-transparent with blur on scroll
-const practiceUrl = import.meta.env.PUBLIC_PRACTICE_URL ?? 'http://localhost:3002';
-const teacherUrl = import.meta.env.PUBLIC_TEACHER_URL ?? 'http://localhost:3001';
-const parentUrl = import.meta.env.PUBLIC_PARENT_URL ?? 'http://localhost:8081';
-const parentLoginUrl = parentUrl.includes('localhost:8081') ? parentUrl : `${parentUrl}/login`;
-const practiceLoginUrl = `${practiceUrl}/login`;
-const teacherLoginUrl = `${teacherUrl}/login`;
+import { registerUrl } from '../config/urls';
 ---
 
 <header
@@ -25,14 +20,12 @@ const teacherLoginUrl = `${teacherUrl}/login`;
     <nav class="hidden items-center gap-1 lg:flex" aria-label="Navegación principal">
       <a href="#caracteristicas" class="nav-link">Funcionalidades</a>
       <a href="#precios" class="nav-link">Precios</a>
-      <a href={practiceLoginUrl} class="nav-link">Alumnos</a>
-      <a href={teacherLoginUrl} class="nav-link">Profesores</a>
     </nav>
 
     <!-- Desktop actions -->
     <div class="hidden items-center gap-3 lg:flex">
       <a
-        href={`${practiceUrl}/register`}
+        href={registerUrl}
         class="btn btn-primary"
       >
         Comenzar gratis
@@ -64,11 +57,8 @@ const teacherLoginUrl = `${teacherUrl}/login`;
       <a href="#como-funciona" class="mobile-nav-link">Cómo funciona</a>
       <a href="#precios" class="mobile-nav-link">Precios</a>
       <div class="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
-        <a href={`${practiceUrl}/login`} class="mobile-nav-link">Alumnos</a>
-        <a href={teacherLoginUrl} class="mobile-nav-link">Profesores</a>
-        <a href={parentLoginUrl} class="mobile-nav-link">Apoderados</a>
         <a
-          href={`${practiceUrl}/register`}
+          href={registerUrl}
           class="rounded-xl bg-[var(--sky-500)] px-4 py-3 text-center text-sm font-semibold text-white"
         >
           Comenzar gratis
