@@ -5,15 +5,14 @@ import { DashboardLayout } from '@components/DashboardLayout';
 import { AlertsPanel } from '@components/AlertsPanel';
 import { createApiClient, type TeacherAlertRecord } from '@components/api-client';
 import { getAccessToken } from '@shared/auth-session';
+import { getPublicRuntimeConfig } from '@shared/runtime-config';
 import type { TeacherAlert } from '@lib/types';
 
-const CLASSROOM_ID = process.env.NEXT_PUBLIC_CLASSROOM_ID ?? 'seed-classroom-001';
-
-function mapBackendAlert(alert: TeacherAlertRecord): TeacherAlert {
+function mapBackendAlert(alert: TeacherAlertRecord, fallbackClassroomId: string): TeacherAlert {
   return {
     id: alert.id,
     alertType: 'AT_RISK_SKILL',
-    classroomId: alert.classroomId ?? CLASSROOM_ID,
+    classroomId: alert.classroomId ?? fallbackClassroomId,
     payload: {
       skillLabel: alert.message,
       studentIds: alert.studentId ? [alert.studentId] : [],
@@ -24,7 +23,9 @@ function mapBackendAlert(alert: TeacherAlertRecord): TeacherAlert {
 }
 
 export default function AlertsPage(): JSX.Element {
-  const apiBaseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', []);
+  const runtimeConfig = getPublicRuntimeConfig();
+  const classroomId = runtimeConfig.classroomId;
+  const apiBaseUrl = runtimeConfig.apiUrl;
   const apiClient = useMemo(
     () => createApiClient({ baseUrl: apiBaseUrl, getAccessToken }),
     [apiBaseUrl],
@@ -37,8 +38,8 @@ export default function AlertsPage(): JSX.Element {
   useEffect(() => {
     async function load(): Promise<void> {
       try {
-        const backendAlerts = await apiClient.listAlerts(CLASSROOM_ID);
-        setAlerts(backendAlerts.map(mapBackendAlert));
+        const backendAlerts = await apiClient.listAlerts(classroomId);
+        setAlerts(backendAlerts.map((alert) => mapBackendAlert(alert, classroomId)));
       } catch (err) {
         setLoadError(err instanceof Error ? err.message : 'No se pudieron cargar las alertas');
       } finally {
@@ -46,7 +47,7 @@ export default function AlertsPage(): JSX.Element {
       }
     }
     void load();
-  }, [apiClient]);
+  }, [apiClient, classroomId]);
 
   const handleResolve = (id: string): void => {
     setAlerts((prev) =>
