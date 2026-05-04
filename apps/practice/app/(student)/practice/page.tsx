@@ -17,6 +17,20 @@ const DIFFICULTY_LABEL: Record<string, string> = {
   hard: 'Difícil',
 };
 
+interface BackendEnvelope<T> {
+  data?: T;
+}
+
+interface BackendItem {
+  id: string;
+  content?: {
+    problem?: string;
+    prompt?: string;
+    expectedAnswer?: number;
+  };
+  difficulty?: 'easy' | 'medium' | 'hard';
+}
+
 // Mock items for SSR — replaced by API data when available
 const MOCK_ITEMS: PracticeItem[] = [
   { id: 'item-001', skillKey: 'subtraction_borrow', skillLabel: 'Resta con reagrupación', content: { problem: '53 − 26 = ?' }, difficulty: 'medium' },
@@ -34,7 +48,19 @@ async function getItems(): Promise<PracticeItem[]> {
       next: { revalidate: 60 },
     });
     if (!res.ok) return MOCK_ITEMS;
-    return res.json() as Promise<PracticeItem[]>;
+    const payload = await res.json() as BackendItem[] | BackendEnvelope<BackendItem[]>;
+    const backendItems = Array.isArray(payload) ? payload : payload.data;
+    if (!backendItems || backendItems.length === 0) return MOCK_ITEMS;
+
+    return backendItems.slice(0, 10).map((item, index) => ({
+      id: item.id,
+      skillKey: 'subtraction_borrow',
+      skillLabel: 'Resta con reagrupación',
+      content: {
+        problem: item.content?.problem ?? item.content?.prompt ?? MOCK_ITEMS[index % MOCK_ITEMS.length].content.problem,
+      },
+      difficulty: item.difficulty ?? 'medium',
+    }));
   } catch {
     return MOCK_ITEMS;
   }
