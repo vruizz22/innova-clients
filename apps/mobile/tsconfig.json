@@ -6,11 +6,16 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
-      "@design/*": ["../../SuperProfes-Design-System/*"],
-      "@design": ["../../SuperProfes-Design-System"]
+      "@design/*": [
+        "../../SuperProfes-Design-System/*"
+      ],
+      "@design": [
+        "../../SuperProfes-Design-System"
+      ]
     }
   },
   "include": [
+    "*.d.ts",
     "App.tsx",
     "app/**/*.ts",
     "app/**/*.tsx",
@@ -18,8 +23,9 @@
     "components/**/*.tsx",
     "lib/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.tsx",
-    "expo-env.d.ts"
+    "src/**/*.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
