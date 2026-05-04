@@ -1,0 +1,48 @@
+---
+// Nav.astro — top navigation with logo + CTA button
+// Thin wrapper around Header.astro to satisfy task spec naming.
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
+  <!-- Logo -->
+  <a href="/" class="flex items-center gap-2 group" aria-label="SuperProfes — ir a inicio">
+    <img
+      src="/design-system/assets/superprofes-logo-inverse.svg"
+      alt="SuperProfes"
+      width="140"
+      height="32"
+      class="h-8 w-auto"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+    />
+    <!-- Fallback text logo -->
+    <span
+      class="hidden text-xl font-black text-white tracking-tight"
+      aria-hidden="true"
+    >
+      Super<span class="text-[var(--sky-300)]">Profes</span>
+    </span>
+  </a>
+
+  <!-- Links -->
+  <div class="hidden md:flex items-center gap-6 text-sm font-medium text-white/70">
+    <a href="#caracteristicas" class="hover:text-white transition-colors">Características</a>
+    <a href="#como-funciona" class="hover:text-white transition-colors">Cómo funciona</a>
+    <a href="#precios" class="hover:text-white transition-colors">Precios</a>
+  </div>
+
+  <!-- CTA -->
+  <div class="flex items-center gap-3">
+    <a
+      href="https://profe.superprofes.app/login"
+      class="hidden sm:inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold text-white/80 border border-white/20 hover:bg-white/10 transition-all"
+    >
+      Iniciar sesión
+    </a>
+    <a
+      href="#contacto"
+      class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-[var(--sky-500)] hover:bg-[var(--sky-600)] transition-all shadow-md"
+    >
+      Solicitar demo
+    </a>
+  </div>
+</nav>
