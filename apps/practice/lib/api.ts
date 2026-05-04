@@ -1,4 +1,5 @@
 // Typed API client for the practice app
+import { getAccessToken } from '@shared/auth-session';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -6,11 +7,12 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 export interface PracticeItem {
   id: string;
+  isFallback?: boolean;
   skillKey: string;
   skillLabel: string;
   content: {
     problem: string;
-    canonicalSolution: string;
+    canonicalSolution?: string;
     minuend?: number;
     subtrahend?: number;
   };
@@ -24,15 +26,18 @@ export interface RawStep {
 
 export interface SubmitAttemptPayload {
   studentId: string;
-  itemId: string;
+  itemId?: string;
   skillKey: string;
   rawSteps: RawStep[];
   expectedAnswer: number;
   studentAnswer: number;
+  minuend?: number;
+  subtrahend?: number;
 }
 
 export interface AttemptResult {
-  id: string;
+  attemptId?: string;
+  id?: string;
   isCorrect: boolean;
   errorType: string | null;
   confidence: number;
@@ -49,15 +54,21 @@ export interface AttemptStatusResult {
 // ---- Helpers ---------------------------------------------------------------
 
 function getAuthHeaders(): Record<string, string> {
-  if (typeof window === 'undefined') return {};
-  const raw = sessionStorage.getItem('auth_session');
-  if (!raw) return {};
-  try {
-    const session = JSON.parse(raw) as { accessToken?: string };
-    return session.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {};
-  } catch {
-    return {};
+  const token = getAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function unwrapApiData<T>(payload: T | { data?: T }): T {
+  if (
+    payload !== null &&
+    typeof payload === 'object' &&
+    'data' in payload &&
+    (payload as { data?: T }).data !== undefined
+  ) {
+    return (payload as { data: T }).data;
   }
+
+  return payload as T;
 }
 
 async function apiGet<T>(path: string): Promise<T> {
@@ -65,7 +76,7 @@ async function apiGet<T>(path: string): Promise<T> {
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
   });
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
-  return res.json() as Promise<T>;
+  return unwrapApiData(await res.json() as T | { data?: T });
 }
 
 async function apiPost<TBody, TResult>(path: string, body: TBody): Promise<TResult> {
@@ -75,7 +86,7 @@ async function apiPost<TBody, TResult>(path: string, body: TBody): Promise<TResu
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
-  return res.json() as Promise<TResult>;
+  return unwrapApiData(await res.json() as TResult | { data?: TResult });
 }
 
 // ---- API functions -------------------------------------------------------
