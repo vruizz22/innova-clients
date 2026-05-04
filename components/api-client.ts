@@ -106,6 +106,13 @@ export type ApiResponse =
   | PracticeAssignmentResponse
   | OcrExtractResponse
 
+type ApiEnvelope<TResponse> = {
+  statusCode?: number
+  data?: TResponse
+  message?: unknown
+  error?: unknown
+}
+
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH'
   body?: object | FormData
@@ -175,7 +182,18 @@ async function requestJson<TResponse>(
     return undefined as TResponse
   }
 
-  return JSON.parse(bodyText) as TResponse
+  const parsed = JSON.parse(bodyText) as TResponse | ApiEnvelope<TResponse>
+
+  if (
+    parsed !== null &&
+    typeof parsed === 'object' &&
+    'data' in parsed &&
+    (parsed as ApiEnvelope<TResponse>).data !== undefined
+  ) {
+    return (parsed as ApiEnvelope<TResponse>).data as TResponse
+  }
+
+  return parsed as TResponse
 }
 
 export function createApiClient(config: BaseConfig) {

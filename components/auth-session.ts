@@ -1,6 +1,6 @@
 import type { AuthSession, UserRole } from './api-client';
 
-const SESSION_KEY = 'innova.auth.session';
+export const SESSION_KEY = 'innova.auth.session';
 
 export type StoredAuthSession = AuthSession;
 
@@ -39,12 +39,18 @@ export function clearStoredSession(): void {
 
 export function getDashboardUrl(role: UserRole): string {
   if (role === 'teacher') {
-    return process.env.NEXT_PUBLIC_TEACHER_URL ?? 'http://localhost:3001';
+    return process.env.NEXT_PUBLIC_TEACHER_URL ?? (
+      process.env.NODE_ENV === 'production' ? 'https://profe.superprofes.app' : 'http://localhost:3001'
+    );
   }
 
   if (role === 'parent') {
-    return process.env.NEXT_PUBLIC_PARENT_URL ?? 'http://localhost:8081';
+    return process.env.NEXT_PUBLIC_PARENT_URL ?? (
+      process.env.NODE_ENV === 'production' ? 'https://superprofes.app' : 'http://localhost:8081'
+    );
   }
 
-  return process.env.NEXT_PUBLIC_PRACTICE_URL ?? 'http://localhost:3002';
+  return process.env.NEXT_PUBLIC_PRACTICE_URL ?? (
+    process.env.NODE_ENV === 'production' ? 'https://practice.superprofes.app' : 'http://localhost:3002'
+  );
 }
