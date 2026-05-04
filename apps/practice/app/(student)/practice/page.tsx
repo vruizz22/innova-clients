@@ -1,73 +1,45 @@
-// Practice assignments list — server component
-// Fetches available items from the API and renders them
+'use client'
 
-import Link from 'next/link';
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
-interface PracticeItem {
-  id: string;
-  skillKey: string;
-  skillLabel: string;
-  content: { problem: string };
-  difficulty: 'easy' | 'medium' | 'hard';
-}
+import { getItems, type PracticeItem } from '@/lib/api'
 
 const DIFFICULTY_LABEL: Record<string, string> = {
   easy: 'Fácil',
   medium: 'Medio',
   hard: 'Difícil',
-};
-
-interface BackendEnvelope<T> {
-  data?: T;
 }
 
-interface BackendItem {
-  id: string;
-  content?: {
-    problem?: string;
-    prompt?: string;
-    expectedAnswer?: number;
-  };
-  difficulty?: 'easy' | 'medium' | 'hard';
-}
+export default function PracticePage(): JSX.Element {
+  const [items, setItems] = useState<PracticeItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-// Mock items for SSR — replaced by API data when available
-const MOCK_ITEMS: PracticeItem[] = [
-  { id: 'item-001', skillKey: 'subtraction_borrow', skillLabel: 'Resta con reagrupación', content: { problem: '53 − 26 = ?' }, difficulty: 'medium' },
-  { id: 'item-002', skillKey: 'subtraction_borrow', skillLabel: 'Resta con reagrupación', content: { problem: '82 − 47 = ?' }, difficulty: 'medium' },
-  { id: 'item-003', skillKey: 'addition_carry', skillLabel: 'Suma con llevada', content: { problem: '68 + 47 = ?' }, difficulty: 'easy' },
-  { id: 'item-004', skillKey: 'multiplication_basic', skillLabel: 'Multiplicación básica', content: { problem: '7 × 8 = ?' }, difficulty: 'easy' },
-  { id: 'item-005', skillKey: 'fractions_add', skillLabel: 'Suma de fracciones', content: { problem: '1/3 + 1/4 = ?' }, difficulty: 'hard' },
-];
+  useEffect(() => {
+    let cancelled = false
 
-async function getItems(): Promise<PracticeItem[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiUrl) return MOCK_ITEMS;
-  try {
-    const res = await fetch(`${apiUrl}/items?topic=subtraction_borrow&limit=10`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return MOCK_ITEMS;
-    const payload = await res.json() as BackendItem[] | BackendEnvelope<BackendItem[]>;
-    const backendItems = Array.isArray(payload) ? payload : payload.data;
-    if (!backendItems || backendItems.length === 0) return MOCK_ITEMS;
+    async function loadItems(): Promise<void> {
+      setLoading(true)
+      setError('')
+      try {
+        const backendItems = await getItems({ topic: 'subtraction_borrow', limit: 10 })
+        if (!cancelled) setItems(backendItems)
+      } catch (loadError) {
+        if (!cancelled) {
+          setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar ejercicios.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
 
-    return backendItems.slice(0, 10).map((item, index) => ({
-      id: item.id,
-      skillKey: 'subtraction_borrow',
-      skillLabel: 'Resta con reagrupación',
-      content: {
-        problem: item.content?.problem ?? item.content?.prompt ?? MOCK_ITEMS[index % MOCK_ITEMS.length].content.problem,
-      },
-      difficulty: item.difficulty ?? 'medium',
-    }));
-  } catch {
-    return MOCK_ITEMS;
-  }
-}
+    void loadItems()
 
-export default async function PracticePage(): Promise<JSX.Element> {
-  const items = await getItems();
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <main className="page-wrapper">
@@ -76,11 +48,25 @@ export default async function PracticePage(): Promise<JSX.Element> {
         <p>Resuelve cada ejercicio y recibe retroalimentación inmediata.</p>
       </div>
 
-      {items.length === 0 ? (
+      {loading ? (
+        <div className="practice-empty">
+          <p>Cargando ejercicios...</p>
+        </div>
+      ) : null}
+
+      {!loading && error ? (
+        <div className="practice-empty" role="alert">
+          <p>{error}</p>
+        </div>
+      ) : null}
+
+      {!loading && !error && items.length === 0 ? (
         <div className="practice-empty">
           <p>No hay ejercicios disponibles por ahora.</p>
         </div>
-      ) : (
+      ) : null}
+
+      {!loading && !error && items.length > 0 ? (
         <ul className="practice-items">
           {items.map((item) => (
             <li key={item.id}>
@@ -116,7 +102,8 @@ export default async function PracticePage(): Promise<JSX.Element> {
             </li>
           ))}
         </ul>
-      )}
+      ) : null}
     </main>
-  );
+  )
 }
+
