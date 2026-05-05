@@ -22,7 +22,7 @@ type AuthPageProps = {
   allowedRoles?: RegisterInput['role'][]
 }
 
-const DEFAULT_ALLOWED_ROLES: RegisterInput['role'][] = ['student', 'parent']
+const DEFAULT_ALLOWED_ROLES: RegisterInput['role'][] = ['student', 'teacher', 'parent']
 
 export function AuthPage({
   title,
