@@ -5,7 +5,6 @@ export type PublicRuntimeConfig = {
   teacherUrl: string
   parentUrl: string
   studentId: string
-  classroomId: string
 }
 
 const PROD_CONFIG = {
@@ -23,7 +22,6 @@ const LOCAL_CONFIG = {
   teacherUrl: 'http://localhost:3001',
   parentUrl: 'http://localhost:8081',
   studentId: 'seed-student-001',
-  classroomId: 'seed-classroom-001',
 } as const
 
 function requiredPublicEnv(name: string, fallback?: string): string {
@@ -44,6 +42,5 @@ export function getPublicRuntimeConfig(): PublicRuntimeConfig {
     teacherUrl: requiredPublicEnv('NEXT_PUBLIC_TEACHER_URL', defaults.teacherUrl),
     parentUrl: requiredPublicEnv('NEXT_PUBLIC_PARENT_URL', defaults.parentUrl),
     studentId: requiredPublicEnv('NEXT_PUBLIC_STUDENT_ID', LOCAL_CONFIG.studentId),
-    classroomId: requiredPublicEnv('NEXT_PUBLIC_CLASSROOM_ID', LOCAL_CONFIG.classroomId),
   }
 }
