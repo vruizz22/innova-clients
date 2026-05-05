@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import { getPublicRuntimeConfig } from '@shared/runtime-config'
-import { AppHeader } from '../components/AppHeader'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -9,12 +7,9 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const landingUrl = getPublicRuntimeConfig().landingUrl
-
   return (
     <html lang="es">
       <body>
-        <AppHeader landingUrl={landingUrl} />
         {children}
       </body>
     </html>

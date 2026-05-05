@@ -41,6 +41,7 @@ export default function TeacherDashboard(): JSX.Element {
     [apiBaseUrl],
   );
 
+  const [currentUser, setCurrentUser] = useState<{ email: string; id: string } | null>(null);
   const [classroom, setClassroom] = useState<ClassroomRecord | null>(null);
   const [students, setStudents] = useState<StudentMastery[]>([]);
   const [alerts, setAlerts] = useState<TeacherAlert[]>([]);
@@ -58,7 +59,13 @@ export default function TeacherDashboard(): JSX.Element {
       setLoadError('');
       setDashLoading(true);
       try {
-        const classrooms = await apiClient.getMyClassrooms();
+        const [meResult, classrooms] = await Promise.all([
+          apiClient.me().catch(() => null),
+          apiClient.getMyClassrooms(),
+        ]);
+        if (meResult?.user) {
+          setCurrentUser({ email: meResult.user.email, id: meResult.user.id });
+        }
 
         if (classrooms.length === 0) {
           setClassroom(null);
@@ -127,7 +134,7 @@ export default function TeacherDashboard(): JSX.Element {
 
   return (
     <AuthGuard allowedRoles={TEACHER_ROLES} loginPath="/login">
-      <DashboardLayout unresolvedAlertCount={alerts.filter(a => !a.resolvedAt).length}>
+      <DashboardLayout unresolvedAlertCount={alerts.filter(a => !a.resolvedAt).length} userEmail={currentUser?.email}>
         {dashLoading ? (
           <div style={{ padding: 'var(--sp-8)', textAlign: 'center', color: 'var(--fg-3)' }}>
             <p>Cargando dashboard...</p>
@@ -174,32 +181,67 @@ export default function TeacherDashboard(): JSX.Element {
 
         {!dashLoading && !loadError && classroom ? (
           <>
-            {/* Classroom header with invite */}
-            <div style={{ padding: 'var(--sp-4) 0 var(--sp-6)', display: 'flex', alignItems: 'center', gap: 'var(--sp-4)', flexWrap: 'wrap' }}>
+            {/* Page header */}
+            <div className="t-page-head">
               <div>
-                <p style={{ fontSize: 'var(--text-body-sm)', color: 'var(--fg-3)', marginBottom: 2 }}>Mi Classroom</p>
-                <h2 style={{ margin: 0 }}>{classroom.name}</h2>
+                <h1>Buenas tardes, {currentUser?.email?.split('@')[0] ?? 'Profesor/a'}</h1>
+                <p>Vista general del curso · {classroom.name} · {students.length} alumnos</p>
               </div>
-              <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 'var(--sp-2)' }}>
+              <div style={{ display: 'flex', gap: 'var(--sp-2)', flexWrap: 'wrap', alignItems: 'center' }}>
                 <button
                   onClick={handleCopyInvite}
-                  style={{ padding: 'var(--sp-2) var(--sp-4)', borderRadius: 'var(--radius-md)', background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 'var(--text-body-sm)' }}
+                  className="btn btn-secondary"
+                  style={{ fontSize: 'var(--text-body-sm)' }}
                 >
                   Copiar link de invitación
                 </button>
-                {copyMessage ? (
-                  <span style={{ fontSize: 'var(--text-body-sm)', color: 'var(--fg-2)' }}>{copyMessage}</span>
-                ) : null}
-                {inviteUrl ? (
-                  <input
-                    readOnly
-                    value={inviteUrl}
-                    style={{ fontSize: 'var(--text-body-sm)', padding: 'var(--sp-1) var(--sp-2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', width: 300 }}
-                    onClick={(e) => (e.target as HTMLInputElement).select()}
-                  />
-                ) : null}
+                <button className="btn btn-primary">Asignar práctica</button>
               </div>
             </div>
+
+            {copyMessage ? (
+              <p style={{ fontSize: 'var(--text-body-sm)', color: 'var(--fg-2)', marginBottom: 'var(--sp-2)' }}>{copyMessage}</p>
+            ) : null}
+            {inviteUrl ? (
+              <input
+                readOnly
+                value={inviteUrl}
+                style={{ fontSize: 'var(--text-body-sm)', padding: 'var(--sp-1) var(--sp-2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', width: 300, marginBottom: 'var(--sp-4)', display: 'block' }}
+                onClick={(e) => (e.target as HTMLInputElement).select()}
+              />
+            ) : null}
+
+            {/* Stat row — 4 KPIs */}
+            {(() => {
+              const allPKnown = students.flatMap(s => s.skills?.map(sk => sk.pKnown) ?? [])
+              const masteryAvg = allPKnown.length > 0 ? allPKnown.reduce((a, b) => a + b, 0) / allPKnown.length : 0
+              const atRisk = students.filter(s => (s.skills ?? []).some(sk => sk.pKnown < 0.4)).length
+              const unresolvedAlerts = alerts.filter(a => !a.resolvedAt).length
+              return (
+                <div className="t-stats">
+                  <div className="card t-stat-card">
+                    <div className="t-caption">Mastery promedio · curso</div>
+                    <div className="t-stat math">{Math.round(masteryAvg * 100)}%</div>
+                    <div className="t-delta t-delta-up">Datos en tiempo real</div>
+                  </div>
+                  <div className="card t-stat-card">
+                    <div className="t-caption">Alumnos en riesgo</div>
+                    <div className="t-stat math" style={{ color: atRisk > 0 ? 'var(--mastery-weak)' : undefined }}>{atRisk} <span className="t-stat-of">/ {students.length}</span></div>
+                    <div className="t-delta">{atRisk > 0 ? 'Requieren atención' : 'Todos en buen nivel'}</div>
+                  </div>
+                  <div className="card t-stat-card">
+                    <div className="t-caption">Alertas sin resolver</div>
+                    <div className="t-stat math" style={{ color: unresolvedAlerts > 0 ? 'var(--mastery-weak)' : 'var(--mint-600)' }}>{unresolvedAlerts}</div>
+                    <div className="t-delta">{unresolvedAlerts > 0 ? 'Requieren acción' : 'Sin alertas pendientes'}</div>
+                  </div>
+                  <div className="card t-stat-card">
+                    <div className="t-caption">Alumnos en el aula</div>
+                    <div className="t-stat math">{students.length}</div>
+                    <div className="t-delta">{classroom.name}</div>
+                  </div>
+                </div>
+              )
+            })()}
 
             {selectedStudent ? (
               <StudentDetail
@@ -210,25 +252,24 @@ export default function TeacherDashboard(): JSX.Element {
                 onBack={() => setSelectedStudentId(null)}
               />
             ) : (
-              <div className="dashboard-home">
+              <div className="t-grid-2">
                 <div>
                   <div className="t-section-head">
-                    <h2>Dominio por alumno</h2>
+                    <h2>Mastery del aula</h2>
+                    <span>Toca una celda para ver el detalle</span>
                   </div>
-                  <MasteryHeatmap
-                    students={students}
-                    onStudentClick={setSelectedStudentId}
-                  />
+                  <div className="t-heatmap">
+                    <MasteryHeatmap
+                      students={students}
+                      onStudentClick={setSelectedStudentId}
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <div className="t-section-head">
-                    <h2>Alertas activas</h2>
-                    {alerts.filter(a => !a.resolvedAt).length > 0 && (
-                      <span className="alert-count-badge">
-                        {alerts.filter(a => !a.resolvedAt).length} sin resolver
-                      </span>
-                    )}
+                    <h2>Alertas pendientes</h2>
+                    <span>{alerts.filter(a => !a.resolvedAt).length} sin resolver</span>
                   </div>
                   <AlertsPanel
                     alerts={alerts.filter(a => !a.resolvedAt)}
