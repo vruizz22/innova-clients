@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>SuperProfes · Alerts Inbox</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="../shared.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  body { background:var(--slate-50); margin:0; }
+  .ai-shell { max-width:1280px; margin:0 auto; padding:28px 24px; }
+  .ai-title { font-size:28px; font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
+  .ai-sub { font-size:14px; color:var(--fg-2); margin:0 0 20px; }
+  
+  .ai-controls { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+  .filter-btn { padding:8px 14px; border-radius:8px; border:1.5px solid var(--border); background:#fff; cursor:pointer; font:inherit; font-size:13px; font-weight:600; transition:all .15s; }
+  .filter-btn.active { background:var(--sky-500); color:#fff; border-color:var(--sky-500); }
+  .filter-btn:hover { border-color:var(--sky-400); }
+  
+  .ai-list { display:flex; flex-direction:column; gap:12px; }
+  .alert-item { background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:16px; display:flex; gap:14px; align-items:flex-start; cursor:pointer; transition:all .15s; }
+  .alert-item:hover { box-shadow:var(--shadow-pop); }
+  .alert-item.resolved { opacity:.6; border-color:var(--mint-300); }
+  
+  .alert-icon { width:44px; height:44px; border-radius:10px; display:grid; place-items:center; flex-shrink:0; font-size:20px; }
+  .alert-icon.risk { background:var(--error-bg); color:var(--mastery-weak); }
+  .alert-icon.warning { background:var(--mastery-medium); opacity:.15; color:var(--mastery-medium); }
+  .alert-icon.info { background:var(--sky-50); color:var(--sky-600); }
+  
+  .alert-main { flex:1; }
+  .alert-type { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--fg-2); margin-bottom:3px; }
+  .alert-title { font-size:15px; font-weight:700; color:var(--fg-1); }
+  .alert-subtitle { font-size:13px; color:var(--fg-2); margin-top:2px; }
+  .alert-meta { display:flex; gap:12px; margin-top:8px; font-size:12px; color:var(--fg-2); }
+  
+  .alert-actions { display:flex; gap:6px; align-items:center; }
+  .act-btn { padding:6px 10px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer; font:inherit; font-size:12px; transition:all .12s; }
+  .act-btn:hover { background:var(--slate-100); }
+  
+  .bulk-header { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--slate-50); border-radius:10px; margin-bottom:12px; }
+  .bulk-header input { width:16px; height:16px; cursor:pointer; }
+  .bulk-actions { display:flex; gap:8px; margin-left:auto; }
+  .bulk-actions button { padding:8px 14px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; font:inherit; font-size:13px; font-weight:600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../shared/Icon.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const ALERTS = [
+  {id:1,type:'AT_RISK_SKILL',student:'Diego Ramírez',skill:'Resta con reserva',pattern:'BORROW_OMITTED_TENS',count:3,time:'hoy 14:32',status:'active',pkBefore:.15,pkNow:.20},
+  {id:2,type:'AT_RISK_SKILL',student:'Valentina Espinoza',skill:'División larga',pattern:'DIVISOR_MISPLACED',count:2,time:'hoy 12:15',status:'active',pkBefore:.25,pkNow:.28},
+  {id:3,type:'AT_RISK_SKILL',student:'Matías Pérez',skill:'Multiplicación',pattern:'CARRIES_MISAPPLIED',count:4,time:'ayer 16:45',status:'resolved',pkBefore:.30,pkNow:.52},
+  {id:4,type:'MASTERY_JUMP',student:'Sofía Müller',skill:'Suma con llevadas',change:'+0.19',time:'ayer 14:20',status:'resolved',pkBefore:.52,pkNow:.71},
+  {id:5,type:'AT_RISK_SKILL',student:'Carlos López',skill:'Fracciones',pattern:'SAME_DENOM_SKIP',count:5,time:'lun 09:30',status:'active',pkBefore:.12,pkNow:.18},
+];
+
+function App() {
+  const [filter, setFilter] = useState('active');
+  const [selected, setSelected] = useState([]);
+  const [alerts, setAlerts] = useState(ALERTS);
+  
+  const filtered = alerts.filter(a => filter==='all' || a.status===filter);
+  const toggleSel = (id) => setSelected(sel => sel.includes(id)?sel.filter(x=>x!==id):[...sel,id]);
+  const markResolved = () => {
+    setAlerts(as => as.map(a => selected.includes(a.id)?{...a,status:'resolved'}:a));
+    setSelected([]);
+  };
+  const markUnread = () => alert('POST /alerts/:id/mark-unread');
+  
+  return (
+    <div className="ai-shell" data-screen-label="Teacher · Alerts Inbox">
+      <h1 className="ai-title">Bandeja de alertas</h1>
+      <p className="ai-sub">GET /alerts?classroom=:id · {filtered.length} alertas</p>
+      
+      <div className="ai-controls">
+        <button className={`filter-btn ${filter==='active'?'active':''}`} onClick={()=>setFilter('active')}>
+          <Icon name="alert-circle" size={14}/>Activas ({alerts.filter(a=>a.status==='active').length})
+        </button>
+        <button className={`filter-btn ${filter==='resolved'?'active':''}`} onClick={()=>setFilter('resolved')}>
+          <Icon name="check-circle" size={14}/>Resueltas ({alerts.filter(a=>a.status==='resolved').length})
+        </button>
+        <button className={`filter-btn ${filter==='all'?'active':''}`} onClick={()=>setFilter('all')}>
+          Todas ({alerts.length})
+        </button>
+        <div className="spacer"/>
+        <button className="filter-btn"><Icon name="settings" size={14}/> Preferencias</button>
+      </div>
+      
+      {selected.length > 0 && (
+        <div className="bulk-header">
+          <input type="checkbox" checked={selected.length===filtered.length} onChange={()=>{
+            if(selected.length===filtered.length) setSelected([]);
+            else setSelected(filtered.map(a=>a.id));
+          }}/>
+          <span style={{fontWeight:600}}>{selected.length} seleccionadas</span>
+          <div className="bulk-actions">
+            <button onClick={markResolved}>Marcar resueltas</button>
+            <button onClick={markUnread}>Archivar</button>
+            <button style={{color:'var(--mastery-weak)',borderColor:'var(--mastery-weak)'}}>Eliminar</button>
+          </div>
+        </div>
+      )}
+      
+      <div className="ai-list">
+        {filtered.map(a => (
+          <div key={a.id} className={`alert-item ${a.status}`} onClick={()=>toggleSel(a.id)}>
+            <input type="checkbox" checked={selected.includes(a.id)} onClick={e=>e.stopPropagation()} onChange={()=>toggleSel(a.id)} style={{width:16,height:16,cursor:'pointer'}}/>
+            <div className={`alert-icon ${a.status==='active'?'risk':'info'}`}>
+              {a.status==='active'?'⚠️':'✓'}
+            </div>
+            <div className="alert-main">
+              <div className="alert-type">{a.type==='AT_RISK_SKILL'?'RIESGO':'PROGRESO'}</div>
+              <div className="alert-title">{a.student} · {a.skill}</div>
+              <div className="alert-subtitle">
+                {a.type==='AT_RISK_SKILL'
+                  ? `${a.pattern} detectado ${a.count} veces · dominio bajó a ${(a.pkNow*100).toFixed(0)}%`
+                  : `Progreso: ${a.pkBefore.toFixed(2)} → ${a.pkNow.toFixed(2)}`}
+              </div>
+              <div className="alert-meta">
+                <span>{a.time}</span>
+                <span>•</span>
+                <span style={{color:a.status==='active'?'var(--mastery-weak)':'var(--mint-600)',fontWeight:600}}>
+                  {a.status==='active'?'Activa':'Resuelta'}
+                </span>
+              </div>
+            </div>
+            <div className="alert-actions">
+              <button className="act-btn" onClick={e=>{e.stopPropagation();alert('GET /students/'+a.student.toLowerCase().replace(' ','-'));}}>
+                <Icon name="arrow-right" size={14}/>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

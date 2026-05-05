@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>SuperProfes · Classrooms</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="../shared.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  body { background: var(--slate-50); margin: 0; }
+  .cx-shell { max-width: 1180px; margin: 0 auto; padding: 28px 24px; }
+  .cx-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+  .cx-head h1 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+  .cx-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .cx-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .cx-card.add { border-style: dashed; border-color: var(--border-strong); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--fg-2); min-height: 180px; transition: background .12s; }
+  .cx-card.add:hover { background: var(--slate-50); }
+  .cx-name { font-size: 18px; font-weight: 700; }
+  .cx-meta { font-size: 13px; color: var(--fg-2); }
+  .cx-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cx-pill { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; background: var(--sky-100); color: var(--sky-800); }
+  .cx-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cx-invite { display: flex; align-items: center; gap: 8px; background: var(--slate-50); border-radius: 8px; padding: 10px 12px; }
+  .cx-invite code { flex:1; font-family: ui-monospace, monospace; font-size: 13px; color: var(--fg-1); }
+  .cx-roster { display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; }
+  .cx-student { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .cx-av { width: 26px; height: 26px; border-radius: 9999px; background: var(--slate-100); display: grid; place-items: center; font-weight: 700; font-size: 11px; color: var(--slate-700); }
+  .cx-pk { font-size: 11px; font-family: ui-monospace, monospace; margin-left: auto; padding: 2px 7px; border-radius: 9999px; }
+
+  /* Modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(15,42,61,.4); display: grid; place-items: center; z-index: 50; padding: 24px; }
+  .modal { background: #fff; border-radius: 16px; padding: 28px; width: min(440px, 100%); box-shadow: var(--shadow-pop); }
+  .modal h2 { margin: 0 0 16px; font-size: 20px; }
+  .modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .modal-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); }
+  .modal-input { padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--border-strong); font-family: inherit; font-size: 15px; }
+  .modal-foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Join (student) */
+  .join-box { background: var(--mint-50); border: 1px solid var(--mint-200); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px; max-width: 420px; margin-top: 24px; }
+  .join-box h3 { margin: 0; font-size: 16px; }
+  .join-input { display: flex; gap: 8px; }
+  .join-input input { flex: 1; padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--border-strong); font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; }
+
+  .tab-bar { display: flex; gap: 4px; background: var(--slate-100); border-radius: 10px; padding: 4px; margin-bottom: 20px; width: fit-content; }
+  .tab-bar button { padding: 8px 16px; border-radius: 7px; border: 0; background: transparent; font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--fg-2); }
+  .tab-bar button.is-active { background: #fff; color: var(--fg-1); box-shadow: 0 1px 3px rgba(15,42,61,.08); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../shared/Icon.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const pkColor = p => p>=.7?{bg:'var(--mint-100)',fg:'var(--mint-700)'}:p>=.4?{bg:'#FFEFCD',fg:'var(--error-fg)'}:{bg:'#FAD9D9',fg:'#7A2E2E'};
+
+const SEED = [
+  { id:'c1', name:'4° A · Matemáticas', desc:'Primer semestre 2026', grade:'4°', school:'Colegio San Pedro', inviteCode:'4A-MAT-X7', students:[
+    {name:'Antonia F.',pk:.32},{name:'Benjamín S.',pk:.41},{name:'Catalina P.',pk:.74},{name:'Diego V.',pk:.28},{name:'Emilia R.',pk:.62},
+  ]},
+  { id:'c2', name:'5° B · Matemáticas', desc:'Primer semestre 2026', grade:'5°', school:'Colegio San Pedro', inviteCode:'5B-MAT-Q2', students:[
+    {name:'Felipe N.',pk:.55},{name:'Gabriela T.',pk:.81},{name:'Hugo R.',pk:.44},
+  ]},
+];
+
+function ClassroomCard({ c, onInvite }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => { navigator.clipboard?.writeText(c.inviteCode).catch(()=>{}); setCopied(true); setTimeout(()=>setCopied(false),1800); };
+  return (
+    <div className="cx-card">
+      <div>
+        <div className="cx-name">{c.name}</div>
+        <div className="cx-meta">{c.desc} · {c.school}</div>
+      </div>
+      <div className="cx-pills">
+        <span className="cx-pill">{c.students.length} alumnos</span>
+        <span className="cx-pill">{c.grade} básico</span>
+      </div>
+      <div>
+        <div className="t-caption" style={{marginBottom:6, fontWeight:700}}>Código de invitación</div>
+        <div className="cx-invite">
+          <code>{c.inviteCode}</code>
+          <button className="btn btn-ghost" style={{minHeight:32,padding:'4px 10px',fontSize:12}} onClick={copy}>
+            {copied ? '✓ Copiado' : <><Icon name="copy" size={13}/> Copiar</>}
+          </button>
+          <button className="btn btn-ghost" style={{minHeight:32,padding:'4px 10px',fontSize:12}} onClick={()=>onInvite(c)}>
+            <Icon name="refresh" size={13}/> Nuevo
+          </button>
+        </div>
+      </div>
+      <div>
+        <div className="t-caption" style={{marginBottom:6, fontWeight:700}}>Alumnos</div>
+        <div className="cx-roster">
+          {c.students.map((s,i)=>{
+            const col = pkColor(s.pk);
+            return (
+              <div key={i} className="cx-student">
+                <div className="cx-av">{s.name.split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+                <span>{s.name}</span>
+                <span className="cx-pk" style={{background:col.bg,color:col.fg}}>{(s.pk*100).toFixed(0)}%</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="cx-actions">
+        <button className="btn btn-ghost" style={{flex:1}}><Icon name="chart" size={14}/> Mastery</button>
+        <button className="btn btn-primary" style={{flex:1}}><Icon name="book" size={14}/> Asignar práctica</button>
+      </div>
+    </div>
+  );
+}
+
+function CreateModal({ onClose, onCreate }) {
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <h2>Crear nuevo curso</h2>
+        <div className="modal-field"><label>Nombre del curso</label><input className="modal-input" placeholder="Ej: 4° A · Matemáticas" value={name} onChange={e=>setName(e.target.value)}/></div>
+        <div className="modal-field"><label>Descripción (opcional)</label><input className="modal-input" placeholder="Ej: Primer semestre 2026" value={desc} onChange={e=>setDesc(e.target.value)}/></div>
+        <div className="t-caption" style={{marginTop:8}}>POST <code style={{fontFamily:'ui-monospace,monospace'}}>/classrooms</code> · Se genera código de invitación automáticamente.</div>
+        <div className="modal-foot">
+          <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-primary" disabled={!name.trim()} onClick={()=>onCreate(name,desc)}>Crear curso</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeacherView() {
+  const [classrooms, setClassrooms] = useState(SEED);
+  const [showModal, setShowModal] = useState(false);
+  const create = (name, desc) => {
+    setClassrooms(cs => [...cs, { id:'c'+Date.now(), name, desc, grade:'4°', school:'Colegio San Pedro', inviteCode:'NEW-'+Math.random().toString(36).slice(2,7).toUpperCase(), students:[] }]);
+    setShowModal(false);
+  };
+  return (
+    <div data-screen-label="Teacher · Classrooms">
+      <div className="cx-head">
+        <div><h1>Mis cursos</h1><div className="t-caption">GET <code style={{fontFamily:'ui-monospace,monospace'}}>/classrooms/mine</code> · {classrooms.length} cursos activos</div></div>
+        <button className="btn btn-primary" onClick={()=>setShowModal(true)}><Icon name="plus" size={14}/> Nuevo curso</button>
+      </div>
+      <div className="cx-grid">
+        {classrooms.map(c=><ClassroomCard key={c.id} c={c} onInvite={()=>{}}/>)}
+        <div className="cx-card add" onClick={()=>setShowModal(true)}><Icon name="plus" size={28}/><span style={{fontSize:14,fontWeight:600}}>Crear nuevo curso</span></div>
+      </div>
+      {showModal && <CreateModal onClose={()=>setShowModal(false)} onCreate={create}/>}
+    </div>
+  );
+}
+
+function StudentView() {
+  const [code, setCode] = useState('');
+  const [joined, setJoined] = useState(false);
+  return (
+    <div data-screen-label="Student · Join classroom">
+      <div className="cx-head">
+        <div><h1>Mi curso</h1><div className="t-caption">GET <code style={{fontFamily:'ui-monospace,monospace'}}>/classrooms/student/mine</code></div></div>
+      </div>
+      {joined ? (
+        <div className="cx-card" style={{maxWidth:420}}>
+          <div className="cx-name">4° A · Matemáticas</div>
+          <div className="cx-meta">Colegio San Pedro · Sra. González</div>
+          <div className="cx-pills"><span className="cx-pill">32 alumnos</span><span className="cx-pill">4° básico</span></div>
+          <div style={{background:'var(--mint-50)', borderRadius:10, padding:12, fontSize:13, color:'var(--mint-800)'}}>
+            <Icon name="check" size={16}/> Te uniste correctamente a este curso.
+          </div>
+        </div>
+      ) : (
+        <div className="join-box">
+          <h3>Unirte a un curso</h3>
+          <p className="t-caption">Ingresa el código que te dio tu profesor/a. POST <code style={{fontFamily:'ui-monospace,monospace'}}>/classrooms/join</code></p>
+          <div className="join-input">
+            <input placeholder="4A-MAT-X7" value={code} onChange={e=>setCode(e.target.value.toUpperCase())} maxLength={12}/>
+            <button className="btn btn-primary" disabled={code.length < 4} onClick={()=>setJoined(true)}>Unirme</button>
+          </div>
+          <div className="t-caption">El código tiene la forma <code style={{fontFamily:'ui-monospace,monospace'}}>GRADO-MATERIA-XXXXXX</code> y lo genera el profesor al crear el curso.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab] = useState('teacher');
+  return (
+    <div className="cx-shell">
+      <div className="tab-bar">
+        <button className={tab==='teacher'?'is-active':''} onClick={()=>setTab('teacher')}>Vista Docente</button>
+        <button className={tab==='student'?'is-active':''} onClick={()=>setTab('student')}>Vista Alumno</button>
+      </div>
+      {tab==='teacher' ? <TeacherView/> : <StudentView/>}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
