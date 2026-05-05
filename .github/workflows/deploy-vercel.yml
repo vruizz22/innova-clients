@@ -36,6 +36,11 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID }}
           NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }}
+          NEXT_PUBLIC_LANDING_URL: https://superprofes.app
+          NEXT_PUBLIC_PRACTICE_URL: https://practice.superprofes.app
+          NEXT_PUBLIC_TEACHER_URL: https://profe.superprofes.app
+          NEXT_PUBLIC_PARENT_URL: https://superprofes.app
+          NEXT_PUBLIC_CLASSROOM_ID: ${{ secrets.NEXT_PUBLIC_CLASSROOM_ID }}
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
@@ -74,6 +79,11 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID }}
           NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }}
+          NEXT_PUBLIC_LANDING_URL: https://superprofes.app
+          NEXT_PUBLIC_PRACTICE_URL: https://practice.superprofes.app
+          NEXT_PUBLIC_TEACHER_URL: https://profe.superprofes.app
+          NEXT_PUBLIC_PARENT_URL: https://superprofes.app
+          NEXT_PUBLIC_CLASSROOM_ID: ${{ secrets.NEXT_PUBLIC_CLASSROOM_ID }}
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
