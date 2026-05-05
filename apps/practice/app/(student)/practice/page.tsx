@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-import { getItems, type PracticeItem } from '@/lib/api'
+import { getItems, getMyStudentClassrooms, type ClassroomRecord, type PracticeItem } from '@/lib/api'
 
 const DIFFICULTY_LABEL: Record<string, string> = {
   easy: 'Fácil',
@@ -15,6 +15,7 @@ export default function PracticePage(): JSX.Element {
   const [items, setItems] = useState<PracticeItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [classroom, setClassroom] = useState<ClassroomRecord | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -23,8 +24,14 @@ export default function PracticePage(): JSX.Element {
       setLoading(true)
       setError('')
       try {
-        const backendItems = await getItems({ topic: 'subtraction_borrow', limit: 10 })
-        if (!cancelled) setItems(backendItems)
+        const [backendItems, classrooms] = await Promise.all([
+          getItems({ topic: 'subtraction_borrow', limit: 10 }),
+          getMyStudentClassrooms().catch(() => [] as ClassroomRecord[]),
+        ])
+        if (!cancelled) {
+          setItems(backendItems)
+          setClassroom(classrooms[0] ?? null)
+        }
       } catch (loadError) {
         if (!cancelled) {
           setError(loadError instanceof Error ? loadError.message : 'No se pudieron cargar ejercicios.')
@@ -45,6 +52,9 @@ export default function PracticePage(): JSX.Element {
     <main className="page-wrapper">
       <div className="practice-list-head">
         <h1>Tus ejercicios</h1>
+        {classroom ? (
+          <p className="practice-classroom-label">Classroom: <strong>{classroom.name}</strong></p>
+        ) : null}
         <p>Resuelve cada ejercicio y recibe retroalimentación inmediata.</p>
       </div>
 
