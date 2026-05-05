@@ -17,6 +17,14 @@ export default defineConfig({
             alias: {
                 '@design': resolve(currentDir, '../SuperProfes-Design-System/index.ts'),
                 '@design/': resolve(currentDir, '../SuperProfes-Design-System/') + '/',
+                '@components': resolve(currentDir, './src/components'),
+                '@components/': resolve(currentDir, './src/components/') + '/',
+                '@config': resolve(currentDir, './src/config'),
+                '@config/': resolve(currentDir, './src/config/') + '/',
+                '@layouts': resolve(currentDir, './src/layouts'),
+                '@layouts/': resolve(currentDir, './src/layouts/') + '/',
+                '@styles': resolve(currentDir, './src/styles'),
+                '@styles/': resolve(currentDir, './src/styles/') + '/',
             },
         },
     }
