@@ -127,6 +127,15 @@ export async function getMyStudentClassrooms(): Promise<ClassroomRecord[]> {
   return apiGet<ClassroomRecord[]>('/classrooms/student/mine');
 }
 
+export interface JoinClassroomResult {
+  id: string;
+  name: string;
+}
+
+export async function joinClassroom(code: string): Promise<JoinClassroomResult> {
+  return apiPost<{ code: string }, JoinClassroomResult>('/classrooms/join', { code });
+}
+
 export interface MasteryRecord {
   skillKey: string;
   skillLabel: string;
