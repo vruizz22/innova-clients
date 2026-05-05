@@ -1,5 +1,5 @@
 ---
-// SmartLoginButton — redirects to dashboard if already logged in, otherwise to loginUrl
+// SmartLoginButton — shows profile badge if logged in, otherwise links to auth selector
 interface Props {
   loginUrl: string;
   apiUrl: string;
@@ -23,34 +23,84 @@ const {
 const buttonId = `smart-login-${Math.random().toString(36).slice(2)}`;
 ---
 
+<!-- Default: login link. Script replaces with profile badge if session found. -->
 <a href={loginUrl} id={buttonId} class={className}>
   {label}
 </a>
+
+<style>
+  .slb-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 8px;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 160ms;
+  }
+  .slb-profile:hover { background: rgba(255,255,255,0.22); }
+  .slb-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--mint-500, #3DAA72);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+</style>
 
 <script define:vars={{ buttonId, loginUrl, apiUrl, teacherUrl, practiceUrl, parentUrl }}>
   (async () => {
     const raw = localStorage.getItem('innova.auth.session');
     if (!raw) return;
+
+    let session;
+    try { session = JSON.parse(raw); } catch { return; }
+    if (!session?.accessToken) return;
+
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
     try {
-      const session = JSON.parse(raw);
-      if (!session?.accessToken) return;
       const res = await fetch(`${apiUrl}/auth/me`, {
         headers: { Authorization: `Bearer ${session.accessToken}` },
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        localStorage.removeItem('innova.auth.session');
+        return;
+      }
       const body = await res.json();
-      const role = body?.data?.user?.role ?? body?.user?.role;
-      const urls = {
+      const user = body?.data?.user ?? body?.user;
+      const role = user?.role;
+      const email = user?.email ?? '';
+
+      const roleUrls = {
         teacher: `${teacherUrl}/dashboard`,
         student: `${practiceUrl}/practice`,
-        parent: parentUrl,
+        parent: `${parentUrl}/dashboard`,
       };
-      const dest = urls[role] ?? loginUrl;
-      const btn = document.getElementById(buttonId);
-      if (btn) btn.setAttribute('href', dest);
-      window.location.replace(dest);
+      const dashUrl = roleUrls[role] ?? loginUrl;
+      const initial = email ? email[0].toUpperCase() : '?';
+      const displayEmail = email.length > 22 ? email.slice(0, 20) + '…' : email;
+
+      // Replace button with profile badge
+      const badge = document.createElement('a');
+      badge.href = dashUrl;
+      badge.className = 'slb-profile';
+      badge.innerHTML = `
+        <span class="slb-avatar">${initial}</span>
+        <span>${displayEmail}</span>
+      `;
+      btn.replaceWith(badge);
     } catch {
-      // Session invalid or network error — stay on loginUrl
+      // Network error or parse error — keep login link
     }
   })();
 </script>
