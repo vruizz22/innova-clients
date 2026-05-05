@@ -8,8 +8,8 @@ import {
   getDashboardUrl,
   getStoredSession,
   storeSession,
-} from '../../../components/auth-session'
-import { getPublicRuntimeConfig } from '../../../components/runtime-config'
+} from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import {
   createApiClient,
   type ConfirmForgotPasswordInput,
@@ -17,7 +17,7 @@ import {
   type LoginInput,
   type RegisterInput,
   type UserRole,
-} from '../../../components/api-client'
+} from '@shared/api-client'
 
 type InputChangeEvent = { target: { value: string } }
 type AuthMode = 'login' | 'forgot' | 'reset' | 'register'
