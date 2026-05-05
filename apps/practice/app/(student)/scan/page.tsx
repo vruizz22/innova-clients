@@ -7,7 +7,7 @@ export default function ScanPage(): JSX.Element {
     <main className="container mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
         <a
-          href="/practice"
+          href="/dashboard"
           className="text-sm text-[#3FA7D6] font-semibold hover:text-[#2F8DBA] flex items-center gap-1 mb-4"
         >
           ← Volver a ejercicios
