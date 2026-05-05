@@ -126,3 +126,24 @@ export async function getAttemptStatus(attemptId: string): Promise<AttemptStatus
 export async function getMyStudentClassrooms(): Promise<ClassroomRecord[]> {
   return apiGet<ClassroomRecord[]>('/classrooms/student/mine');
 }
+
+export interface MasteryRecord {
+  skillKey: string;
+  skillLabel: string;
+  pKnown: number;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: string;
+  profileId?: string;
+}
+
+export async function getMastery(studentId: string): Promise<MasteryRecord[]> {
+  return apiGet<MasteryRecord[]>(`/mastery/${studentId}`);
+}
+
+export async function getMe(): Promise<{ user: UserProfile }> {
+  return apiGet<{ user: UserProfile }>('/auth/me');
+}
