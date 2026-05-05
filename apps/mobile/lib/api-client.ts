@@ -7,6 +7,7 @@ export type AuthSession = {
     id: string;
     email: string;
     role: UserRole | 'teacher' | 'admin';
+    profileId?: string | null;
   };
 };
 
@@ -16,6 +17,21 @@ export type AttemptResponse = {
   errorType: string;
   classifierSource: 'RULE_ENGINE' | 'LLM';
   confidence: number;
+};
+
+export type ClassroomRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  schoolId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ApiEnvelope<TResponse> = {
+  data?: TResponse;
+  message?: unknown;
+  error?: unknown;
 };
 
 const DEFAULT_API_URL = 'http://localhost:3000';
@@ -50,10 +66,34 @@ async function requestJson<TResponse>(
 
   const text = await response.text();
   if (!response.ok) {
+    let backendMessage: unknown;
+    try {
+      const parsed = JSON.parse(text) as ApiEnvelope<unknown>;
+      backendMessage = Array.isArray(parsed.message)
+        ? parsed.message.join(', ')
+        : parsed.message ?? parsed.error;
+    } catch {
+      backendMessage = undefined;
+    }
+
+    if (typeof backendMessage === 'string' && backendMessage.length > 0) {
+      throw new Error(backendMessage);
+    }
+
     throw new Error(text || `Request failed with status ${response.status}`);
   }
 
-  return (text ? JSON.parse(text) : undefined) as TResponse;
+  const parsed = (text ? JSON.parse(text) : undefined) as TResponse | ApiEnvelope<TResponse>;
+  if (
+    parsed !== null &&
+    typeof parsed === 'object' &&
+    'data' in parsed &&
+    (parsed as ApiEnvelope<TResponse>).data !== undefined
+  ) {
+    return (parsed as ApiEnvelope<TResponse>).data as TResponse;
+  }
+
+  return parsed as TResponse;
 }
 
 export function login(email: string, password: string): Promise<AuthSession> {
@@ -67,6 +107,18 @@ export function register(email: string, password: string, role: UserRole): Promi
   return requestJson<AuthSession>('/auth/register', {
     method: 'POST',
     body: { email, password, role },
+  });
+}
+
+export function getMyStudentClassrooms(accessToken: string): Promise<ClassroomRecord[]> {
+  return requestJson<ClassroomRecord[]>('/classrooms/student/mine', { accessToken });
+}
+
+export function joinClassroom(code: string, accessToken: string): Promise<ClassroomRecord> {
+  return requestJson<ClassroomRecord>('/classrooms/join', {
+    method: 'POST',
+    body: { code },
+    accessToken,
   });
 }
 

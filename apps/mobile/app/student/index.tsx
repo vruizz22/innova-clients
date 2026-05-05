@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   SafeAreaView,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
-import SkillBadge from '../../components/SkillBadge';
-import { MOCK_EXERCISES, MOCK_STUDENT_NAME } from '../../lib/mock-data';
-import type { Exercise } from '../../lib/types';
+import SkillBadge from '@components/SkillBadge';
+import { MOCK_EXERCISES, MOCK_STUDENT_NAME } from '@lib/mock-data';
+import { getMyStudentClassrooms, joinClassroom, type ClassroomRecord } from '@lib/api-client';
+import { getStoredAccessToken } from '@lib/auth-storage';
+import type { Exercise } from '@lib/types';
 
 export interface PracticeHomeScreenProps {
   onSelectExercise: (exercise: Exercise) => void;
@@ -18,6 +22,47 @@ export default function PracticeHomeScreen({
   onSelectExercise,
 }: PracticeHomeScreenProps): JSX.Element {
   const pending = MOCK_EXERCISES.length;
+
+  const [classroom, setClassroom] = useState<ClassroomRecord | null>(null);
+  const [loadingClassroom, setLoadingClassroom] = useState(true);
+  const [joinCode, setJoinCode] = useState('');
+  const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadClassroom(): Promise<void> {
+      const token = await getStoredAccessToken();
+      if (!token) { setLoadingClassroom(false); return; }
+      try {
+        const classrooms = await getMyStudentClassrooms(token);
+        if (!cancelled) setClassroom(classrooms[0] ?? null);
+      } catch {
+        // Network or auth error — no classroom shown
+      } finally {
+        if (!cancelled) setLoadingClassroom(false);
+      }
+    }
+    void loadClassroom();
+    return () => { cancelled = true; };
+  }, []);
+
+  async function handleJoin(): Promise<void> {
+    if (!joinCode.trim()) return;
+    setJoining(true);
+    setJoinError('');
+    try {
+      const token = await getStoredAccessToken();
+      if (!token) { setJoinError('Debes iniciar sesión primero.'); return; }
+      const joined = await joinClassroom(joinCode.trim(), token);
+      setClassroom(joined);
+      setJoinCode('');
+    } catch (err) {
+      setJoinError(err instanceof Error ? err.message : 'No se pudo unir al classroom.');
+    } finally {
+      setJoining(false);
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#F7F8FA]">
@@ -40,6 +85,40 @@ export default function PracticeHomeScreen({
             </Text>
           )}
         </View>
+
+        {/* Classroom section */}
+        {loadingClassroom ? (
+          <ActivityIndicator size="small" color="#2F8DBA" />
+        ) : classroom ? (
+          <View className="rounded-2xl bg-white px-4 py-3 border border-slate-100 flex-row items-center gap-3">
+            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Classroom</Text>
+            <Text className="text-sm font-bold text-[#1F2937] flex-1">{classroom.name}</Text>
+          </View>
+        ) : (
+          <View className="rounded-2xl bg-white px-4 py-4 border border-slate-100 gap-3">
+            <Text className="text-sm font-semibold text-slate-700">Unirte a un classroom</Text>
+            <Text className="text-xs text-slate-400">Ingresa el código que te dio tu profesor.</Text>
+            <TextInput
+              value={joinCode}
+              onChangeText={setJoinCode}
+              placeholder="Código de invitación"
+              autoCapitalize="none"
+              style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 10, padding: 10, fontSize: 14 }}
+            />
+            {joinError ? (
+              <Text className="text-xs text-red-500">{joinError}</Text>
+            ) : null}
+            <Pressable
+              onPress={handleJoin}
+              disabled={joining || !joinCode.trim()}
+              style={{ minHeight: 44, borderRadius: 12, backgroundColor: '#2F8DBA', alignItems: 'center', justifyContent: 'center', opacity: joining || !joinCode.trim() ? 0.6 : 1 }}
+            >
+              <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>
+                {joining ? 'Uniéndote...' : 'Unirse'}
+              </Text>
+            </Pressable>
+          </View>
+        )}
 
         {/* Exercises section */}
         {pending === 0 ? (

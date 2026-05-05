@@ -5,8 +5,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import AssignmentCard from '../../components/AssignmentCard';
-import { MOCK_ASSIGNMENTS, MOCK_CHILD_NAME } from '../../lib/mock-data';
+import AssignmentCard from '@components/AssignmentCard';
+import { MOCK_ASSIGNMENTS, MOCK_CHILD_NAME } from '@lib/mock-data';
 
 export default function ParentAssignmentsScreen(): JSX.Element {
   const pendingCount = MOCK_ASSIGNMENTS.filter((a) => a.status === 'pending').length;

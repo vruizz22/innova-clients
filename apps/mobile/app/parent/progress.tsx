@@ -5,8 +5,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import MasteryBar from '../../components/MasteryBar';
-import { MOCK_CHILD_PROGRESS } from '../../lib/mock-data';
+import MasteryBar from '@components/MasteryBar';
+import { MOCK_CHILD_PROGRESS } from '@lib/mock-data';
 
 export default function ParentProgressScreen(): JSX.Element {
   const { childName, exercisesThisWeek, skills } = MOCK_CHILD_PROGRESS;

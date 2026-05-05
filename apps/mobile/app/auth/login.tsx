@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { login, type AuthSession } from '../../lib/api-client';
+import { login, type AuthSession } from '@lib/api-client';
 
 export interface LoginScreenProps {
   onLogin: (session: AuthSession) => void;

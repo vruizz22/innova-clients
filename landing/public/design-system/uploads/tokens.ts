@@ -15,7 +15,7 @@ export const SP_TOKENS = {
   radius: {
     lg: '12px',
     xl: '18px',
-    2xl: '24px',
+    '2xl': '24px',
     pill: '9999px',
   },
   spacing: {
@@ -26,6 +26,6 @@ export const SP_TOKENS = {
     6: '24px',
     8: '32px',
   },
-} as const
+} as const;
 
 export type SuperProfesTokens = typeof SP_TOKENS

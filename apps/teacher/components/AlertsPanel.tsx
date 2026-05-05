@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { TeacherAlert } from '../lib/types';
+import type { TeacherAlert } from '@lib/types';
 
 interface AlertsPanelProps {
   alerts: TeacherAlert[];

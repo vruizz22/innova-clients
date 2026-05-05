@@ -140,3 +140,28 @@ vite.config.ts.timestamp-*
 
 # expo
 .expo/
+
+.turbo/
+
+# Generated app/build assets
+landing/dist/
+**/*.tsbuildinfo
+
+# TypeScript side-effect output from root/package tsc runs
+SuperProfes-Design-System/**/*.js
+components/**/*.js
+apps/*/app/**/*.js
+apps/*/components/**/*.js
+apps/*/lib/**/*.js
+apps/mobile/App.js
+apps/mobile/app.config.js
+
+# Ignore generated build outputs across workspaces
+**/dist/
+**/build/
+**/out/
+**/.next/
+**/public/design-system/uploads/*.js
+**/public/design-system/*.js
+**/uploads/*.js
+**/*.js.map

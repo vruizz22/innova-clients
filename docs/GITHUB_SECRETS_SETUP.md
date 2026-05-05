@@ -22,9 +22,13 @@ Para que los workflows CI/CD funcionen correctamente, agrega estos secrets en el
 - `S3_BUCKET_NAME`: bucket estático de la landing
 - `CLOUDFRONT_DISTRIBUTION_ID`: distribución para invalidación opcional
 
-## Environment Variables (Next.js - required en `.env.production`)
+## Environment Variables (Next.js - required en Vercel)
 
 - `NEXT_PUBLIC_API_URL`
+- `NEXT_PUBLIC_LANDING_URL`
+- `NEXT_PUBLIC_PRACTICE_URL`
+- `NEXT_PUBLIC_TEACHER_URL`
+- `NEXT_PUBLIC_PARENT_URL`
 - `NEXT_PUBLIC_COGNITO_CLIENT_ID`
 - `NEXT_PUBLIC_COGNITO_USER_POOL_ID`
 - `SENTRY_DSN`
@@ -32,8 +36,28 @@ Para que los workflows CI/CD funcionen correctamente, agrega estos secrets en el
 Estos se setean en Vercel/Cloudflare panels o via secrets:
 
 - `NEXT_PUBLIC_API_URL`: URL base del backend (ej: `https://api.superprofes.app`)
+- `NEXT_PUBLIC_LANDING_URL`: `https://superprofes.app`
+- `NEXT_PUBLIC_PRACTICE_URL`: `https://practice.superprofes.app`
+- `NEXT_PUBLIC_TEACHER_URL`: `https://profe.superprofes.app`
+- `NEXT_PUBLIC_PARENT_URL`: URL parent actual, por ahora `https://superprofes.app` si no hay app web separada
 - `NEXT_PUBLIC_COGNITO_USER_POOL_ID`: ID del User Pool de Cognito (ej: `us-east-1_XXXXXXX`)
 - `NEXT_PUBLIC_COGNITO_CLIENT_ID`: Client ID de Cognito
+
+No crear `NEXT_PUBLIC_CLASSROOM_ID` ni `NEXT_PUBLIC_STUDENT_ID`: classroom y alumno se resuelven por el JWT y los endpoints `/classrooms/*`.
+
+## Environment Variables (Landing S3/CloudFront)
+
+- `PUBLIC_LANDING_URL`
+- `PUBLIC_PRACTICE_URL`
+- `PUBLIC_TEACHER_URL`
+- `PUBLIC_PARENT_URL`
+- `PUBLIC_API_URL`
+
+## Environment Variables (Expo EAS)
+
+- `EXPO_PUBLIC_API_URL`
+- `EXPO_PUBLIC_COGNITO_CLIENT_ID`
+- `EXPO_PUBLIC_COGNITO_REGION`
 
 ## Cómo obtener estos secrets
 
@@ -65,6 +89,10 @@ Estos se setean en Vercel/Cloudflare panels o via secrets:
 
 ```
 NEXT_PUBLIC_API_URL=https://api.superprofes.app
+NEXT_PUBLIC_LANDING_URL=https://superprofes.app
+NEXT_PUBLIC_PRACTICE_URL=https://practice.superprofes.app
+NEXT_PUBLIC_TEACHER_URL=https://profe.superprofes.app
+NEXT_PUBLIC_PARENT_URL=https://superprofes.app
 NEXT_PUBLIC_COGNITO_USER_POOL_ID=us-east-1_TESTPOOL
 NEXT_PUBLIC_COGNITO_CLIENT_ID=testclientid
 ```

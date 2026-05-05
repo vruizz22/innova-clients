@@ -28,6 +28,7 @@ export type AuthUser = {
   id: string
   email: string
   role: UserRole
+  profileId?: string | null
   cognitoSub?: string | null
   tokenVersion?: number
 }
@@ -69,7 +70,39 @@ export type ApiMessageResponse = {
 export type MasteryState = {
   studentId: string
   skillKey: string
+  skillLabel?: string
   pKnown: number
+}
+
+export type AttemptHistoryRecord = {
+  id: string
+  itemContent: { problem: string; canonicalSolution: string }
+  finalAnswer: string
+  isCorrect: boolean
+  errorType: string | null
+  classifierSource: string
+  confidence: number | null
+  durationMs: number
+  createdAt: string
+}
+
+export type ErrorFrequencyRecord = {
+  errorType: string
+  count: number
+  percentage: number
+}
+
+export type ClassroomStudentMasteryRecord = {
+  studentId: string
+  studentName: string
+  skills: Array<{
+    skillKey: string
+    skillLabel: string
+    pKnown: number
+    attemptsCount: number
+  }>
+  attempts: AttemptHistoryRecord[]
+  errorFrequency: ErrorFrequencyRecord[]
 }
 
 export type TeacherAlertRecord = {
@@ -97,14 +130,45 @@ export type OcrExtractResponse = {
   confidence: number
 }
 
+export type ClassroomRecord = {
+  id: string
+  name: string
+  description: string | null
+  schoolId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type ClassroomInviteResponse = {
+  code: string
+  url: string
+}
+
+export type CreateClassroomInput = {
+  name: string
+  description?: string
+}
+
+export type JoinClassroomInput = {
+  code: string
+}
+
 export type ApiResponse =
   | AuthSession
   | ApiMessageResponse
   | AttemptResponse
   | MasteryState[]
+  | ClassroomStudentMasteryRecord[]
   | TeacherAlertRecord[]
   | PracticeAssignmentResponse
   | OcrExtractResponse
+
+type ApiEnvelope<TResponse> = {
+  statusCode?: number
+  data?: TResponse
+  message?: unknown
+  error?: unknown
+}
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH'
@@ -175,7 +239,18 @@ async function requestJson<TResponse>(
     return undefined as TResponse
   }
 
-  return JSON.parse(bodyText) as TResponse
+  const parsed = JSON.parse(bodyText) as TResponse | ApiEnvelope<TResponse>
+
+  if (
+    parsed !== null &&
+    typeof parsed === 'object' &&
+    'data' in parsed &&
+    (parsed as ApiEnvelope<TResponse>).data !== undefined
+  ) {
+    return (parsed as ApiEnvelope<TResponse>).data as TResponse
+  }
+
+  return parsed as TResponse
 }
 
 export function createApiClient(config: BaseConfig) {
@@ -231,6 +306,11 @@ export function createApiClient(config: BaseConfig) {
     },
     getMastery: (studentId: string) =>
       requestJson<MasteryState[]>(config, `/mastery/${encodeURIComponent(studentId)}`),
+    getClassroomMastery: (classroomId: string) =>
+      requestJson<ClassroomStudentMasteryRecord[]>(
+        config,
+        `/mastery/classroom/${encodeURIComponent(classroomId)}`,
+      ),
     listAlerts: (classroomId: string) =>
       requestJson<TeacherAlertRecord[]>(
         config,
@@ -244,6 +324,28 @@ export function createApiClient(config: BaseConfig) {
       ),
     createAssignment: (input: { studentId: string; itemIds: string[]; dueAt?: string }) =>
       requestJson<PracticeAssignmentResponse>(config, '/practice/assign', {
+        method: 'POST',
+        body: input,
+      }),
+    getMyClassrooms: () =>
+      requestJson<ClassroomRecord[]>(config, '/classrooms/mine'),
+    getMyStudentClassrooms: () =>
+      requestJson<ClassroomRecord[]>(config, '/classrooms/student/mine'),
+    getClassroom: (id: string) =>
+      requestJson<ClassroomRecord>(config, `/classrooms/${encodeURIComponent(id)}`),
+    createClassroom: (input: CreateClassroomInput) =>
+      requestJson<ClassroomRecord>(config, '/classrooms', {
+        method: 'POST',
+        body: input,
+      }),
+    createClassroomInvite: (classroomId: string) =>
+      requestJson<ClassroomInviteResponse>(
+        config,
+        `/classrooms/${encodeURIComponent(classroomId)}/invite`,
+        { method: 'POST' },
+      ),
+    joinClassroom: (input: JoinClassroomInput) =>
+      requestJson<ClassroomRecord>(config, '/classrooms/join', {
         method: 'POST',
         body: input,
       }),

@@ -1,74 +1,55 @@
 ---
-// Footer
+// Footer — DS spec
+import { registerUrl } from '@config/urls';
 ---
 
 <footer class="border-t border-[var(--border)] bg-[var(--slate-800)] py-12 md:py-16">
   <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-10">
-    <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-12">
+    <div class="grid gap-10 md:grid-cols-[2fr_1fr_1fr] md:gap-12">
       <!-- Brand column -->
       <div class="flex flex-col gap-4">
-        <a href="/" class="flex items-center gap-3" aria-label="SuperProfes — inicio">
-          <div class="grid h-9 w-9 place-items-center rounded-xl bg-[var(--sky-600)]">
-            <span class="text-sm font-bold text-white">SP</span>
-          </div>
-          <span class="text-base font-semibold text-white">SuperProfes</span>
-        </a>
-        <p class="text-sm leading-relaxed text-white/50">
-          Diagnóstico matemático procedural para profesores chilenos. Detecta el error específico antes de la prueba.
-        </p>
-        <div class="flex flex-col gap-1 text-xs text-white/30">
-          <span class="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Cumple con Ley 21.180 · COPPA · MINEDUC OA
+        <a href="/" class="flex items-center gap-2.5" aria-label="SuperProfes — inicio">
+          <img src="/design-system/assets/superprofes-mark.svg" alt="" class="h-9 w-9 rounded-xl" />
+          <span class="text-base font-bold text-white">
+            Super<span style="color: var(--sky-400);">Profes</span>
           </span>
-        </div>
+        </a>
+        <p class="t-body-sm leading-relaxed text-white/50">
+          Detección temprana. Aprendizaje mejor.
+        </p>
+        <a href="mailto:innova.grupo23@gmail.com" class="t-caption text-white/40 hover:text-white/70 transition-colors">
+          innova.grupo23@gmail.com
+        </a>
       </div>
 
       <!-- Producto -->
       <div>
-        <p class="mb-4 text-xs font-bold uppercase tracking-wider text-white/35">Producto</p>
+        <p class="mb-4 t-allcaps text-white/35">Producto</p>
         <ul class="flex flex-col gap-2.5">
-          <li><a href="#caracteristicas" class="footer-link">Características</a></li>
-          <li><a href="#como-funciona" class="footer-link">Cómo funciona</a></li>
-          <li><a href="#precios" class="footer-link">Pricing</a></li>
-          <li><a href="#contacto" class="footer-link">Solicitar demo</a></li>
-        </ul>
-      </div>
-
-      <!-- Empresa -->
-      <div>
-        <p class="mb-4 text-xs font-bold uppercase tracking-wider text-white/35">Empresa</p>
-        <ul class="flex flex-col gap-2.5">
-          <li><a href="#contacto" class="footer-link">Contacto</a></li>
-          <li>
-            <a
-              href="mailto:innova.grupo23@gmail.com"
-              class="footer-link"
-            >
-              innova.grupo23@gmail.com
-            </a>
-          </li>
+          <li><a href="#caracteristicas" class="footer-link">Funcionalidades</a></li>
+          <li><a href="#precios" class="footer-link">Precios</a></li>
+          <li><a href={registerUrl} class="footer-link">Comenzar gratis</a></li>
+          <li><a href="mailto:innova.grupo23@gmail.com?subject=Contacto%20SuperProfes" class="footer-link">Contacto</a></li>
         </ul>
       </div>
 
       <!-- Legal -->
       <div>
-        <p class="mb-4 text-xs font-bold uppercase tracking-wider text-white/35">Legal</p>
+        <p class="mb-4 t-allcaps text-white/35">Legal</p>
         <ul class="flex flex-col gap-2.5">
           <li><a href="#" class="footer-link">Privacidad</a></li>
-          <li><a href="#" class="footer-link">Términos de uso</a></li>
-          <li><a href="#" class="footer-link">Política COPPA</a></li>
+          <li><a href="#" class="footer-link">Términos</a></li>
         </ul>
       </div>
     </div>
 
     <!-- Bottom bar -->
     <div class="mt-10 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-8 sm:flex-row sm:items-center">
-      <p class="text-xs text-white/30">
-        &copy; 2026 Innova EdTech SpA · Santiago, Chile
+      <p class="t-caption text-white/30">
+        &copy; 2026 Innova EdTech · innova.grupo23@gmail.com
       </p>
-      <p class="text-xs text-white/20">
-        Hecho con mucho café y datos reales de aula
+      <p class="t-caption text-white/20">
+        Ley 21.180 · COPPA · MINEDUC OA
       </p>
     </div>
   </div>

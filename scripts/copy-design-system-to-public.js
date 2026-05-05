@@ -21,6 +21,10 @@ function copyDirectory(sourcePath, targetPath) {
     }
 
     if (entry.isFile()) {
+      if (entry.name.endsWith('.ts')) {
+        continue
+      }
+
       fs.copyFileSync(sourceEntry, targetEntry)
     }
   }

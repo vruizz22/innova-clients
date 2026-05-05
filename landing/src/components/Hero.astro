@@ -1,5 +1,6 @@
 ---
 // Hero — full-screen, dark gradient background, mastery heatmap mockup
+import { registerUrl } from '@config/urls';
 ---
 
 <section
@@ -23,34 +24,28 @@
           EdTech · Diagnóstico matemático
         </div>
 
-        <!-- Headline -->
-        <h1 class="text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-white md:text-5xl lg:text-6xl">
-          Detecta el error<br />
+        <!-- Headline — DS spec: t-display-1 -->
+        <h1 class="t-display-1 text-white">
+          Detecta cómo aprende tu alumno,<br />
           <span class="bg-gradient-to-r from-[var(--sky-300)] to-[var(--mint-400)] bg-clip-text text-transparent">
-            antes de la prueba
+            en tiempo real.
           </span>
         </h1>
 
-        <!-- Subheadline -->
-        <p class="max-w-xl text-lg leading-relaxed text-white/72 md:text-xl">
-          Tu asistente de diagnóstico matemático. Ve exactamente qué procedimiento está fallando cada alumno, antes de la evaluación.
+        <!-- Subheadline — DS spec: t-body -->
+        <p class="t-body max-w-xl text-white/80">
+          SuperProfes convierte cada ejercicio en datos accionables para el docente.
         </p>
 
-        <!-- CTAs -->
+        <!-- CTAs — DS spec -->
         <div class="flex flex-wrap gap-3 pt-2">
           <a
-            href="#contacto"
-            class="inline-flex items-center gap-2 rounded-xl bg-[var(--sky-500)] px-6 py-3 text-base font-semibold text-white shadow-lg shadow-[var(--sky-900)]/40 transition-all hover:bg-[var(--sky-600)] hover:-translate-y-px active:scale-95"
+            href={registerUrl}
+            class="btn btn-primary shadow-lg"
+            style="box-shadow: 0 8px 24px rgba(15,42,61,0.25);"
           >
-            Solicitar demo
+            Comenzar gratis
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </a>
-          <a
-            href="#como-funciona"
-            class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/8 px-6 py-3 text-base font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/14 hover:border-white/30 active:scale-95"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Ver cómo funciona
           </a>
         </div>
 
