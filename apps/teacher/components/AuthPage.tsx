@@ -92,9 +92,8 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
     <main className="container">
       <section className="card auth-shell">
         <div className="auth-head">
-          <p className="auth-eyebrow">SuperProfes</p>
+          <a href={runtimeConfig.landingUrl} className="auth-brand">SuperProfes</a>
           <h1>{title}</h1>
-          <p>Ingresa con tu cuenta para continuar.</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -169,7 +168,11 @@ export function AuthPage({ title, mode }: AuthPageProps): JSX.Element {
           </button>
         </form>
 
-        <p className="auth-message">{message || 'Tus datos se validan contra SuperProfes.'}</p>
+        {message ? (
+          <p className="auth-message" role="alert">
+            {message}
+          </p>
+        ) : null}
         {mode !== 'login' ? (
           <p className="auth-message">
             <a className="auth-link-inline" href="/login">Ya tengo cuenta</a>
