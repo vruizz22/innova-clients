@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL ?? 'https://superprofes.app'
+  const landingUrl = getPublicRuntimeConfig().landingUrl
 
   return (
     <html lang="es">
