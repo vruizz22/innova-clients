@@ -19,13 +19,15 @@ const {
   class: className = 'btn btn-secondary',
   label = 'Iniciar sesión',
 } = Astro.props;
+
+const buttonId = `smart-login-${Math.random().toString(36).slice(2)}`;
 ---
 
-<a href={loginUrl} id="smart-login-btn" class={className}>
+<a href={loginUrl} id={buttonId} class={className}>
   {label}
 </a>
 
-<script define:vars={{ loginUrl, apiUrl, teacherUrl, practiceUrl, parentUrl }}>
+<script define:vars={{ buttonId, loginUrl, apiUrl, teacherUrl, practiceUrl, parentUrl }}>
   (async () => {
     const raw = localStorage.getItem('innova.auth.session');
     if (!raw) return;
@@ -44,7 +46,7 @@ const {
         parent: parentUrl,
       };
       const dest = urls[role] ?? loginUrl;
-      const btn = document.getElementById('smart-login-btn');
+      const btn = document.getElementById(buttonId);
       if (btn) btn.setAttribute('href', dest);
       window.location.replace(dest);
     } catch {
