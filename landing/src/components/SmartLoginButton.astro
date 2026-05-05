@@ -1,0 +1,54 @@
+---
+// SmartLoginButton — redirects to dashboard if already logged in, otherwise to loginUrl
+interface Props {
+  loginUrl: string;
+  apiUrl: string;
+  teacherUrl: string;
+  practiceUrl: string;
+  parentUrl: string;
+  class?: string;
+  label?: string;
+}
+
+const {
+  loginUrl,
+  apiUrl,
+  teacherUrl,
+  practiceUrl,
+  parentUrl,
+  class: className = 'btn btn-secondary',
+  label = 'Iniciar sesión',
+} = Astro.props;
+---
+
+<a href={loginUrl} id="smart-login-btn" class={className}>
+  {label}
+</a>
+
+<script define:vars={{ loginUrl, apiUrl, teacherUrl, practiceUrl, parentUrl }}>
+  (async () => {
+    const raw = localStorage.getItem('innova.auth.session');
+    if (!raw) return;
+    try {
+      const session = JSON.parse(raw);
+      if (!session?.accessToken) return;
+      const res = await fetch(`${apiUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      if (!res.ok) return;
+      const body = await res.json();
+      const role = body?.data?.user?.role ?? body?.user?.role;
+      const urls = {
+        teacher: `${teacherUrl}/dashboard`,
+        student: `${practiceUrl}/practice`,
+        parent: parentUrl,
+      };
+      const dest = urls[role] ?? loginUrl;
+      const btn = document.getElementById('smart-login-btn');
+      if (btn) btn.setAttribute('href', dest);
+      window.location.replace(dest);
+    } catch {
+      // Session invalid or network error — stay on loginUrl
+    }
+  })();
+</script>

@@ -1,6 +1,9 @@
 ---
 // Header — sticky, semi-transparent with blur on scroll
-import { registerUrl } from '../config/urls';
+import { loginUrl, registerUrl, teacherUrl, practiceUrl, parentUrl } from '../config/urls';
+import SmartLoginButton from './SmartLoginButton.astro';
+
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 ---
 
 <header
@@ -24,10 +27,14 @@ import { registerUrl } from '../config/urls';
 
     <!-- Desktop actions -->
     <div class="hidden items-center gap-3 lg:flex">
-      <a
-        href={registerUrl}
-        class="btn btn-primary"
-      >
+      <SmartLoginButton
+        loginUrl={loginUrl}
+        apiUrl={apiUrl}
+        teacherUrl={teacherUrl}
+        practiceUrl={practiceUrl}
+        parentUrl={parentUrl}
+      />
+      <a href={registerUrl} class="btn btn-primary">
         Comenzar gratis
       </a>
     </div>
@@ -57,6 +64,15 @@ import { registerUrl } from '../config/urls';
       <a href="#como-funciona" class="mobile-nav-link">Cómo funciona</a>
       <a href="#precios" class="mobile-nav-link">Precios</a>
       <div class="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
+        <SmartLoginButton
+          loginUrl={loginUrl}
+          apiUrl={apiUrl}
+          teacherUrl={teacherUrl}
+          practiceUrl={practiceUrl}
+          parentUrl={parentUrl}
+          class="rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-center text-sm font-semibold text-white"
+          label="Iniciar sesión"
+        />
         <a
           href={registerUrl}
           class="rounded-xl bg-[var(--sky-500)] px-4 py-3 text-center text-sm font-semibold text-white"
