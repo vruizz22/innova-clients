@@ -66,7 +66,7 @@ export default function PracticeExerciseScreen({
     try {
       const backendResult = await createAttempt({
         accessToken: session.accessToken,
-        studentId: process.env.EXPO_PUBLIC_STUDENT_ID ?? 'seed-student-001',
+        studentId: session.user.profileId ?? session.user.id,
         skillKey: 'subtraction_borrow',
         rawSteps: [{ expression: `${exercise.problem} = ${userAnswer}`, isFinal: true }],
         expectedAnswer: exercise.expectedAnswer,
