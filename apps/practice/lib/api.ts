@@ -54,6 +54,15 @@ export interface AttemptStatusResult {
   errorType: string | null;
 }
 
+export interface ClassroomRecord {
+  id: string;
+  name: string;
+  description: string | null;
+  schoolId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ---- Helpers ---------------------------------------------------------------
 
 function getAuthHeaders(): Record<string, string> {
@@ -112,4 +121,8 @@ export async function submitAttempt(payload: SubmitAttemptPayload): Promise<Atte
 
 export async function getAttemptStatus(attemptId: string): Promise<AttemptStatusResult> {
   return apiGet<AttemptStatusResult>(`/attempts/${attemptId}/status`);
+}
+
+export async function getMyStudentClassrooms(): Promise<ClassroomRecord[]> {
+  return apiGet<ClassroomRecord[]>('/classrooms/student/mine');
 }
