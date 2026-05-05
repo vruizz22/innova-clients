@@ -17,6 +17,4 @@ export const parentUrl = publicUrl('PUBLIC_PARENT_URL', PROD_URLS.parent);
 
 export const registerUrl = `${practiceUrl.replace(/\/$/, '')}/register`;
 export const loginUrl = `${practiceUrl.replace(/\/$/, '')}/login`;
-export const teacherLoginUrl = `${teacherUrl.replace(/\/$/, '')}/login`;
 export const parentLoginUrl = `${parentUrl.replace(/\/$/, '')}/login`;
-
