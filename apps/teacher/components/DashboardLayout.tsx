@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getPublicRuntimeConfig } from '@shared/runtime-config';
+import { clearStoredSession } from '@shared/auth-session';
 
 interface NavItem {
   id: string;
@@ -12,6 +13,7 @@ interface NavItem {
 interface DashboardLayoutProps {
   children?: React.ReactNode;
   unresolvedAlertCount: number;
+  userEmail?: string;
 }
 
 // Inline SVG icons — no external icon dependency
@@ -81,10 +83,16 @@ const navItems: NavItem[] = [
   { id: 'assignments',  label: 'Asignaciones',    icon: <IconBook /> },
 ];
 
-export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLayoutProps): JSX.Element {
+export function DashboardLayout({ children, unresolvedAlertCount, userEmail }: DashboardLayoutProps): JSX.Element {
   const [activeNav, setActiveNav] = useState<string>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   const landingUrl = getPublicRuntimeConfig().landingUrl;
+
+  function handleLogout(): void {
+    clearStoredSession();
+    window.location.href = '/login';
+  }
 
   return (
     <div className="t-app" data-testid="dashboard-layout">
@@ -184,14 +192,50 @@ export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLay
           <a className="student-link" href={landingUrl}>
             Inicio
           </a>
-          <div
-            className="t-avatar"
-            role="img"
-            aria-label="Sra. González — avatar"
-            title="Sra. González"
-            data-testid="user-avatar"
-          >
-            SG
+          <div style={{ position: 'relative' }}>
+            <div
+              className="t-avatar"
+              role="button"
+              aria-label={userEmail ?? 'Usuario'}
+              title={userEmail ?? 'Usuario'}
+              data-testid="user-avatar"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setShowUserMenu(prev => !prev)}
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowUserMenu(prev => !prev) }}
+            >
+              {userEmail ? userEmail.slice(0, 2).toUpperCase() : 'SP'}
+            </div>
+            {showUserMenu && (
+              <div
+                style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 8,
+                  background: '#fff', border: '1px solid var(--border)', borderRadius: 10,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)', minWidth: 200, zIndex: 100,
+                  padding: '8px 0',
+                }}
+                data-testid="user-menu"
+              >
+                {userEmail && (
+                  <div style={{ padding: '8px 16px 10px', borderBottom: '1px solid var(--border)', fontSize: 13, color: 'var(--fg-2)', wordBreak: 'break-all' }}>
+                    {userEmail}
+                  </div>
+                )}
+                <a
+                  href="/profile"
+                  style={{ display: 'block', padding: '9px 16px', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', textDecoration: 'none' }}
+                  onClick={() => setShowUserMenu(false)}
+                >
+                  Mi perfil
+                </a>
+                <button
+                  onClick={handleLogout}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 16px', fontSize: 14, fontWeight: 600, color: 'var(--mastery-weak)', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
