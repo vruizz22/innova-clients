@@ -11,7 +11,7 @@ const PROD_CONFIG = {
   landingUrl: 'https://superprofes.app',
   practiceUrl: 'https://practice.superprofes.app',
   teacherUrl: 'https://profe.superprofes.app',
-  parentUrl: 'https://superprofes.app',
+  parentUrl: 'https://padres.superprofes.app',
 } as const
 
 const LOCAL_CONFIG = {
@@ -19,7 +19,7 @@ const LOCAL_CONFIG = {
   landingUrl: 'http://localhost:3004',
   practiceUrl: 'http://localhost:3002',
   teacherUrl: 'http://localhost:3001',
-  parentUrl: 'http://localhost:8081',
+  parentUrl: 'http://localhost:3003',
 } as const
 
 function requiredPublicEnv(name: string, fallback?: string): string {

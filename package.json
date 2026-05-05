@@ -4,11 +4,6 @@
   "version": "0.1.0",
   "type": "module",
   "packageManager": "pnpm@10.10.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "SuperProfes-Design-System"
-  ],
   "scripts": {
     "bootstrap": "pnpm -w install",
     "dev": "turbo run dev --parallel",
@@ -16,10 +11,11 @@
     "dev:landing": "pnpm --filter superprofes-landing dev",
     "dev:practice": "pnpm --filter @innova/practice dev",
     "dev:teacher": "pnpm --filter @innova/teacher dev",
+    "dev:parent": "pnpm --filter @innova/parent dev",
     "dev:mobile": "pnpm --filter @innova/mobile start",
     "dev:backend": "npm --prefix ../innova-backend-serverless run start:dev",
     "ai:test": "cd ../innova-ai-engine && uv run pytest",
-    "assets": "node scripts/copy-design-system-to-public.js landing/public/design-system && node scripts/copy-design-system-to-public.js apps/practice/public/design-system && node scripts/copy-design-system-to-public.js apps/teacher/public/design-system",
+    "assets": "node scripts/copy-design-system-to-public.js landing/public/design-system && node scripts/copy-design-system-to-public.js apps/practice/public/design-system && node scripts/copy-design-system-to-public.js apps/teacher/public/design-system && node scripts/copy-design-system-to-public.js apps/parent/public/design-system",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
