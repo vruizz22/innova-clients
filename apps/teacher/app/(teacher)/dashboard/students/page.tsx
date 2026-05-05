@@ -6,6 +6,7 @@ import { DashboardLayout } from '@components/DashboardLayout'
 import { createApiClient } from '@components/api-client'
 import { getAccessToken } from '@shared/auth-session'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
+import { useFirstClassroomId } from '@lib/use-classroom'
 import type { StudentMastery } from '@lib/types'
 
 function getMasteryColor(p: number): string {
@@ -32,25 +33,30 @@ export default function StudentsPage(): JSX.Element {
     () => createApiClient({ baseUrl: runtimeConfig.apiUrl, getAccessToken }),
     [runtimeConfig.apiUrl],
   )
+  const { classroomId, loading: classroomLoading, error: classroomError } = useFirstClassroomId(apiClient)
   const [students, setStudents] = useState<StudentMastery[]>([])
   const [search, setSearch] = useState('')
   const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
+    if (classroomLoading || !classroomId) return
+
     async function loadStudents(): Promise<void> {
       try {
-        setStudents(await apiClient.getClassroomMastery(runtimeConfig.classroomId))
+        setStudents(await apiClient.getClassroomMastery(classroomId as string))
       } catch (error) {
         setLoadError(error instanceof Error ? error.message : 'No se pudieron cargar alumnos')
       }
     }
 
     void loadStudents()
-  }, [apiClient, runtimeConfig.classroomId])
+  }, [apiClient, classroomId, classroomLoading])
 
   const filtered = students.filter((student) =>
     student.studentName.toLowerCase().includes(search.toLowerCase()),
   )
+
+  const error = classroomError || loadError
 
   return (
     <DashboardLayout unresolvedAlertCount={0}>
@@ -66,8 +72,18 @@ export default function StudentsPage(): JSX.Element {
           />
         </div>
 
-        {loadError ? (
-          <p style={{ color: 'var(--mastery-weak)', fontSize: 'var(--text-body-sm)' }}>{loadError}</p>
+        {error ? (
+          <p style={{ color: 'var(--mastery-weak)', fontSize: 'var(--text-body-sm)' }}>{error}</p>
+        ) : null}
+
+        {!error && !classroomId && !classroomLoading ? (
+          <p style={{ color: 'var(--fg-2)', fontSize: 'var(--text-body-sm)' }}>
+            No tienes un classroom asignado. Crea uno desde el dashboard principal.
+          </p>
+        ) : null}
+
+        {classroomLoading ? (
+          <p style={{ color: 'var(--fg-2)', fontSize: 'var(--text-body-sm)' }}>Cargando...</p>
         ) : null}
 
         <div className="students-table-wrap">
@@ -127,4 +143,3 @@ export default function StudentsPage(): JSX.Element {
     </DashboardLayout>
   )
 }
-
