@@ -3,22 +3,25 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 
 import { getAccessToken, getStoredSession } from '@shared/auth-session'
+import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import { createApiClient, type AttemptInput, type AttemptResponse } from '@components/api-client'
-import { VisualErrorRenderer } from './VisualErrorRenderer'
+import { VisualErrorRenderer } from '@components/VisualErrorRenderer'
 
 export function AttemptWorkbench(): JSX.Element {
-  const apiBaseUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000', [])
+  const apiBaseUrl = getPublicRuntimeConfig().apiUrl
   const apiClient = useMemo(
     () => createApiClient({ baseUrl: apiBaseUrl, getAccessToken }),
     [apiBaseUrl],
   )
   const [hasSession, setHasSession] = useState(false)
+  const [studentId, setStudentId] = useState('')
 
   useEffect(() => {
-    setHasSession(getStoredSession() !== null)
+    const session = getStoredSession()
+    setHasSession(session !== null)
+    setStudentId(session?.user.profileId ?? '')
   }, [])
 
-  const [studentId, setStudentId] = useState(process.env.NEXT_PUBLIC_STUDENT_ID ?? 'seed-student-001')
   const [skillKey, setSkillKey] = useState('subtraction_borrow')
   const [expectedAnswer, setExpectedAnswer] = useState(27)
   const [studentAnswer, setStudentAnswer] = useState(33)
@@ -68,7 +71,7 @@ export function AttemptWorkbench(): JSX.Element {
     return (
       <section className="auth-form" style={{ marginTop: 20 }}>
         <h3>Sesión requerida</h3>
-        <p>Inicia sesión para enviar intentos al backend local.</p>
+        <p>Inicia sesión para enviar intentos.</p>
         <a className="auth-submit" href="/login">Ir a login</a>
       </section>
     )
@@ -79,10 +82,6 @@ export function AttemptWorkbench(): JSX.Element {
       <section style={{marginTop:20}}>
         <h3>Enviar intento</h3>
         <form onSubmit={submitAttempt} style={{display:'grid', gap:12}}>
-          <label>
-            Student ID
-            <input value={studentId} onChange={(event) => setStudentId(event.target.value)} />
-          </label>
           <label>
             Skill key
             <input value={skillKey} onChange={(event) => setSkillKey(event.target.value)} />

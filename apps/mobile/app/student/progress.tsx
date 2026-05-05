@@ -5,8 +5,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import MasteryBar from '../../components/MasteryBar';
-import { MOCK_SKILL_PROGRESS, MOCK_STUDENT_NAME } from '../../lib/mock-data';
+import MasteryBar from '@components/MasteryBar';
+import { MOCK_SKILL_PROGRESS, MOCK_STUDENT_NAME } from '@lib/mock-data';
 
 export default function StudentProgressScreen(): JSX.Element {
   return (

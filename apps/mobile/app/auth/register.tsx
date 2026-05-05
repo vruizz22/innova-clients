@@ -9,8 +9,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import type { UserRole } from '../../lib/types';
-import { register, type AuthSession } from '../../lib/api-client';
+import type { UserRole } from '@lib/types';
+import { register, type AuthSession } from '@lib/api-client';
 
 export interface RegisterScreenProps {
   onRegister: (session: AuthSession) => void;

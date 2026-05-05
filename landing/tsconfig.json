@@ -6,6 +6,10 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@components/*": ["src/components/*"],
+      "@config/*": ["src/config/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@styles/*": ["src/styles/*"],
       "@design/*": ["../SuperProfes-Design-System/*"],
       "@design": ["../SuperProfes-Design-System"]
     }

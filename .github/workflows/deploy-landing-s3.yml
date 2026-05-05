@@ -1,63 +1,73 @@
 name: Deploy Landing to S3 + CloudFront
 
 on:
-    push:
-        branches: [ main ]
-    workflow_dispatch:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-    validate:
-        name: Validate paths
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  build-and-deploy:
+    name: Build and Deploy superprofes.app
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.10.0
 
-            - name: Install root deps
-              run: pnpm -w install --frozen-lockfile
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
-            - name: Run path validator
-              run: node innova-clients/scripts/check-absolute-paths.js innova-clients/landing
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-    build-and-deploy:
-        name: Build and Deploy Landing
-        needs: validate
-        runs-on: ubuntu-latest
-        environment: production
+      - name: Copy design system
+        run: node scripts/copy-design-system-to-public.js landing/public/design-system
+
+      - name: Build landing
+        working-directory: landing
         env:
-            AWS_REGION: ${{ secrets.AWS_REGION }}
-            S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-            CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-        steps:
-            - uses: actions/checkout@v4
+          PUBLIC_LANDING_URL: ${{ secrets.PUBLIC_LANDING_URL }}
+          PUBLIC_PRACTICE_URL: ${{ secrets.PUBLIC_PRACTICE_URL }}
+          PUBLIC_TEACHER_URL: ${{ secrets.PUBLIC_TEACHER_URL }}
+          PUBLIC_PARENT_URL: ${{ secrets.PUBLIC_PARENT_URL }}
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+        run: pnpm run build
 
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: pnpm
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            - name: Install landing deps
-              working-directory: innova-clients/landing
-              run: pnpm install --frozen-lockfile
+      - name: Sync static assets to S3 (immutable cache)
+        run: |
+          aws s3 sync landing/dist s3://$S3_BUCKET_NAME \
+            --delete \
+            --cache-control "max-age=31536000,immutable" \
+            --exclude "*.html"
 
-            - name: Build landing
-              working-directory: innova-clients/landing
-              run: pnpm run build
+      - name: Sync HTML to S3 (no-cache)
+        run: |
+          aws s3 sync landing/dist s3://$S3_BUCKET_NAME \
+            --delete \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --include "*.html" \
+            --exclude "*" \
+            --include "*.html"
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
-
-            - name: Sync to S3
-              run: aws s3 sync innova-clients/landing/dist s3://$S3_BUCKET_NAME --delete
-
-            - name: Invalidate CloudFront
-              if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
-              run: aws cloudfront create-invalidation --distribution-id
-                  "$CLOUDFRONT_DISTRIBUTION_ID" --paths '/*'
+      - name: Invalidate CloudFront
+        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths "/*"

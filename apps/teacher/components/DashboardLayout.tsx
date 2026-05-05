@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getPublicRuntimeConfig } from '@shared/runtime-config';
 
 interface NavItem {
   id: string;
@@ -83,6 +84,7 @@ const navItems: NavItem[] = [
 export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLayoutProps): JSX.Element {
   const [activeNav, setActiveNav] = useState<string>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const landingUrl = getPublicRuntimeConfig().landingUrl;
 
   return (
     <div className="t-app" data-testid="dashboard-layout">
@@ -95,15 +97,17 @@ export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLay
       >
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px 16px', borderBottom: '1px solid var(--border)', marginBottom: 8 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: 'var(--sky-500)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <span style={{ color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: '-0.03em' }}>SP</span>
-          </div>
-          <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--slate-900)', letterSpacing: '-0.01em' }}>
-            Super<span style={{ color: 'var(--sky-500)' }}>Profes</span>
-          </span>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }} aria-label="SuperProfes — dashboard profesor">
+            <div style={{
+              width: 28, height: 28, borderRadius: 8,
+              background: 'var(--sky-500)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: '-0.03em' }}>SP</span>
+            </div>
+            <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--slate-900)', letterSpacing: '-0.01em' }}>
+              Super<span style={{ color: 'var(--sky-500)' }}>Profes</span>
+            </span>
+          </a>
           {/* Mobile close button */}
           <button
             className="t-icon-btn"
@@ -177,6 +181,9 @@ export function DashboardLayout({ children, unresolvedAlertCount }: DashboardLay
           >
             <IconBell count={unresolvedAlertCount} />
           </button>
+          <a className="student-link" href={landingUrl}>
+            Inicio
+          </a>
           <div
             className="t-avatar"
             role="img"

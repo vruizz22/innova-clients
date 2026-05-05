@@ -1,6 +1,6 @@
 'use client';
 
-import type { StudentMastery } from '../lib/types';
+import type { StudentMastery } from '@lib/types';
 
 interface MasteryHeatmapProps {
   students: StudentMastery[];

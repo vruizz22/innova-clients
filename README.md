@@ -325,22 +325,34 @@ main (protegida) <── feature/<app-scope>
 
 Validadas en build-time. **Nunca commitear `.env.local` ni `.env`.**
 
-### Next.js apps (apps/teacher)
+### Next.js apps (apps/practice, apps/teacher)
 
 ```env
-NEXT_PUBLIC_API_URL=https://api.innova.cl
+NEXT_PUBLIC_API_URL=https://api.superprofes.app
+NEXT_PUBLIC_LANDING_URL=https://superprofes.app
+NEXT_PUBLIC_PRACTICE_URL=https://practice.superprofes.app
+NEXT_PUBLIC_TEACHER_URL=https://profe.superprofes.app
+NEXT_PUBLIC_PARENT_URL=https://superprofes.app
 NEXT_PUBLIC_COGNITO_USER_POOL_ID=
 NEXT_PUBLIC_COGNITO_CLIENT_ID=
-NEXT_PUBLIC_COGNITO_REGION=us-east-1
-NEXT_PUBLIC_S3_UPLOAD_BUCKET=innova-uploads
 ```
 
-Validadas con `@t3-oss/env-nextjs` (Zod schemas) en `src/env.ts`.
+El classroom se resuelve desde `/classrooms/mine` o `/classrooms/student/mine`; no configurar `NEXT_PUBLIC_CLASSROOM_ID`.
 
-### Expo apps (apps/practice, apps/parent)
+### Landing Astro
 
 ```env
-EXPO_PUBLIC_API_URL=https://api.innova.cl
+PUBLIC_LANDING_URL=https://superprofes.app
+PUBLIC_PRACTICE_URL=https://practice.superprofes.app
+PUBLIC_TEACHER_URL=https://profe.superprofes.app
+PUBLIC_PARENT_URL=https://superprofes.app
+PUBLIC_API_URL=https://api.superprofes.app
+```
+
+### Expo app (apps/mobile)
+
+```env
+EXPO_PUBLIC_API_URL=https://api.superprofes.app
 EXPO_PUBLIC_COGNITO_CLIENT_ID=
 EXPO_PUBLIC_COGNITO_REGION=us-east-1
 ```

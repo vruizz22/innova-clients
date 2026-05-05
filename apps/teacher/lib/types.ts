@@ -7,6 +7,8 @@ export interface StudentMastery {
     pKnown: number; // 0-1
     attemptsCount: number;
   }>;
+  attempts?: AttemptHistory[];
+  errorFrequency?: ErrorFrequency[];
 }
 
 export interface TeacherAlert {
