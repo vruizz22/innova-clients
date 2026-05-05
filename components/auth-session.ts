@@ -40,14 +40,16 @@ export function clearStoredSession(): void {
 
 export function getDashboardUrl(role: UserRole): string {
   const config = getPublicRuntimeConfig();
+  const teacherUrl = config.teacherUrl.replace(/\/$/, '');
+  const practiceUrl = config.practiceUrl.replace(/\/$/, '');
 
   if (role === 'teacher') {
-    return config.teacherUrl;
+    return `${teacherUrl}/dashboard`;
   }
 
   if (role === 'parent') {
     return config.parentUrl;
   }
 
-  return config.practiceUrl;
+  return `${practiceUrl}/practice`;
 }
