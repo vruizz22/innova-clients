@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import React from 'react'
 
 import { getAccessToken, getDashboardUrl, getStoredSession, storeSession } from '@shared/auth-session'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
@@ -9,57 +10,49 @@ import {
   type ConfirmForgotPasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
-  type RegisterInput,
+  type UserRole,
 } from '@components/api-client'
 
-type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
+type InputChangeEvent = { target: { value: string } }
+type AuthMode = 'login' | 'forgot' | 'reset'
+type SelectedRole = 'student' | 'teacher' | 'parent'
 
 type AuthPageProps = {
   title: string
   mode: AuthMode
-  defaultRole?: RegisterInput['role']
-  allowedRoles?: RegisterInput['role'][]
+  defaultRole?: SelectedRole
 }
 
-type AllowedRole = RegisterInput['role']
-
-const ROLE_LABELS: Record<AllowedRole, string> = {
-  student: 'Alumno',
-  teacher: 'Profe',
-  parent: 'Apoderado',
+const ROLE_LABELS: Record<SelectedRole, string> = {
+  student: 'Estudiante',
+  teacher: 'Profesor/a',
+  parent: 'Apoderado/a',
 }
 
-const DEFAULT_ALLOWED_ROLES: RegisterInput['role'][] = ['student', 'teacher', 'parent']
+const ROLE_ICONS: Record<SelectedRole, React.ReactNode> = {
+  student: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+  teacher: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/></svg>,
+  parent: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
+}
 
-export function AuthPage({
-  title,
-  mode,
-  defaultRole = 'student',
-  allowedRoles = DEFAULT_ALLOWED_ROLES,
-}: AuthPageProps): JSX.Element {
+export function AuthPage({ title, mode, defaultRole = 'student' }: AuthPageProps): JSX.Element {
   const runtimeConfig = getPublicRuntimeConfig()
   const baseUrl = runtimeConfig.apiUrl
   const authClient = useMemo(() => createApiClient({ baseUrl }), [baseUrl])
   const [message, setMessage] = useState('')
+  const [isError, setIsError] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [selectedRole, setSelectedRole] = useState<SelectedRole>(defaultRole)
 
   const [loginData, setLoginData] = useState<LoginInput>({ email: '', password: '' })
-  const [registerData, setRegisterData] = useState<RegisterInput>({
-    email: '',
-    password: '',
-    role: defaultRole,
-  })
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
-  const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({
-    email: '',
-    code: '',
-    newPassword: '',
-  })
+  const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
 
   useEffect(() => {
     if (mode !== 'login') return
     const session = getStoredSession()
     if (!session) return
+
     const meClient = createApiClient({ baseUrl, getAccessToken })
     void meClient
       .me()
@@ -68,6 +61,7 @@ export function AuthPage({
       })
       .catch(() => {
         setMessage('Tu sesión expiró. Ingresa nuevamente.')
+        setIsError(true)
       })
   }, [baseUrl, mode])
 
@@ -75,73 +69,137 @@ export function AuthPage({
     event.preventDefault()
     setLoading(true)
     setMessage('')
+    setIsError(false)
+
     try {
       if (mode === 'login') {
         const result = await authClient.login(loginData)
+
+        const actualRole = result.user.role as UserRole
+        if (actualRole !== selectedRole && actualRole !== 'admin') {
+          setMessage(
+            `Tu cuenta es de tipo "${ROLE_LABELS[actualRole as SelectedRole] ?? actualRole}". Usa el acceso correspondiente.`
+          )
+          setIsError(true)
+          setLoading(false)
+          return
+        }
+
         storeSession(result)
         window.location.href = getDashboardUrl(result.user.role)
         return
       }
-      if (mode === 'register') {
-        const result = await authClient.register(registerData)
-        storeSession(result)
-        window.location.href = getDashboardUrl(result.user.role)
-        return
-      }
+
       if (mode === 'forgot') {
         const result = await authClient.forgotPassword(forgotData)
-        setMessage(result.message ?? 'Código enviado. Revisa tu correo.')
+        setMessage(result.message ?? 'Se envió el código de recuperación a tu correo.')
+        setIsError(false)
         return
       }
-      const result = await authClient.confirmForgotPassword(resetData)
-      setMessage(result.message ?? 'Contraseña restablecida correctamente.')
+
+      if (mode === 'reset') {
+        const result = await authClient.confirmForgotPassword(resetData)
+        setMessage(result.message ?? 'Contraseña actualizada correctamente.')
+        setIsError(false)
+      }
     } catch (requestError) {
-      setMessage(
-        requestError instanceof Error ? requestError.message : 'Error de autenticación',
-      )
+      setMessage(requestError instanceof Error ? requestError.message : 'Error de autenticación')
+      setIsError(true)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <main className="auth-main">
-      <div className="auth-card">
-          <h1 className="auth-title">{title}</h1>
-          <p className="auth-sub">
-            {mode === 'login' && 'Ingresa con tu correo y contraseña.'}
-            {mode === 'register' && 'Crea tu cuenta en segundos.'}
-            {mode === 'forgot' && 'Te enviaremos un código de recuperación.'}
-            {mode === 'reset' && 'Ingresa el código que recibiste por correo.'}
-          </p>
+    <div className="auth-shell">
+      {/* ── Left aside — brand panel ─────────────────────── */}
+      <aside className="auth-aside">
+        <div className="auth-brand">
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: 13 }}>SP</span>
+          </div>
+          <span style={{ fontWeight: 800, fontSize: 18, color: '#fff', letterSpacing: '-0.02em' }}>SuperProfes</span>
+        </div>
 
-          {/* Role chooser — only for register */}
-          {mode === 'register' && allowedRoles.length > 1 ? (
-            <div className="auth-roles">
-              {allowedRoles.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  className="auth-role"
-                  aria-pressed={registerData.role === role}
-                  onClick={() => setRegisterData((prev) => ({ ...prev, role }))}
-                >
-                  {role === 'student' ? '📚' : role === 'teacher' ? '👩‍🏫' : '👨‍👩‍👧'}
-                  <span>{ROLE_LABELS[role] ?? role}</span>
-                </button>
-              ))}
+        <div className="auth-pitch">
+          <h2>Practica matemáticas y aprende de tus errores</h2>
+          <p>Ejercicios adaptativos que detectan tus errores y te ayudan a mejorar paso a paso.</p>
+          <div className="auth-pitch-foot">
+            <span className="dot" />
+            <span>Para alumnos, profesores y apoderados</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Right form area ──────────────────────────────── */}
+      <main className="auth-main">
+        <div className="auth-card">
+          <div className="auth-logo-mobile">
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--sky-700)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#fff', fontWeight: 900, fontSize: 12 }}>SP</span>
             </div>
+            <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--fg-1)' }}>SuperProfes</span>
+          </div>
+
+          {mode === 'login' ? (
+            <>
+              <h1 className="auth-title">Bienvenido de vuelta</h1>
+              <p className="auth-sub">Selecciona tu rol e ingresa tus credenciales.</p>
+
+              <div className="auth-roles" role="group" aria-label="Selecciona tu rol">
+                {(['student', 'teacher', 'parent'] as SelectedRole[]).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className="auth-role"
+                    aria-pressed={selectedRole === role}
+                    onClick={() => {
+                      const roleUrls: Record<SelectedRole, string> = { student: 'http://localhost:3002/login', teacher: 'http://localhost:3001/login', parent: 'http://localhost:3003/login' }
+                      if (role !== defaultRole) {
+                        window.location.href = roleUrls[role]
+                        return
+                      }
+                      setSelectedRole(role)
+                    }}
+                  >
+                    <span aria-hidden="true">{ROLE_ICONS[role]}</span>
+                    {ROLE_LABELS[role]}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
+
+          {mode === 'forgot' ? (
+            <>
+              <h1 className="auth-title">Recuperar contraseña</h1>
+              <p className="auth-sub">Te enviaremos un código de recuperación a tu correo.</p>
+            </>
+          ) : null}
+
+          {mode === 'reset' ? (
+            <>
+              <h1 className="auth-title">Nueva contraseña</h1>
+              <p className="auth-sub">Ingresa el código que recibiste y tu nueva contraseña.</p>
+            </>
           ) : null}
 
           {message ? (
-            <div className="auth-error-banner" role="alert">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-              {message}
+            <div
+              className={isError ? 'auth-error-banner' : 'auth-email-sent'}
+              role="alert"
+              style={{ marginBottom: 16 }}
+            >
+              {!isError ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : null}
+              <span>{message}</span>
             </div>
           ) : null}
 
           <form className="auth-form" onSubmit={handleSubmit}>
-            {/* Login fields */}
             {mode === 'login' ? (
               <>
                 <div className="auth-row">
@@ -152,10 +210,10 @@ export function AuthPage({
                     type="email"
                     autoComplete="email"
                     required
-                    placeholder="tu@email.com"
+                    placeholder={selectedRole === 'teacher' ? 'profe@colegio.cl' : selectedRole === 'parent' ? 'apoderado@mail.cl' : 'alumno@colegio.cl'}
                     value={loginData.email}
-                    onChange={(e) =>
-                      setLoginData((prev) => ({ ...prev, email: e.target.value }))
+                    onChange={(event: InputChangeEvent) =>
+                      setLoginData((current: LoginInput) => ({ ...current, email: event.target.value }))
                     }
                   />
                 </div>
@@ -169,12 +227,12 @@ export function AuthPage({
                     required
                     placeholder="••••••••"
                     value={loginData.password}
-                    onChange={(e) =>
-                      setLoginData((prev) => ({ ...prev, password: e.target.value }))
+                    onChange={(event: InputChangeEvent) =>
+                      setLoginData((current: LoginInput) => ({ ...current, password: event.target.value }))
                     }
                   />
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   <a className="auth-link" href="/forgot" style={{ fontSize: 13 }}>
                     ¿Olvidaste tu contraseña?
                   </a>
@@ -182,43 +240,6 @@ export function AuthPage({
               </>
             ) : null}
 
-            {/* Register fields */}
-            {mode === 'register' ? (
-              <>
-                <div className="auth-row">
-                  <label htmlFor="auth-email">Email</label>
-                  <input
-                    id="auth-email"
-                    className="auth-input"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="tu@email.com"
-                    value={registerData.email}
-                    onChange={(e) =>
-                      setRegisterData((prev) => ({ ...prev, email: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="auth-row">
-                  <label htmlFor="auth-password">Contraseña</label>
-                  <input
-                    id="auth-password"
-                    className="auth-input"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    placeholder="Mínimo 8 caracteres"
-                    value={registerData.password}
-                    onChange={(e) =>
-                      setRegisterData((prev) => ({ ...prev, password: e.target.value }))
-                    }
-                  />
-                </div>
-              </>
-            ) : null}
-
-            {/* Forgot password */}
             {mode === 'forgot' ? (
               <div className="auth-row">
                 <label htmlFor="auth-email">Email</label>
@@ -228,14 +249,13 @@ export function AuthPage({
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="tu@email.com"
+                  placeholder="correo@ejemplo.cl"
                   value={forgotData.email}
-                  onChange={(e) => setForgotData({ email: e.target.value })}
+                  onChange={(event: InputChangeEvent) => setForgotData({ email: event.target.value })}
                 />
               </div>
             ) : null}
 
-            {/* Reset password */}
             {mode === 'reset' ? (
               <>
                 <div className="auth-row">
@@ -246,8 +266,8 @@ export function AuthPage({
                     type="email"
                     required
                     value={resetData.email}
-                    onChange={(e) =>
-                      setResetData((prev) => ({ ...prev, email: e.target.value }))
+                    onChange={(event: InputChangeEvent) =>
+                      setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, email: event.target.value }))
                     }
                   />
                 </div>
@@ -261,8 +281,8 @@ export function AuthPage({
                     required
                     placeholder="123456"
                     value={resetData.code}
-                    onChange={(e) =>
-                      setResetData((prev) => ({ ...prev, code: e.target.value }))
+                    onChange={(event: InputChangeEvent) =>
+                      setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, code: event.target.value }))
                     }
                   />
                 </div>
@@ -275,8 +295,8 @@ export function AuthPage({
                     required
                     placeholder="Mínimo 8 caracteres"
                     value={resetData.newPassword}
-                    onChange={(e) =>
-                      setResetData((prev) => ({ ...prev, newPassword: e.target.value }))
+                    onChange={(event: InputChangeEvent) =>
+                      setResetData((current: ConfirmForgotPasswordInput) => ({ ...current, newPassword: event.target.value }))
                     }
                   />
                 </div>
@@ -284,18 +304,21 @@ export function AuthPage({
             ) : null}
 
             <button className="auth-submit" type="submit" disabled={loading}>
-              {loading ? 'Enviando...' : mode === 'login' ? 'Ingresar' : mode === 'register' ? 'Crear cuenta' : 'Continuar'}
+              {loading ? 'Ingresando...' : 'Entrar'}
             </button>
           </form>
 
-          <div className="auth-foot">
-            {mode === 'login' ? (
-              <>¿No tienes cuenta? <a className="auth-link" href="/register">Regístrate gratis</a></>
-            ) : (
-              <>¿Ya tienes cuenta? <a className="auth-link" href="/login">Ingresar</a></>
-            )}
-          </div>
-      </div>
-    </main>
+          {mode === 'login' ? (
+            <p className="auth-foot">
+              ¿Problemas para ingresar? <a className="auth-link" href="/forgot">Recupera tu contraseña</a>
+            </p>
+          ) : (
+            <p className="auth-foot">
+              <a className="auth-link" href="/login">Volver al inicio de sesión</a>
+            </p>
+          )}
+        </div>
+      </main>
+    </div>
   )
 }
