@@ -10,11 +10,12 @@ import {
   type ConfirmForgotPasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
+  type RegisterInput,
   type UserRole,
 } from './api-client'
 
 type InputChangeEvent = { target: { value: string } }
-type AuthMode = 'login' | 'forgot' | 'reset'
+type AuthMode = 'login' | 'forgot' | 'reset' | 'register'
 type SelectedRole = 'student' | 'teacher' | 'parent'
 
 type AuthPageProps = {
@@ -48,6 +49,7 @@ export function AuthPage({ title, mode, defaultRole = 'teacher' }: AuthPageProps
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
   const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
   const [rememberMe, setRememberMe] = useState(false)
+  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: defaultRole })
 
   useEffect(() => {
     if (mode !== 'login') return
@@ -103,6 +105,14 @@ export function AuthPage({ title, mode, defaultRole = 'teacher' }: AuthPageProps
         const result = await authClient.confirmForgotPassword(resetData)
         setMessage(result.message ?? 'Contraseña actualizada correctamente.')
         setIsError(false)
+        return
+      }
+
+      if (mode === 'register') {
+        const result = await authClient.register(registerData)
+        storeSession(result)
+        window.location.href = getDashboardUrl(result.user.role)
+        return
       }
     } catch (requestError) {
       setMessage(requestError instanceof Error ? requestError.message : 'Error de autenticación')
@@ -315,8 +325,51 @@ export function AuthPage({ title, mode, defaultRole = 'teacher' }: AuthPageProps
               </>
             ) : null}
 
+            {mode === 'register' ? (
+              <>
+                <div className="auth-row">
+                  <label htmlFor="auth-email">Email</label>
+                  <input
+                    id="auth-email"
+                    className="auth-input"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="correo@ejemplo.cl"
+                    value={registerData.email}
+                    onChange={(event: InputChangeEvent) =>
+                      setRegisterData((current: RegisterInput) => ({ ...current, email: event.target.value }))
+                    }
+                  />
+                </div>
+                <div className="auth-row">
+                  <label htmlFor="auth-password">Contraseña</label>
+                  <input
+                    id="auth-password"
+                    className="auth-input"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    placeholder="Mínimo 8 caracteres"
+                    value={registerData.password}
+                    onChange={(event: InputChangeEvent) =>
+                      setRegisterData((current: RegisterInput) => ({ ...current, password: event.target.value }))
+                    }
+                  />
+                </div>
+              </>
+            ) : null}
+
             <button className="auth-submit" type="submit" disabled={loading}>
-              {loading ? 'Ingresando...' : 'Entrar'}
+              {loading
+                ? mode === 'register'
+                  ? 'Creando cuenta...'
+                  : 'Ingresando...'
+                : mode === 'register'
+                  ? 'Crear cuenta'
+                  : mode === 'login'
+                    ? 'Entrar'
+                    : 'Enviar'}
             </button>
           </form>
 
