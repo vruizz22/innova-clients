@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
+import { AppHeader } from '../components/AppHeader'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -13,12 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body>
-        <header className="app-header">
-          <a href={landingUrl} className="app-brand">
-            <span className="app-brand-super">Super</span>
-            <span className="app-brand-profes">Profes</span>
-          </a>
-        </header>
+        <AppHeader landingUrl={landingUrl} />
         {children}
       </body>
     </html>

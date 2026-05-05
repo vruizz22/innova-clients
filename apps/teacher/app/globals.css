@@ -249,80 +249,163 @@ body {
 }
 
 /* ── Auth pages ──────────────────────────────────────────────── */
-.auth-head {
-  margin-bottom: var(--sp-6);
+.auth-main {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at top right, rgba(63, 167, 214, 0.16), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(115, 130, 151, 0.18), transparent 34%),
+    var(--slate-50);
 }
 
-.auth-eyebrow {
-  font-size: var(--text-caption);
-  font-weight: var(--fw-bold);
-  text-transform: uppercase;
-  letter-spacing: var(--ls-allcaps);
-  color: var(--sky-500);
-  margin: 0 0 var(--sp-2);
+.auth-card {
+  width: min(100%, 460px);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2xl);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
 }
 
-.auth-head h1 {
+.auth-title {
   font-size: var(--text-h1);
   font-weight: var(--fw-bold);
   color: var(--fg-1);
-  margin: 0 0 var(--sp-1);
-}
-
-.auth-head p {
-  font-size: var(--text-caption);
-  color: var(--fg-3);
+  letter-spacing: -0.03em;
   margin: 0;
 }
 
-.auth-shell.card {
-  display: block;
-  min-height: auto;
-  max-width: 440px;
-  margin: var(--sp-10) auto;
+.auth-sub {
+  margin: 8px 0 20px;
+  color: var(--fg-2);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
 }
 
-.auth-form label {
+.auth-roles {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.auth-role {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  padding: 14px 16px;
+  color: var(--fg-1);
+  font: inherit;
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    background var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+
+.auth-role:hover,
+.auth-role[aria-pressed="true"] {
+  border-color: var(--sky-500);
+  background: var(--sky-50);
+  box-shadow: 0 0 0 3px rgba(63, 167, 214, 0.12);
+}
+
+.auth-row {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.auth-row label {
   font-size: var(--text-body-sm);
   font-weight: var(--fw-semibold);
   color: var(--fg-2);
 }
 
-.auth-form input,
-.auth-form select {
-  height: 44px;
-  padding: 0 var(--sp-3);
+.auth-input {
+  height: 46px;
+  padding: 0 14px;
   border: 1px solid var(--border-strong);
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  color: var(--fg-1);
   font-family: var(--font-sans);
   font-size: var(--text-body-sm);
-  color: var(--fg-1);
-  background: var(--bg);
   transition:
     border-color var(--dur-fast) var(--ease-standard),
     box-shadow var(--dur-fast) var(--ease-standard);
 }
 
-.auth-form input:focus,
-.auth-form select:focus {
+.auth-input:focus {
   outline: none;
   border-color: var(--sky-500);
-  box-shadow: 0 0 0 3px rgba(63, 167, 214, 0.18);
+  box-shadow: 0 0 0 3px rgba(63, 167, 214, 0.16);
 }
 
-.auth-form button[type="submit"] {
+.auth-submit {
   width: 100%;
-  margin-top: var(--sp-2);
+  height: 48px;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--sky-500), var(--slate-700));
+  color: #fff;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  margin-top: 4px;
+  transition:
+    transform var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard),
+    opacity var(--dur-fast) var(--ease-standard);
+  box-shadow: var(--shadow-pop);
 }
 
-.auth-message {
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 32px rgba(115, 130, 151, 0.22);
+}
+
+.auth-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-foot {
+  margin-top: 18px;
+  text-align: center;
   font-size: var(--text-body-sm);
   color: var(--fg-2);
-  text-align: center;
-  margin: var(--sp-3) 0 0;
+}
+
+.auth-link {
+  color: var(--sky-600);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  color: var(--sky-700);
+  text-decoration: underline;
+}
+
+.auth-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-lg);
+  background: var(--warning-bg);
+  border: 1px solid color-mix(in oklch, var(--mastery-weak) 24%, white);
+  color: #7a1f1f;
+  font-size: var(--text-body-sm);
 }
 
 /* ── Mobile sidebar ──────────────────────────────────────────── */
