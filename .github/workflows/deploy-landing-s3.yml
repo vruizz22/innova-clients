@@ -19,6 +19,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
+          version: 10.10.0
 
       - uses: actions/setup-node@v4
         with:
@@ -34,9 +35,11 @@ jobs:
       - name: Build landing
         working-directory: landing
         env:
-          PUBLIC_PRACTICE_URL: https://practice.superprofes.app
-          PUBLIC_TEACHER_URL: https://profe.superprofes.app
-          PUBLIC_PARENT_URL: https://apoderado.superprofes.app
+          PUBLIC_LANDING_URL: ${{ secrets.PUBLIC_LANDING_URL }}
+          PUBLIC_PRACTICE_URL: ${{ secrets.PUBLIC_PRACTICE_URL }}
+          PUBLIC_TEACHER_URL: ${{ secrets.PUBLIC_TEACHER_URL }}
+          PUBLIC_PARENT_URL: ${{ secrets.PUBLIC_PARENT_URL }}
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
         run: pnpm run build
 
       - name: Configure AWS credentials

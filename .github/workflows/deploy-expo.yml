@@ -35,6 +35,7 @@ jobs:
         env:
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_COGNITO_CLIENT_ID }}
+          EXPO_PUBLIC_COGNITO_REGION: ${{ secrets.EXPO_PUBLIC_COGNITO_REGION }}
         run: eas build --profile production --platform all --non-interactive
 
   # EAS Workflow alternative — uses eas.yml workflow file
