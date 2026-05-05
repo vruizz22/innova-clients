@@ -11,22 +11,8 @@ import {
 import SkillBadge from '@components/SkillBadge';
 import { MOCK_EXERCISES, MOCK_STUDENT_NAME } from '@lib/mock-data';
 import { getMyStudentClassrooms, joinClassroom, type ClassroomRecord } from '@lib/api-client';
-import type { Exercise } from '../../lib/types';
-
-// Read session from AsyncStorage if available (Expo standard)
-async function getAccessTokenFromStorage(): Promise<string | null> {
-  try {
-    // Dynamic import avoids hard dep on @react-native-async-storage/async-storage
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-    const raw: string | null = await AsyncStorage.getItem('innova.auth.session');
-    if (!raw) return null;
-    const session = JSON.parse(raw) as { accessToken?: string };
-    return session.accessToken ?? null;
-  } catch {
-    return null;
-  }
-}
+import { getStoredAccessToken } from '@lib/auth-storage';
+import type { Exercise } from '@lib/types';
 
 export interface PracticeHomeScreenProps {
   onSelectExercise: (exercise: Exercise) => void;
@@ -46,7 +32,7 @@ export default function PracticeHomeScreen({
   useEffect(() => {
     let cancelled = false;
     async function loadClassroom(): Promise<void> {
-      const token = await getAccessTokenFromStorage();
+      const token = await getStoredAccessToken();
       if (!token) { setLoadingClassroom(false); return; }
       try {
         const classrooms = await getMyStudentClassrooms(token);
@@ -66,7 +52,7 @@ export default function PracticeHomeScreen({
     setJoining(true);
     setJoinError('');
     try {
-      const token = await getAccessTokenFromStorage();
+      const token = await getStoredAccessToken();
       if (!token) { setJoinError('Debes iniciar sesión primero.'); return; }
       const joined = await joinClassroom(joinCode.trim(), token);
       setClassroom(joined);
