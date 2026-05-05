@@ -13,14 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body>
         <header className="app-header">
-          <a href="/practice" className="app-brand">
+          <a href={landingUrl} className="app-brand">
             <span className="app-brand-super">Super</span>
             <span className="app-brand-profes">Profes</span>
           </a>
           <nav aria-label="Navegación principal">
-            <a href={landingUrl} className="exercise-back-link" style={{ margin: 0 }}>
-              Inicio
-            </a>
             <a href="/practice" className="exercise-back-link" style={{ margin: 0 }}>
               Ejercicios
             </a>
