@@ -48,8 +48,8 @@ export function getDashboardUrl(role: UserRole): string {
   }
 
   if (role === 'parent') {
-    return config.parentUrl;
+    return `${config.parentUrl.replace(/\/$/, '')}/dashboard`;
   }
 
-  return `${practiceUrl}/practice`;
+  return `${practiceUrl}/dashboard`;
 }
