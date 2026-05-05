@@ -3,10 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import {
-  createApiClient,
-  getAccessToken,
-} from '@shared/api-client'
+import { createApiClient } from '@shared/api-client'
+import { getAccessToken } from '@shared/auth-session'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import { getItems, submitAttempt, type PracticeItem, type AttemptResponse } from '@/lib/api'
 
@@ -251,10 +249,10 @@ export default function ExerciseFlowPage(): JSX.Element {
                     transition: 'all 200ms',
                   }}
                   onMouseDown={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'
+                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'
                   }}
                   onMouseUp={(e) => {
-                    ;(e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'
+                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'
                   }}
                 >
                   {label}

@@ -3,10 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import {
-  createApiClient,
-  getAccessToken,
-} from '@shared/api-client'
+import { createApiClient } from '@shared/api-client'
+import { getAccessToken } from '@shared/auth-session'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import { getItems, submitAttempt, type PracticeItem, type AttemptResponse } from '@/lib/api'
 import { VisualErrorRenderer } from '@/components/VisualErrorRenderer'
