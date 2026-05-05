@@ -130,6 +130,29 @@ export type OcrExtractResponse = {
   confidence: number
 }
 
+export type ClassroomRecord = {
+  id: string
+  name: string
+  description: string | null
+  schoolId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type ClassroomInviteResponse = {
+  code: string
+  url: string
+}
+
+export type CreateClassroomInput = {
+  name: string
+  description?: string
+}
+
+export type JoinClassroomInput = {
+  code: string
+}
+
 export type ApiResponse =
   | AuthSession
   | ApiMessageResponse
@@ -301,6 +324,28 @@ export function createApiClient(config: BaseConfig) {
       ),
     createAssignment: (input: { studentId: string; itemIds: string[]; dueAt?: string }) =>
       requestJson<PracticeAssignmentResponse>(config, '/practice/assign', {
+        method: 'POST',
+        body: input,
+      }),
+    getMyClassrooms: () =>
+      requestJson<ClassroomRecord[]>(config, '/classrooms/mine'),
+    getMyStudentClassrooms: () =>
+      requestJson<ClassroomRecord[]>(config, '/classrooms/student/mine'),
+    getClassroom: (id: string) =>
+      requestJson<ClassroomRecord>(config, `/classrooms/${encodeURIComponent(id)}`),
+    createClassroom: (input: CreateClassroomInput) =>
+      requestJson<ClassroomRecord>(config, '/classrooms', {
+        method: 'POST',
+        body: input,
+      }),
+    createClassroomInvite: (classroomId: string) =>
+      requestJson<ClassroomInviteResponse>(
+        config,
+        `/classrooms/${encodeURIComponent(classroomId)}/invite`,
+        { method: 'POST' },
+      ),
+    joinClassroom: (input: JoinClassroomInput) =>
+      requestJson<ClassroomRecord>(config, '/classrooms/join', {
         method: 'POST',
         body: input,
       }),
