@@ -18,6 +18,15 @@ export type AttemptResponse = {
   confidence: number;
 };
 
+export type ClassroomRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  schoolId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 const DEFAULT_API_URL = 'http://localhost:3000';
 
 export function getApiBaseUrl(): string {
@@ -67,6 +76,18 @@ export function register(email: string, password: string, role: UserRole): Promi
   return requestJson<AuthSession>('/auth/register', {
     method: 'POST',
     body: { email, password, role },
+  });
+}
+
+export function getMyStudentClassrooms(accessToken: string): Promise<ClassroomRecord[]> {
+  return requestJson<ClassroomRecord[]>('/classrooms/student/mine', { accessToken });
+}
+
+export function joinClassroom(code: string, accessToken: string): Promise<ClassroomRecord> {
+  return requestJson<ClassroomRecord>('/classrooms/join', {
+    method: 'POST',
+    body: { code },
+    accessToken,
   });
 }
 
