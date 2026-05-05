@@ -9,7 +9,6 @@ import {
 } from '@shared/api-client'
 import { getPublicRuntimeConfig } from '@shared/runtime-config'
 import { getItems, submitAttempt, type PracticeItem, type AttemptResponse } from '@/lib/api'
-import { VisualErrorRenderer } from '@/components/VisualErrorRenderer'
 
 type ExerciseStage = 'loading' | 'problem' | 'feedback' | 'complete'
 
@@ -73,7 +72,7 @@ export default function ExerciseFlowPage(): JSX.Element {
   }
 
   async function handleSubmit(): Promise<void> {
-    if (session.stage !== 'problem' || !currentItem || !session.response) return
+    if (session.stage !== 'problem' || !currentItem) return
 
     setSession((s) => ({ ...s, stage: 'feedback' }))
 
@@ -252,10 +251,10 @@ export default function ExerciseFlowPage(): JSX.Element {
                     transition: 'all 200ms',
                   }}
                   onMouseDown={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'
+                    ;(e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.95)'
                   }}
                   onMouseUp={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'
+                    ;(e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)'
                   }}
                 >
                   {label}
@@ -292,15 +291,19 @@ export default function ExerciseFlowPage(): JSX.Element {
               </p>
             </div>
 
-            {!session.feedback.isCorrect && session.feedback.errorType && currentItem ? (
-              <div style={{ marginBottom: 16 }}>
-                <VisualErrorRenderer
-                  slug={session.feedback.errorType}
-                  minuend={currentItem.content.minuend}
-                  subtrahend={currentItem.content.subtrahend}
-                  expectedAnswer={currentItem.content.answer}
-                  studentAnswer={parseInt(session.response, 10)}
-                />
+            {!session.feedback.isCorrect && session.feedback.errorType ? (
+              <div
+                style={{
+                  padding: 16,
+                  borderRadius: 8,
+                  background: '#fef3c7',
+                  borderLeft: '4px solid #f59e0b',
+                  marginBottom: 16,
+                }}
+              >
+                <p style={{ fontSize: 14, color: '#92400e', margin: 0 }}>
+                  <strong>Tipo de error:</strong> {session.feedback.errorType}
+                </p>
               </div>
             ) : null}
 
@@ -340,4 +343,3 @@ export default function ExerciseFlowPage(): JSX.Element {
     </main>
   )
 }
-
