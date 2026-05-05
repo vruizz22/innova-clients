@@ -10,7 +10,6 @@ import {
   type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
-  type UserRole,
 } from '@components/api-client'
 
 type AuthMode = 'login' | 'register' | 'forgot' | 'reset'
@@ -20,6 +19,14 @@ type AuthPageProps = {
   mode: AuthMode
   defaultRole?: RegisterInput['role']
   allowedRoles?: RegisterInput['role'][]
+}
+
+type AllowedRole = RegisterInput['role']
+
+const ROLE_LABELS: Record<AllowedRole, string> = {
+  student: 'Alumno',
+  teacher: 'Profe',
+  parent: 'Apoderado',
 }
 
 const DEFAULT_ALLOWED_ROLES: RegisterInput['role'][] = ['student', 'teacher', 'parent']
@@ -37,15 +44,22 @@ export function AuthPage({
   const [loading, setLoading] = useState(false)
 
   const [loginData, setLoginData] = useState<LoginInput>({ email: '', password: '' })
-  const [registerData, setRegisterData] = useState<RegisterInput>({ email: '', password: '', role: defaultRole })
+  const [registerData, setRegisterData] = useState<RegisterInput>({
+    email: '',
+    password: '',
+    role: defaultRole,
+  })
   const [forgotData, setForgotData] = useState<ForgotPasswordInput>({ email: '' })
-  const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({ email: '', code: '', newPassword: '' })
+  const [resetData, setResetData] = useState<ConfirmForgotPasswordInput>({
+    email: '',
+    code: '',
+    newPassword: '',
+  })
 
   useEffect(() => {
     if (mode !== 'login') return
     const session = getStoredSession()
     if (!session) return
-
     const meClient = createApiClient({ baseUrl, getAccessToken })
     void meClient
       .me()
@@ -61,7 +75,6 @@ export function AuthPage({
     event.preventDefault()
     setLoading(true)
     setMessage('')
-
     try {
       if (mode === 'login') {
         const result = await authClient.login(loginData)
@@ -69,167 +82,220 @@ export function AuthPage({
         window.location.href = getDashboardUrl(result.user.role)
         return
       }
-
       if (mode === 'register') {
         const result = await authClient.register(registerData)
         storeSession(result)
         window.location.href = getDashboardUrl(result.user.role)
         return
       }
-
       if (mode === 'forgot') {
         const result = await authClient.forgotPassword(forgotData)
-        setMessage(result.message ?? 'Código de recuperación enviado.')
+        setMessage(result.message ?? 'Código enviado. Revisa tu correo.')
         return
       }
-
       const result = await authClient.confirmForgotPassword(resetData)
       setMessage(result.message ?? 'Contraseña restablecida correctamente.')
     } catch (requestError) {
-      setMessage(requestError instanceof Error ? requestError.message : 'Error de autenticación desconocido')
+      setMessage(
+        requestError instanceof Error ? requestError.message : 'Error de autenticación',
+      )
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <main className="container">
-      <section className="card auth-shell">
-        <div className="auth-head">
-          <a href={runtimeConfig.landingUrl} className="auth-brand">SuperProfes</a>
-          <h1>{title}</h1>
-        </div>
+    <main className="auth-main">
+      <div className="auth-card">
+          <h1 className="auth-title">{title}</h1>
+          <p className="auth-sub">
+            {mode === 'login' && 'Ingresa con tu correo y contraseña.'}
+            {mode === 'register' && 'Crea tu cuenta en segundos.'}
+            {mode === 'forgot' && 'Te enviaremos un código de recuperación.'}
+            {mode === 'reset' && 'Ingresa el código que recibiste por correo.'}
+          </p>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {mode === 'login' ? (
-            <>
-              <label>
-                Email
-                <input
-                  value={loginData.email}
-                  onChange={(event) => setLoginData((current) => ({ ...current, email: event.target.value }))}
-                  type="email"
-                  required
-                  placeholder="tu@email.com"
-                />
-              </label>
-              <label>
-                Contraseña
-                <input
-                  value={loginData.password}
-                  onChange={(event) => setLoginData((current) => ({ ...current, password: event.target.value }))}
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                />
-              </label>
-            </>
-          ) : null}
-
-          {mode === 'register' ? (
-            <>
-              <label>
-                Email
-                <input
-                  value={registerData.email}
-                  onChange={(event) => setRegisterData((current) => ({ ...current, email: event.target.value }))}
-                  type="email"
-                  required
-                  placeholder="tu@email.com"
-                />
-              </label>
-              <label>
-                Contraseña
-                <input
-                  value={registerData.password}
-                  onChange={(event) => setRegisterData((current) => ({ ...current, password: event.target.value }))}
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                />
-              </label>
-              <label>
-                Tipo de cuenta
-                <select
-                  value={registerData.role}
-                  onChange={(event) => {
-                    const nextRole = event.target.value as UserRole
-                    if (nextRole === 'student' || nextRole === 'teacher' || nextRole === 'parent') {
-                      setRegisterData((current) => ({ ...current, role: nextRole }))
-                    }
-                  }}
+          {/* Role chooser — only for register */}
+          {mode === 'register' && allowedRoles.length > 1 ? (
+            <div className="auth-roles">
+              {allowedRoles.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  className="auth-role"
+                  aria-pressed={registerData.role === role}
+                  onClick={() => setRegisterData((prev) => ({ ...prev, role }))}
                 >
-                  {allowedRoles.map((role) => (
-                    <option key={role} value={role}>
-                      {role === 'student' ? 'Alumno' : role === 'teacher' ? 'Profesor' : 'Apoderado'}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </>
+                  {role === 'student' ? '📚' : role === 'teacher' ? '👩‍🏫' : '👨‍👩‍👧'}
+                  <span>{ROLE_LABELS[role] ?? role}</span>
+                </button>
+              ))}
+            </div>
           ) : null}
 
-          {mode === 'forgot' ? (
-            <label>
-              Email
-              <input
-                value={forgotData.email}
-                onChange={(event) => setForgotData({ email: event.target.value })}
-                type="email"
-                required
-                placeholder="tu@email.com"
-              />
-            </label>
+          {message ? (
+            <div className="auth-error-banner" role="alert">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+              {message}
+            </div>
           ) : null}
 
-          {mode === 'reset' ? (
-            <>
-              <label>
-                Email
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {/* Login fields */}
+            {mode === 'login' ? (
+              <>
+                <div className="auth-row">
+                  <label htmlFor="auth-email">Email</label>
+                  <input
+                    id="auth-email"
+                    className="auth-input"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="tu@email.com"
+                    value={loginData.email}
+                    onChange={(e) =>
+                      setLoginData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="auth-row">
+                  <label htmlFor="auth-password">Contraseña</label>
+                  <input
+                    id="auth-password"
+                    className="auth-input"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    placeholder="••••••••"
+                    value={loginData.password}
+                    onChange={(e) =>
+                      setLoginData((prev) => ({ ...prev, password: e.target.value }))
+                    }
+                  />
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <a className="auth-link" href="/forgot" style={{ fontSize: 13 }}>
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+              </>
+            ) : null}
+
+            {/* Register fields */}
+            {mode === 'register' ? (
+              <>
+                <div className="auth-row">
+                  <label htmlFor="auth-email">Email</label>
+                  <input
+                    id="auth-email"
+                    className="auth-input"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="tu@email.com"
+                    value={registerData.email}
+                    onChange={(e) =>
+                      setRegisterData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="auth-row">
+                  <label htmlFor="auth-password">Contraseña</label>
+                  <input
+                    id="auth-password"
+                    className="auth-input"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    placeholder="Mínimo 8 caracteres"
+                    value={registerData.password}
+                    onChange={(e) =>
+                      setRegisterData((prev) => ({ ...prev, password: e.target.value }))
+                    }
+                  />
+                </div>
+              </>
+            ) : null}
+
+            {/* Forgot password */}
+            {mode === 'forgot' ? (
+              <div className="auth-row">
+                <label htmlFor="auth-email">Email</label>
                 <input
-                  value={resetData.email}
-                  onChange={(event) => setResetData((current) => ({ ...current, email: event.target.value }))}
+                  id="auth-email"
+                  className="auth-input"
                   type="email"
+                  autoComplete="email"
                   required
+                  placeholder="tu@email.com"
+                  value={forgotData.email}
+                  onChange={(e) => setForgotData({ email: e.target.value })}
                 />
-              </label>
-              <label>
-                Código de recuperación
-                <input
-                  value={resetData.code}
-                  onChange={(event) => setResetData((current) => ({ ...current, code: event.target.value }))}
-                  type="text"
-                  required
-                />
-              </label>
-              <label>
-                Nueva contraseña
-                <input
-                  value={resetData.newPassword}
-                  onChange={(event) => setResetData((current) => ({ ...current, newPassword: event.target.value }))}
-                  type="password"
-                  required
-                />
-              </label>
-            </>
-          ) : null}
+              </div>
+            ) : null}
 
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Enviando...' : 'Continuar'}
-          </button>
-        </form>
+            {/* Reset password */}
+            {mode === 'reset' ? (
+              <>
+                <div className="auth-row">
+                  <label htmlFor="auth-email">Email</label>
+                  <input
+                    id="auth-email"
+                    className="auth-input"
+                    type="email"
+                    required
+                    value={resetData.email}
+                    onChange={(e) =>
+                      setResetData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="auth-row">
+                  <label htmlFor="auth-code">Código de recuperación</label>
+                  <input
+                    id="auth-code"
+                    className="auth-input"
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    placeholder="123456"
+                    value={resetData.code}
+                    onChange={(e) =>
+                      setResetData((prev) => ({ ...prev, code: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="auth-row">
+                  <label htmlFor="auth-newpw">Nueva contraseña</label>
+                  <input
+                    id="auth-newpw"
+                    className="auth-input"
+                    type="password"
+                    required
+                    placeholder="Mínimo 8 caracteres"
+                    value={resetData.newPassword}
+                    onChange={(e) =>
+                      setResetData((prev) => ({ ...prev, newPassword: e.target.value }))
+                    }
+                  />
+                </div>
+              </>
+            ) : null}
 
-        {message ? (
-          <p className="auth-message" role="alert">
-            {message}
-          </p>
-        ) : null}
-        {mode !== 'login' ? (
-          <p className="auth-message">
-            <a className="auth-link-inline" href="/login">Ya tengo cuenta</a>
-          </p>
-        ) : null}
-      </section>
+            <button className="auth-submit" type="submit" disabled={loading}>
+              {loading ? 'Enviando...' : mode === 'login' ? 'Ingresar' : mode === 'register' ? 'Crear cuenta' : 'Continuar'}
+            </button>
+          </form>
+
+          <div className="auth-foot">
+            {mode === 'login' ? (
+              <>¿No tienes cuenta? <a className="auth-link" href="/register">Regístrate gratis</a></>
+            ) : (
+              <>¿Ya tienes cuenta? <a className="auth-link" href="/login">Ingresar</a></>
+            )}
+          </div>
+      </div>
     </main>
   )
 }
