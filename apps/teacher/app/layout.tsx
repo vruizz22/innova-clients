@@ -7,9 +7,17 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const landingUrl = process.env.NEXT_PUBLIC_LANDING_URL ?? 'https://superprofes.app'
+
   return (
     <html lang="es">
       <body>
+        <header className="app-header">
+          <a href={landingUrl} className="app-brand">
+            <span className="app-brand-super">Super</span>
+            <span className="app-brand-profes">Profes</span>
+          </a>
+        </header>
         {children}
       </body>
     </html>
