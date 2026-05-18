@@ -1,22 +1,33 @@
 # CLAUDE.md — innova-clients
 
 > Repo-specific instructions for Claude Code. Inherits all rules from `~/.claude/CLAUDE.md`.
-> Stack: Turborepo + pnpm + Next.js 14 (App Router) + Expo SDK 51 + Astro + TypeScript strict.
+> **Plan vigente:** ver `../docs/MASTER_PLAN_v7.md` y `./docs/PLAN_v7_ADDENDUM.md`.
+> Stack v7: Turborepo + pnpm + **una sola** Next.js 14 (App Router) + Expo SDK 51 (mobile) + (opcional) Astro landing + TypeScript strict + **Supabase Auth**.
 
 ---
 
-## [1] Domain context
+## [0] REGLA OPERATIVA — install-by-user (CRÍTICA)
 
-This monorepo contains all **client-facing applications** for Innova EdTech:
+WSL2 colapsa cuando Claude Code consume todos los núcleos junto con `pnpm install`, `npx expo start`, `vercel deploy`, `eas build`, builds Next.js. **El agente NUNCA ejecuta esos comandos.** Los entrega en un bloque ` ```bash ` con el output esperado, y los corre Victor.
 
-| App | Platform | Users | MVP |
-|-----|----------|-------|-----|
-| `apps/practice` | Web + Mobile (Expo web + Expo native) | Students | ✅ |
-| `apps/teacher` | Web only (Next.js) | Teachers | ✅ |
-| `apps/parent` | Web + Mobile (Expo web + Expo native) | Parents | ✅ |
-| `apps/landing` | Web only (Astro) | Public | ✅ |
-| `apps/practice-desktop` | Tauri (desktop wrapper) | Students | ❌ post-MVP |
-| `apps/parent-desktop` | Tauri (desktop wrapper) | Parents | ❌ post-MVP |
+Aplica a: `pnpm install`, `pnpm add`, `pnpm dlx`, `pnpm build`, `npx expo`, `vercel`, `eas`, `playwright install`, cualquier `docker compose up` con ≥2 servicios.
+**No aplica a**: lecturas (`Read`/`grep`), edición de archivos, `git status`/`log`/`diff`, tests unitarios cortos (`pnpm vitest run path/file.test.ts`).
+
+---
+
+## [1] Domain context — arquitectura v7 (apps unificadas)
+
+Una sola app Next.js con route groups, dos apps Expo nativas, una landing opcional Astro.
+
+| App | Platform | Users | MVP | Notas |
+|-----|----------|-------|-----|-------|
+| `apps/web` | Next.js 14 App Router | Student + Teacher + Parent + Admin | ✅ | **única SPA**, route groups `(student) (teacher) (parent) (marketing)` con middleware role-based |
+| `apps/mobile-student` | Expo (web+iOS+Android) | Students | ✅ | nativo para cámara/OCR |
+| `apps/mobile-parent` | Expo (web+iOS+Android) | Parents | ✅ | |
+| `landing/` (Astro) | Web | Público | ⚠️ | en evaluación: si SEO no lo exige, migrar a `app/(marketing)/` y borrar |
+| Tauri desktop wrappers | — | — | ❌ | descartado post-MVP, no crear scaffolding |
+
+**Deprecadas (a borrar tras corte M9):** `apps/practice`, `apps/teacher`, `apps/parent`, `apps/mobile` (skeleton viejo). Mientras no estén borradas, **no agregar features nuevas en ellas**.
 
 ---
 
@@ -25,34 +36,37 @@ This monorepo contains all **client-facing applications** for Innova EdTech:
 - **Package manager: `pnpm` ONLY** (workspace protocol `pnpm-workspace.yaml`).
 - Root: `pnpm -r run test`, `pnpm -r run build`, `pnpm --filter apps/teacher dev`.
 - Shared packages in `packages/`:
+  - `packages/supabase` — `createBrowserClient`, `createServerClient`, `middleware` helpers (`@supabase/ssr`).
+  - `packages/api-client` — typed API client generated from backend OpenAPI spec.
+  - `packages/ui` — design system real (shadcn/ui base + Tailwind tokens). **Consumido como package**, no copia de assets.
+  - `packages/design-tokens` — colors/spacing/typography.
   - `packages/math-input` — custom math keyboard + step input component (web + native).
   - `packages/upload-scanner` — camera capture + presigned S3 upload (web + native).
   - `packages/telemetry` — attempt buffer with 2s flush interval, SQS-via-API.
-  - `packages/api-client` — typed API client generated from OpenAPI spec.
   - `packages/error-renderer` — renders classified error with visual step diff.
-  - `packages/ui` — shared design system (Tailwind tokens, shadcn/ui base).
+  - `packages/env` — `@t3-oss/env-nextjs` Zod validation.
 - Never use `npm` or `yarn` — Turborepo pipeline depends on pnpm lockfile.
 
 ---
 
-## [3] Deploy strategy: AWS Amplify (primary) + Cloudflare CDN
+## [3] Deploy strategy v7: Vercel (web) + EAS (mobile)
 
-**Decision: AWS Amplify for Next.js apps, Expo EAS for mobile builds, Cloudflare for Astro landing.**
+**Decision (ADR-103/104):** un solo proyecto Vercel para `apps/web`. EAS Build para mobile. Sin AWS Amplify (descartado: añadía fricción y duplicaba CI con `serverless` del backend).
 
-Rationale (vs Vercel):
-- Amplify Gen 2 supports SSR/ISR, App Router, Streaming natively with zero config.
-- Stays within AWS ecosystem (same Cognito, same SQS, same IAM — no cross-cloud auth complexity).
-- Free tier: 1000 build minutes/month + 15 GB storage + 5 GB data out/month → covers MVP pilot.
-- Vercel is better DX but costs $20+/month per team + adds external vendor dependency.
-- Astro landing: Cloudflare Pages (free tier, global CDN, zero cold start for static).
-- Expo apps: EAS Build + EAS Update for OTA. TestFlight (iOS) + Play Console internal track (Android).
+Rationale:
+- Vercel free tier cubre el piloto (100 GB bandwidth, deploys ilimitados, preview por PR).
+- Auth con Supabase: `@supabase/ssr` calza nativo con Next.js App Router middleware.
+- Astro landing queda en evaluación; si se mantiene, **también Vercel** (segundo proyecto), no S3/CloudFront.
+- EAS Build + EAS Update para OTA. TestFlight (iOS, requiere Apple Dev $99/año — decisión pendiente) + Play Console internal track (Android, $25 una vez).
 
-**Production URLs:**
-- `practice.innova.cl` → Amplify (Next.js)
-- `profe.innova.cl` → Amplify (Next.js)
-- `apoderado.innova.cl` → Amplify (Next.js)
-- `innova.cl` → Cloudflare Pages (Astro)
+**Production URLs v7:**
+- `app.superprofes.app` → Vercel (única app web, route groups)
+- `superprofes.app` → Vercel (Astro landing) o redirect 301 a `app/(marketing)/`
+- `api.superprofes.app` → AWS API Gateway (backend serverless)
+- `ai.superprofes.app` → AWS API Gateway (ai-engine)
 - iOS/Android → Expo EAS
+
+**Subdominios deprecados (redirect 301 tras corte M9):** `practice.superprofes.app`, `profe.superprofes.app`, `padres.superprofes.app` → `app.superprofes.app/{practice|dashboard|family}`.
 
 ---
 
@@ -68,9 +82,9 @@ Rationale (vs Vercel):
 
 ---
 
-## [5] apps/practice — Student practice app
+## [5] apps/web/(student) — Student practice (web)
 
-Platform: **Expo (web + iOS + Android)** using Expo Router (file-based routing).
+Platform: **Next.js App Router** route group `(student)`. Mobile nativo vive en `apps/mobile-student`.
 
 Key flows:
 1. Student lands on assignment list → taps exercise.
@@ -91,9 +105,9 @@ For photo-upload flow:
 
 ---
 
-## [6] apps/teacher — Teacher dashboard
+## [6] apps/web/(teacher) — Teacher dashboard
 
-Platform: **Next.js 14 App Router** (web only, no mobile requirement for MVP).
+Platform: **Next.js 14 App Router** route group `(teacher)`, web-only (no mobile teacher en MVP).
 
 Key views:
 1. **Classroom overview**: heatmap of `p_known` per (student, skill). Color: green ≥0.7, yellow 0.4–0.7, red <0.4.
@@ -108,9 +122,9 @@ Data fetching:
 
 ---
 
-## [7] apps/parent — Parent app
+## [7] apps/web/(parent) + apps/mobile-parent — Parent app
 
-Platform: **Expo (web + iOS + Android)** using Expo Router.
+Web vive en `apps/web/(parent)` (Next.js). Mobile nativo vive en `apps/mobile-parent` (Expo).
 
 Key flows:
 1. View child's active `PracticeAssignment` — list of exercises to do.
@@ -156,41 +170,46 @@ See `docs/prompt/03-innova-clients-testing.md` for full test spec.
 
 ---
 
-## [11] Environment variables
+## [11] Environment variables (v7 Supabase)
 
 ```env
-# apps/practice, apps/teacher, apps/parent (Next.js)
-NEXT_PUBLIC_API_URL=
-NEXT_PUBLIC_COGNITO_USER_POOL_ID=
-NEXT_PUBLIC_COGNITO_CLIENT_ID=
+# apps/web (Next.js)
+NEXT_PUBLIC_API_URL=https://api.superprofes.app
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=          # server-only, NUNCA prefijo NEXT_PUBLIC_
 NEXT_PUBLIC_S3_UPLOAD_BUCKET=
 
-# Expo (apps/practice, apps/parent)
+# Expo (apps/mobile-student, apps/mobile-parent)
 EXPO_PUBLIC_API_URL=
-EXPO_PUBLIC_COGNITO_CLIENT_ID=
-
-# Build-time only (server)
-AMPLIFY_BRANCH=
+EXPO_PUBLIC_SUPABASE_URL=
+EXPO_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Validated at build time via `packages/env` using `@t3-oss/env-nextjs` (Zod schemas).
+Deprecadas: `COGNITO_*`, `AMPLIFY_BRANCH`. Validadas en build via `packages/env` (`@t3-oss/env-nextjs` + Zod). **Las variables `NEXT_PUBLIC_*` se filtran al cliente** — `SUPABASE_SERVICE_ROLE_KEY` jamás debe ir con ese prefijo.
 
 ---
 
 ## [12] CI/CD
 
-- GitHub Actions: `.github/workflows/ci.yml` — type-check + lint + unit tests on all PRs.
-- `.github/workflows/deploy-web.yml` — deploy to AWS Amplify on merge to main.
-- `.github/workflows/deploy-mobile.yml` — EAS Build + EAS Update on merge to main.
-- Branch: `feature/framework` → PR → 2 reviewers → merge.
+- `.github/workflows/ci.yml` — typecheck + lint + unit (Vitest) + **Playwright smoke** en PRs.
+- `.github/workflows/deploy-web.yml` — Vercel deploy `apps/web` en merge a main (1 sólo job).
+- `.github/workflows/deploy-mobile.yml` — EAS Build + EAS Update **bajo demanda** (trigger por tag `mobile-v*`, no en cada merge, para no quemar build minutes).
+- Todos los workflows con `concurrency: { group: ${{github.workflow}}-${{github.ref}}, cancel-in-progress: true }`.
+- Branch: `feature/<nombre>` → PR → 2 reviewers → merge.
+
+### Smoke testing con Playwright MCP
+Ver `docs/SMOKE_TESTING.md`. Cada PR de UI corre Playwright sobre el flujo afectado, captura screenshots y los compara contra `SuperProfes-Design-System/preview/<componente>.png` con tolerancia 5% (bajar a 2% cuando estabilice). Los agentes que toquen UI **deben** ejecutar el smoke vía Playwright MCP (lectura, no instalación) y adjuntar screenshot en el comentario del PR.
 
 ---
 
 ## [13] What NOT to do
 
-- No Vercel-specific features (`next/headers` server-only APIs are fine since Amplify supports App Router).
-- No `localStorage` for session tokens — use httpOnly cookies (web) / SecureStore (native).
-- No third-party analytics that capture PII (COPPA + Ley 21.180 compliance).
-- No desktop Tauri apps in MVP — create the route/folder but don't wire it up.
-- No LaTeX rendering in student practice input (MVP scope).
-- No `useEffect` for data fetching in Next.js App Router — use async Server Components.
+- No `localStorage` for session tokens — usar `@supabase/ssr` (httpOnly cookies en web) / SecureStore (native).
+- No third-party analytics que capture PII (COPPA + Ley 21.180).
+- No Tauri desktop wrappers.
+- No LaTeX rendering en student practice input (MVP).
+- No `useEffect` para data fetching en Next.js App Router — usar async Server Components.
+- No agregar features nuevas en `apps/practice|teacher|parent` (deprecadas, en proceso de borrado).
+- No comandos de instalación / build / deploy desde el agente — ver §[0].
+- No volver a Cognito ni a JWT custom — auth es Supabase de aquí en adelante.
