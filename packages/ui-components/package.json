@@ -10,6 +10,9 @@
   },
   "types": "./src/index.ts",
   "private": true,
+  "dependencies": {
+    "@innova/error-catalog": "workspace:*"
+  },
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
