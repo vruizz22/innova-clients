@@ -4,8 +4,10 @@ import { resolve } from 'node:path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@components': resolve(__dirname, 'apps/practice/components'),
-      '@shared': resolve(__dirname, 'components'),
+      '@innova/ui': resolve(__dirname, 'packages/ui-components/src'),
+      '@innova/design-tokens': resolve(__dirname, 'packages/design-tokens/src'),
+      '@innova/error-catalog': resolve(__dirname, 'packages/error-catalog/src'),
+      '@innova/supabase': resolve(__dirname, 'packages/supabase/src'),
     },
   },
   test: {
