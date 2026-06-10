@@ -8,6 +8,7 @@ export default defineConfig({
       '@innova/design-tokens': resolve(__dirname, 'packages/design-tokens/src'),
       '@innova/error-catalog': resolve(__dirname, 'packages/error-catalog/src'),
       '@innova/supabase': resolve(__dirname, 'packages/supabase/src'),
+      '@innova/api-client': resolve(__dirname, 'packages/api-client/src'),
     },
   },
   test: {
