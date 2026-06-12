@@ -8,22 +8,28 @@
     "start": "next start -p 3005",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test:smoke": "playwright test --config tests/playwright.config.ts",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@innova/ui": "workspace:*",
+    "@innova/api-client": "workspace:*",
+    "@innova/math-input": "workspace:*",
     "@innova/supabase": "workspace:*",
     "@innova/error-catalog": "workspace:*",
     "@innova/design-tokens": "workspace:*",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.0",
     "@tanstack/react-query": "^5.101.0",
+    "katex": "^0.16.11",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/katex": "^0.16.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

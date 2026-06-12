@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -22,6 +23,8 @@
       "@innova/ui/*": ["../../packages/ui-components/src/*"],
       "@innova/supabase": ["../../packages/supabase/src/index.ts"],
       "@innova/supabase/*": ["../../packages/supabase/src/*"],
+      "@innova/api-client": ["../../packages/api-client/src/index.ts"],
+      "@innova/math-input": ["../../packages/math-input/src/index.ts"],
       "@innova/error-catalog": ["../../packages/error-catalog/src/index.ts"]
     }
   },
