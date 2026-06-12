@@ -1,0 +1,51 @@
+name: Deploy Web (Vercel)
+# Single unified app → app.superprofes.app. Replaces the old 3-job
+# practice/teacher/parent pipeline. Secret VERCEL_PROJECT_ID_WEB points at
+# the `superprofes-web` Vercel project.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy app.superprofes.app
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.10.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy apps/web to Vercel
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          mkdir -p apps/web/.vercel
+          # Write project.json WITHOUT rootDirectory to avoid path duplication.
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > apps/web/.vercel/project.json
+          npx vercel pull --yes --environment=production --token "$VERCEL_TOKEN" --cwd apps/web
+          node -e "const fs=require('fs');const p='apps/web/.vercel/project.json';const j=JSON.parse(fs.readFileSync(p,'utf8'));delete j.rootDirectory;fs.writeFileSync(p,JSON.stringify(j));"
+          npx vercel build --prod --token "$VERCEL_TOKEN" --cwd apps/web
+          npx vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN" --cwd apps/web

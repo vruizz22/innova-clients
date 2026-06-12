@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<title>SuperProfes · Auth Mobile</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="../shared.css"/>
+<style>
+  body { background: var(--slate-100); margin: 0; padding: 24px; display: grid; place-items: start center; min-height: 100vh; }
+  .stage { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); }
+  .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+  .nav button { padding: 8px 14px; border-radius: 9999px; border: 1px solid var(--border-strong); background: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
+  .nav button.is-active { background: var(--slate-800); color: #fff; border-color: var(--slate-800); }
+
+  /* ── mobile screen ── */
+  .m-app { display: flex; flex-direction: column; min-height: 100%; background: var(--bg-student); }
+  .m-top { padding: 24px 22px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .m-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; }
+  .m-logo .mark { width: 36px; height: 36px; border-radius: 10px; background: var(--sky-700); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 14px; }
+  .m-body { flex: 1; padding: 24px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .m-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin: 0; color: var(--fg-1); }
+  .m-sub { font-size: 14px; color: var(--fg-2); margin: 0; line-height: 1.5; }
+  .m-input-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .m-input-wrap label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); }
+  .m-input { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid var(--border-strong); font-family: inherit; font-size: 16px; background: #fff; box-sizing: border-box; }
+  .m-input:focus { outline: none; border-color: var(--sky-500); box-shadow: 0 0 0 3px rgba(63,167,214,.18); }
+  .m-btn { width: 100%; padding: 14px; border-radius: 12px; border: 0; background: var(--sky-700); color: #fff; font-family: inherit; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 4px; }
+  .m-btn-ghost { width: 100%; padding: 13px; border-radius: 12px; border: 1.5px solid var(--border-strong); background: #fff; color: var(--fg-1); font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; }
+  .m-link { text-align: center; font-size: 14px; color: var(--fg-2); }
+  .m-link a { color: var(--sky-700); font-weight: 600; text-decoration: none; }
+  .m-divider { display: flex; align-items: center; gap: 10px; color: var(--fg-3); font-size: 12px; }
+  .m-divider::before, .m-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  .m-roles { display: flex; gap: 8px; }
+  .m-role { flex: 1; padding: 10px 6px; border-radius: 10px; border: 1.5px solid var(--border-strong); background: #fff; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--fg-2); }
+  .m-role.is-active { border-color: var(--sky-500); background: var(--sky-50); color: var(--sky-800); }
+  .m-strength { display: flex; gap: 4px; margin-top: 4px; }
+  .m-strength span { flex:1; height: 4px; border-radius: 9999px; background: var(--slate-200); }
+  .m-otp { display: flex; gap: 8px; }
+  .m-otp input { flex:1; height: 52px; text-align: center; font-size: 22px; font-weight: 700; border-radius: 12px; border: 1.5px solid var(--border-strong); background: #fff; font-family: ui-monospace, monospace; }
+  .m-steps { display: flex; gap: 6px; margin-bottom: 4px; }
+  .m-steps .s { flex:1; height: 4px; border-radius: 9999px; background: var(--slate-200); }
+  .m-steps .s.on { background: var(--sky-500); }
+  .m-foot { padding: 16px 22px 0; }
+
+  /* me screen */
+  .m-avatar-big { width: 80px; height: 80px; border-radius: 9999px; background: var(--mint-100); color: var(--mint-700); display: grid; place-items: center; font-size: 28px; font-weight: 700; margin: 0 auto; }
+  .m-kv { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .m-kv:last-child { border-bottom: 0; }
+  .m-kv .k { color: var(--fg-2); font-weight: 600; }
+  .m-kv .v { color: var(--fg-1); font-family: ui-monospace, monospace; font-size: 13px; }
+  .m-badge { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .role-student { background: var(--sky-100); color: var(--sky-800); }
+  .role-teacher { background: var(--slate-100); color: var(--slate-800); }
+  .role-parent  { background: var(--mint-100); color: var(--mint-800); }
+  .role-admin   { background: #EAE0FA; color: #5A2A93; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../shared/Icon.jsx"></script>
+<script type="text/babel" src="../shared/ios-frame.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const Logo = () => (
+  <div className="m-logo">
+    <div className="mark">SP</div>
+    <span>Super<span style={{color:'var(--sky-500)'}}>Profes</span></span>
+  </div>
+);
+
+function LoginScreen() {
+  const [role, setRole] = useState('student');
+  const ROLES = [{id:'student',l:'Alumno'},{id:'teacher',l:'Profe'},{id:'parent',l:'Apoderado'}];
+  return (
+    <div className="m-app">
+      <div className="m-top"><Logo/></div>
+      <div className="m-body">
+        <h1 className="m-title">Hola, bienvenido</h1>
+        <p className="m-sub">Ingresa con tu correo institucional.</p>
+        <div className="m-roles">
+          {ROLES.map(r => <div key={r.id} className={`m-role ${role===r.id?'is-active':''}`} onClick={()=>setRole(r.id)}>{r.l}</div>)}
+        </div>
+        <div className="m-input-wrap"><label>Correo</label><input className="m-input" type="email" placeholder="tu@colegio.cl"/></div>
+        <div className="m-input-wrap"><label>Contraseña</label><input className="m-input" type="password" placeholder="Mínimo 8 caracteres"/></div>
+        <div style={{textAlign:'right'}}><a href="#" style={{fontSize:13,color:'var(--sky-700)',fontWeight:600}}>¿Olvidaste tu contraseña?</a></div>
+        <button className="m-btn">Entrar</button>
+        <div className="m-link">¿Eres nuevo? <a href="#">Crea una cuenta</a></div>
+      </div>
+    </div>
+  );
+}
+
+function RegisterScreen() {
+  const [pw, setPw] = useState('');
+  const strength = Math.min(4,[pw.length>=8,/[A-Z]/.test(pw)&&/[a-z]/.test(pw),/\d/.test(pw),/[^A-Za-z0-9]/.test(pw)].filter(Boolean).length);
+  const colors = ['','#D86060','#E8A33D','var(--mint-500)','var(--mint-500)'];
+  return (
+    <div className="m-app">
+      <div className="m-top"><Logo/></div>
+      <div className="m-body">
+        <h1 className="m-title">Crear cuenta</h1>
+        <p className="m-sub">Empieza gratis. Tu colegio se puede vincular después.</p>
+        <div className="m-input-wrap"><label>Correo institucional</label><input className="m-input" type="email" placeholder="tu@colegio.cl"/></div>
+        <div className="m-input-wrap">
+          <label>Contraseña</label>
+          <input className="m-input" type="password" placeholder="Crea una contraseña segura" value={pw} onChange={e=>setPw(e.target.value)}/>
+          <div className="m-strength">{[0,1,2,3].map(i=><span key={i} style={{background:i<strength?colors[strength]:'var(--slate-200)'}}/>)}</div>
+        </div>
+        <div className="m-input-wrap"><label>Código del colegio (opcional)</label><input className="m-input" type="text" placeholder="Ej: STMARIA-2025"/></div>
+        <button className="m-btn">Crear cuenta</button>
+        <div className="m-link">¿Ya tienes cuenta? <a href="#">Inicia sesión</a></div>
+      </div>
+    </div>
+  );
+}
+
+function ForgotScreen() {
+  return (
+    <div className="m-app">
+      <div className="m-top"><Logo/></div>
+      <div className="m-body">
+        <div style={{width:56,height:56,borderRadius:9999,background:'var(--sky-100)',display:'grid',placeItems:'center',color:'var(--sky-700)'}}><Icon name="lock" size={24}/></div>
+        <h1 className="m-title">Recuperar contraseña</h1>
+        <p className="m-sub">Ingresa tu correo y te enviamos un enlace de recuperación.</p>
+        <div className="m-input-wrap"><label>Correo</label><input className="m-input" type="email" placeholder="tu@colegio.cl"/></div>
+        <button className="m-btn">Enviar enlace</button>
+        <div className="m-link"><a href="#">← Volver al login</a></div>
+      </div>
+    </div>
+  );
+}
+
+function ResetScreen() {
+  const [code, setCode] = useState(['','','','','','']);
+  const setD = (i,v) => { const n=[...code]; n[i]=v.slice(-1); setCode(n); };
+  return (
+    <div className="m-app">
+      <div className="m-top"><Logo/></div>
+      <div className="m-body">
+        <div className="m-steps"><span className="s on"/><span className="s on"/><span className="s"/></div>
+        <h1 className="m-title">Ingresa el código</h1>
+        <p className="m-sub">Enviamos un código de 6 dígitos a <strong>antonia@colegio.cl</strong>. Expira en 15 min.</p>
+        <div className="m-otp">{code.map((d,i)=><input key={i} inputMode="numeric" maxLength="1" value={d} onChange={e=>setD(i,e.target.value)}/>)}</div>
+        <div className="m-input-wrap"><label>Nueva contraseña</label><input className="m-input" type="password" placeholder="Mínimo 8 caracteres"/></div>
+        <button className="m-btn">Cambiar contraseña</button>
+        <div className="m-link">¿No recibiste el código? <a href="#">Reenviar</a></div>
+      </div>
+    </div>
+  );
+}
+
+function MeScreen() {
+  const ME = { name:'Antonia Fuentes', email:'antonia@stmaria.cl', role:'student', classroom:'4° A · Colegio San Pedro', createdAt:'2025-03-12', id:'usr_a8f3b2c1' };
+  return (
+    <div className="m-app">
+      <div className="m-top" style={{paddingTop:20}}><Logo/></div>
+      <div className="m-body" style={{gap:0}}>
+        <div style={{textAlign:'center',marginBottom:20}}>
+          <div className="m-avatar-big">{ME.name.split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+          <div style={{marginTop:12,fontWeight:700,fontSize:18}}>{ME.name}</div>
+          <span className={`m-badge role-${ME.role}`}>{ME.role}</span>
+        </div>
+        <div style={{background:'#fff',borderRadius:14,border:'1px solid var(--border)',padding:'0 16px'}}>
+          <div className="m-kv"><span className="k">Correo</span><span className="v">{ME.email}</span></div>
+          <div className="m-kv"><span className="k">Curso</span><span className="v">{ME.classroom}</span></div>
+          <div className="m-kv"><span className="k">ID</span><span className="v">{ME.id}</span></div>
+          <div className="m-kv"><span className="k">Miembro desde</span><span className="v">{ME.createdAt}</span></div>
+        </div>
+        <div style={{marginTop:14,display:'flex',flexDirection:'column',gap:10}}>
+          <button className="m-btn-ghost"><Icon name="settings" size={16}/> Ajustes de cuenta</button>
+          <button className="m-btn" style={{background:'var(--mastery-weak)'}}>Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SCREENS = [
+  {id:'login',    l:'Login',    C:LoginScreen},
+  {id:'register', l:'Register', C:RegisterScreen},
+  {id:'forgot',   l:'Forgot',   C:ForgotScreen},
+  {id:'reset',    l:'Reset',    C:ResetScreen},
+  {id:'me',       l:'/auth/me', C:MeScreen},
+];
+
+function App() {
+  const [tab, setTab] = useState('login');
+  const cur = SCREENS.find(s=>s.id===tab);
+  return (
+    <div>
+      <div className="nav">
+        {SCREENS.map(s=><button key={s.id} className={s.id===tab?'is-active':''} onClick={()=>setTab(s.id)}>{s.l}</button>)}
+      </div>
+      <div className="stage">
+        <div className="col" data-screen-label={`Auth mobile · ${cur.l}`}>
+          <IOSDevice width={390} height={780}><cur.C/></IOSDevice>
+          <div className="lbl">{cur.l}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
