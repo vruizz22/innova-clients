@@ -18,6 +18,26 @@ const ROLE_LABEL: Record<AppRole, string> = {
   admin: 'Admin',
 };
 
+interface NavLink {
+  readonly href: string;
+  readonly label: string;
+}
+
+const AREA_NAV: Record<Area, readonly NavLink[]> = {
+  student: [
+    { href: '/practice', label: 'Práctica' },
+    { href: '/guides', label: 'Guías' },
+    { href: '/scan', label: 'Escanear' },
+  ],
+  teacher: [
+    { href: '/dashboard', label: 'Cursos' },
+    { href: '/guides', label: 'Guías' },
+    { href: '/exercise-bank', label: 'Banco' },
+  ],
+  parent: [{ href: '/family', label: 'Mis hijos' }],
+  admin: [{ href: '/error-catalog', label: 'Catálogo' }],
+};
+
 export async function AppShell({
   area,
   children,
@@ -62,6 +82,17 @@ export async function AppShell({
             </form>
           </div>
         </div>
+        <nav className="mx-auto flex max-w-[1280px] items-center gap-1 px-5 pb-2">
+          {AREA_NAV[area].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
       </header>
       <main className="mx-auto max-w-[1280px] px-5 py-8">{children}</main>
     </div>
