@@ -5,32 +5,13 @@ export {
   type ApiResult,
   type RequestOptions,
 } from './http';
-export { createApiClient, type InnovaApiClient, type ListItemsParams } from './client';
 export {
-  alertSchema,
-  alertsSchema,
-  assignmentTargetSchema,
-  attemptResultSchema,
-  attemptStepSchema,
-  classroomMasterySchema,
-  classroomSchema,
-  classroomsSchema,
-  courseStudentMasterySchema,
-  difficultySchema,
-  itemSchema,
-  itemsSchema,
-  meSchema,
-  ocrExtractSchema,
-  studentAssignmentsSchema,
-  type Alert,
-  type AttemptResult,
-  type AttemptStep,
-  type Classroom,
-  type CourseStudentMastery,
-  type CreateAttemptInput,
-  type Difficulty,
-  type Item,
-  type Me,
-  type OcrExtractResult,
-  type StudentAssignment,
-} from './schemas';
+  createApiClient,
+  type InnovaApiClient,
+  type ListItemsParams,
+  type ListGuidesParams,
+} from './client';
+export * from './guides';
+// Re-export the full schema surface (no name collisions with ./guides — verified).
+// Keeps new schemas/types — heatmap, parent, topic catalog — exported automatically.
+export * from './schemas';

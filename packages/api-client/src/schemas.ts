@@ -12,11 +12,16 @@ export const difficultySchema = z.enum(['easy', 'medium', 'hard']);
 export type Difficulty = z.infer<typeof difficultySchema>;
 
 // ------------------------------------------------------------------ auth ----
-// GET /auth/me → { id, email, role } (id = User.id / prismaUserId)
+// GET /auth/me → { id, email, role, profileId }
+//   id        = User.id (prismaUserId)
+//   profileId = role-specific record id (Student.id / Teacher.id / Parent.id),
+//               null until the role profile exists. This is the id domain
+//               endpoints expect (e.g. /assignments/student/:studentId).
 export const meSchema = z.object({
   id: z.string(),
   email: z.string(),
   role: z.string(),
+  profileId: z.string().nullable(),
 });
 export type Me = z.infer<typeof meSchema>;
 
@@ -67,6 +72,18 @@ export const assignmentTargetSchema = z.object({
 });
 export const studentAssignmentsSchema = z.array(assignmentTargetSchema);
 export type StudentAssignment = z.infer<typeof assignmentTargetSchema>;
+
+// ----------------------------------------------------------- topics ----
+// GET /skills → Topic[] (the curriculum topic catalog, used by the guide wizard
+// to confirm/change a question's topic).
+export const topicCatalogEntrySchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  unitId: z.string().nullable().optional(),
+});
+export const topicCatalogSchema = z.array(topicCatalogEntrySchema);
+export type TopicCatalogEntry = z.infer<typeof topicCatalogEntrySchema>;
 
 // ----------------------------------------------------------- classrooms ----
 // GET /classrooms/mine → Course[]
@@ -136,6 +153,86 @@ export const courseStudentMasterySchema = z.object({
 export const classroomMasterySchema = z.array(courseStudentMasterySchema);
 export type CourseStudentMastery = z.infer<typeof courseStudentMasterySchema>;
 
+// GET /mastery/course/:id/heatmap → Student × Unit heatmap (C12)
+export const heatmapUnitSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  sequence: z.number(),
+});
+export const heatmapStudentSchema = z.object({
+  studentId: z.string(),
+  displayName: z.string(),
+  units: z.array(
+    z.object({
+      unitId: z.string(),
+      pKnown: z.number(),
+      topicCount: z.number(),
+    })
+  ),
+  topics: z.array(
+    z.object({
+      topicId: z.string(),
+      unitId: z.string(),
+      topicCode: z.string(),
+      topicName: z.string(),
+      pKnown: z.number(),
+    })
+  ),
+});
+export const courseHeatmapSchema = z.object({
+  courseId: z.string(),
+  units: z.array(heatmapUnitSchema),
+  students: z.array(heatmapStudentSchema),
+});
+export type CourseHeatmap = z.infer<typeof courseHeatmapSchema>;
+export type HeatmapStudent = z.infer<typeof heatmapStudentSchema>;
+
+// ---------------------------------------------------------------- parent ----
+export const masteryBandSchema = z.enum(['low', 'mid', 'high']);
+export type MasteryBand = z.infer<typeof masteryBandSchema>;
+
+// GET /parent/children → ParentChild[]
+export const parentChildSchema = z.object({
+  studentId: z.string(),
+  displayName: z.string(),
+  relationship: z.string(),
+});
+export const parentChildrenSchema = z.array(parentChildSchema);
+export type ParentChild = z.infer<typeof parentChildSchema>;
+
+// GET /parent/children/:id → COPPA-safe summary (bands, no raw numbers)
+export const parentChildSummarySchema = z.object({
+  student: z.object({ id: z.string(), displayName: z.string() }),
+  units: z.array(
+    z.object({
+      unitId: z.string(),
+      code: z.string(),
+      name: z.string(),
+      band: masteryBandSchema,
+    })
+  ),
+  recentGuides: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      status: z.string(),
+      dueAt: z.string().nullable(),
+      gradedQuestions: z.number(),
+      totalQuestions: z.number(),
+    })
+  ),
+  alerts: z.array(
+    z.object({
+      id: z.string(),
+      severity: z.string(),
+      alertType: z.string(),
+      createdAt: z.string(),
+    })
+  ),
+});
+export type ParentChildSummary = z.infer<typeof parentChildSummarySchema>;
+
 // --------------------------------------------------------------- attempts ----
 export const attemptStepSchema = z.object({
   expression: z.string(),
@@ -174,6 +271,24 @@ export const ocrExtractSchema = z.object({
   confidence: z.number(),
 });
 export type OcrExtractResult = z.infer<typeof ocrExtractSchema>;
+
+// ----------------------------------------------------- error report (C4) ----
+/**
+ * Request body for POST /attempts/:id/report — a student/teacher disagreeing with
+ * the classifier picks the correct error tag from the catalog (v8 C4). The
+ * resulting tag is recorded with ErrorSource.FIELD_REPORTED on the backend.
+ */
+export interface ReportAttemptErrorInput {
+  readonly errorTagCode: string;
+  readonly comment?: string;
+}
+
+// POST /attempts/:id/report → acknowledgement
+export const reportAckSchema = z.object({
+  attemptId: z.string(),
+  reported: z.boolean(),
+});
+export type ReportAck = z.infer<typeof reportAckSchema>;
 
 // ---------------------------------------------------------------- alerts ----
 // GET /alerts?courseId= → TeacherAlert[]
