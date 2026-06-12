@@ -1,0 +1,50 @@
+import type { Config } from 'tailwindcss';
+
+// SuperProfes palette (design system colors_and_type.css). Student = sky/mint,
+// teacher/parent = slate. Mastery scale never uses alarm red.
+const config: Config = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    '../../packages/ui-components/src/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#3FA7D6',
+        'primary-hover': '#2F8DBA',
+        'primary-press': '#226E94',
+        success: '#3DAA72',
+        warning: '#E8A33D',
+        danger: '#D86060',
+        'mastery-strong': '#3DAA72',
+        'mastery-medium': '#E8A33D',
+        'mastery-weak': '#D86060',
+        sky: {
+          50: '#F0F7FB', 100: '#DCEDF6', 200: '#B6DBED', 300: '#84C2DD', 400: '#58B0D2',
+          500: '#3FA7D6', 600: '#2F8DBA', 700: '#226E94', 800: '#18506D', 900: '#0F2A3D',
+        },
+        mint: {
+          50: '#ECFAF3', 100: '#D2F2E0', 200: '#A8E5C2', 300: '#76D29F', 400: '#50BF82',
+          500: '#3DAA72', 600: '#2D8B5C', 700: '#226B47', 800: '#194E34', 900: '#0F3322',
+        },
+        slate: {
+          50: '#F7F8FA', 100: '#E5E9F0', 200: '#CDD3DD', 300: '#A5ADBC', 400: '#717A8B',
+          500: '#4F5868', 600: '#374050', 700: '#232C3A', 800: '#1F2937', 900: '#0F141B',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        sm: '4px', md: '8px', lg: '12px', xl: '16px', pill: '9999px',
+      },
+      boxShadow: {
+        card: '0 1px 2px rgba(15,42,61,0.04), 0 1px 3px rgba(15,42,61,0.06)',
+        pop: '0 8px 24px rgba(15,42,61,0.10), 0 2px 6px rgba(15,42,61,0.06)',
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;

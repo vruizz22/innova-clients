@@ -2,7 +2,7 @@ const PROD_URLS = {
   landing: 'https://superprofes.app',
   practice: 'https://practice.superprofes.app',
   teacher: 'https://profe.superprofes.app',
-  parent: 'https://superprofes.app',
+  parent: 'https://padres.superprofes.app',
 } as const;
 
 function publicUrl(name: string, fallback: string): string {

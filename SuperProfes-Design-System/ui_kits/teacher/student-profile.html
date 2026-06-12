@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>SuperProfes · Student Profile</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="../shared.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  body { background:var(--slate-50); margin:0; }
+  .sp-shell { max-width:1280px; margin:0 auto; padding:28px 24px; }
+  .sp-header { display:flex; align-items:center; gap:16px; margin-bottom:28px; }
+  .sp-back { background:none; border:0; cursor:pointer; color:var(--sky-600); font-weight:700; font-size:14px; padding:0; display:flex; align-items:center; gap:6px; }
+  .sp-title { font-size:28px; font-weight:700; }
+  .sp-avatar { width:72px; height:72px; border-radius:9999px; background:linear-gradient(135deg,var(--sky-500),var(--mint-400)); display:grid; place-items:center; color:#fff; font-weight:700; font-size:24px; }
+  .sp-info { flex:1; }
+  .sp-name { font-size:20px; font-weight:700; margin:0; }
+  .sp-class { font-size:14px; color:var(--fg-2); margin:4px 0 0; }
+  .sp-actions { display:flex; gap:8px; }
+  .btn { padding:10px 16px; border-radius:10px; border:1.5px solid var(--border); background:#fff; font:inherit; font-weight:600; font-size:14px; cursor:pointer; }
+  
+  .sp-grid { display:grid; grid-template-columns:1fr 360px; gap:24px; }
+  
+  /* Main */
+  .sp-card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:16px; }
+  .sp-card h3 { margin:0 0 16px; font-size:16px; font-weight:700; }
+  
+  /* Mastery grid */
+  .mastery-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .mastery-row:last-child { border-bottom:0; }
+  .mastery-row .nm { flex:1; font-weight:600; }
+  .mastery-row .bar { flex:2; height:8px; background:var(--slate-100); border-radius:9999px; overflow:hidden; }
+  .mastery-row .fill { height:100%; border-radius:9999px; }
+  .mastery-row .pct { width:36px; text-align:right; font-family:ui-monospace,monospace; font-weight:700; font-size:12px; }
+  
+  /* Timeline */
+  .timeline { position:relative; padding-left:24px; }
+  .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--border); }
+  .timeline-item { position:relative; padding:12px 0; }
+  .timeline-item::before { content:''; position:absolute; left:-28px; top:16px; width:12px; height:12px; border-radius:9999px; background:var(--sky-500); border:2px solid #fff; }
+  .timeline-item.resolved::before { background:var(--mint-500); }
+  .timeline-item.error::before { background:var(--mastery-weak); }
+  .timeline-time { font-size:11px; color:var(--fg-2); font-family:ui-monospace,monospace; }
+  .timeline-title { font-weight:600; margin:3px 0; }
+  .timeline-desc { font-size:13px; color:var(--fg-2); }
+  
+  /* Sidebar */
+  .sp-sidebar { display:flex; flex-direction:column; gap:16px; }
+  .sp-stat-card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px; }
+  .sp-stat-v { font-size:24px; font-weight:700; font-family:ui-monospace,monospace; }
+  .sp-stat-l { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--fg-2); margin-top:4px; }
+  
+  .alert-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; }
+  .alert-badge.risk { background:var(--error-bg); color:var(--mastery-weak); }
+  .alert-badge.info { background:var(--sky-50); color:var(--sky-700); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="../shared/Icon.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const SKILLS = [
+  {name:'Resta con reserva',pk:.32,trend:'↓'},
+  {name:'Suma con llevadas',pk:.71,trend:'↑'},
+  {name:'Multiplicación',pk:.58,trend:'→'},
+];
+const pkColor = p => p>=.7?'var(--mint-500)':p>=.4?'var(--mastery-medium)':'var(--mastery-weak)';
+
+const TIMELINE = [
+  {type:'attempt',time:'hoy 14:32',title:'Resta con reserva',desc:'15 ejercicios · 8 correctas',skill:'subtraction_borrow'},
+  {type:'alert',time:'hoy 12:01',title:'⚠️ Alerta activa',desc:'BORROW_OMITTED_TENS detectado 3 veces esta semana',skill:'subtraction_borrow'},
+  {type:'attempt',time:'ayer 16:45',title:'Suma con llevadas',desc:'10 ejercicios · 9 correctas',skill:'addition_carry'},
+  {type:'resolved',time:'ayer 14:00',title:'✓ Alerta resuelta',desc:'Dominio en División larga subió a 0.52',skill:'long_division'},
+  {type:'attempt',time:'mar 09:30',title:'Multiplicación',desc:'20 ejercicios · 12 correctas',skill:'multiplication'},
+];
+
+function App() {
+  const [tab, setTab] = useState('mastery');
+  
+  return (
+    <div className="sp-shell" data-screen-label="Teacher · Student Profile drill-down">
+      <div className="sp-header">
+        <button className="sp-back">← Volver</button>
+        <div className="sp-avatar">AF</div>
+        <div className="sp-info">
+          <h1 className="sp-name">Antonia Fuentes</h1>
+          <p className="sp-class">4° A · Colegio San Pedro</p>
+        </div>
+        <div className="sp-actions">
+          <button className="btn"><Icon name="message-square" size={14}/> Mensaje</button>
+          <button className="btn"><Icon name="settings" size={14}/></button>
+        </div>
+      </div>
+      
+      <div className="sp-grid">
+        <div>
+          {/* MASTERY */}
+          {tab==='mastery' && (
+            <div className="sp-card">
+              <h3>Dominio por habilidad · GET /mastery/:studentId</h3>
+              {SKILLS.map((s,i)=>{
+                const c = pkColor(s.pk);
+                return (
+                  <div key={i} className="mastery-row">
+                    <span className="nm">{s.name}</span>
+                    <div className="bar"><span className="fill" style={{width:(s.pk*100)+'%',background:c}}/></div>
+                    <span className="pct" style={{color:c}}>{(s.pk*100).toFixed(0)}%</span>
+                    <span style={{fontSize:12,color:s.trend==='↑'?'var(--mint-600)':s.trend==='↓'?'var(--mastery-weak)':'var(--fg-2)'}}>{s.trend}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
+          {/* ATTEMPTS */}
+          <div className="sp-card">
+            <h3>Historial de intentos · GET /attempts/student/:id</h3>
+            <div className="timeline">
+              {TIMELINE.filter(t=>t.type==='attempt').map((t,i)=>(
+                <div key={i} className="timeline-item">
+                  <div className="timeline-time">{t.time}</div>
+                  <div className="timeline-title">{t.title}</div>
+                  <div className="timeline-desc">{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* TIMELINE */}
+          <div className="sp-card">
+            <h3>Actividad completa · últimas 2 semanas</h3>
+            <div className="timeline">
+              {TIMELINE.map((t,i)=>(
+                <div key={i} className={`timeline-item ${t.type}`}>
+                  <div className="timeline-time">{t.time}</div>
+                  <div className="timeline-title">{t.title}</div>
+                  <div className="timeline-desc">{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* SIDEBAR */}
+        <div className="sp-sidebar">
+          <div className="sp-stat-card">
+            <div className="sp-stat-v">47</div>
+            <div className="sp-stat-l">Ejercicios esta semana</div>
+          </div>
+          <div className="sp-stat-card">
+            <div className="sp-stat-v">68%</div>
+            <div className="sp-stat-l">Correctas esta semana</div>
+          </div>
+          <div className="sp-stat-card">
+            <div className="sp-stat-v">4 días</div>
+            <div className="sp-stat-l">Racha activa</div>
+          </div>
+          
+          <div className="sp-stat-card">
+            <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>Alertas activas</div>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              <div className="alert-badge risk">
+                <Icon name="alert-circle" size={12}/>
+                Resta con reserva
+              </div>
+              <div style={{fontSize:11,color:'var(--fg-2)',lineHeight:1.5}}>BORROW_OMITTED_TENS detectado 3 veces. Práctica asignada hace 2 horas.</div>
+            </div>
+          </div>
+          
+          <div className="sp-stat-card">
+            <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>Últimas alertas resueltas</div>
+            <div style={{fontSize:11,color:'var(--fg-2)',lineHeight:1.5}}>
+              ✓ División larga — subió a 0.52 el lunes
+              <br/><br/>
+              ✓ Fracciones — 0.29 → 0.41 el viernes
+            </div>
+          </div>
+          
+          <div className="sp-stat-card" style={{background:'var(--sky-50)',border:'1px solid var(--sky-200)'}}>
+            <div style={{fontSize:12,fontWeight:700,color:'var(--sky-900)',marginBottom:8}}>Nota del profe</div>
+            <div style={{fontSize:12,color:'var(--sky-800)',lineHeight:1.6}}>Antonia está mejorando mucho. Necesita más práctica en resta con reserva. Si puedes trabajar con ella el fin de semana, ayuda.</div>
+            <div style={{fontSize:11,color:'var(--sky-700)',marginTop:8}}>— Sra. González · hace 3 días</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "@innova/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed fetch client for the Innova NestJS backend — Result<T,E>, Zod-validated responses, DI-injected auth token. Mirrors the live /docs OpenAPI surface.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "~5.3.3"
+  }
+}

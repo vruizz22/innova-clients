@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
-    name: Build, lint, and test monorepo
+    name: Typecheck, lint, unit, build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,33 +27,27 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Copy design system assets
-        run: |
-          node scripts/copy-design-system-to-public.js landing/public/design-system
-          node scripts/copy-design-system-to-public.js apps/practice/public/design-system
-          node scripts/copy-design-system-to-public.js apps/teacher/public/design-system
-
-      - name: Build landing
-        run: pnpm --filter superprofes-landing build
-
-      - name: Build practice
-        env:
-          NEXT_PUBLIC_API_URL: https://api.superprofes.app
-          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID || 'placeholder' }}
-          NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID || 'placeholder' }}
-        run: pnpm --filter @innova/practice build
-
-      - name: Build teacher
-        env:
-          NEXT_PUBLIC_API_URL: https://api.superprofes.app
-          NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID || 'placeholder' }}
-          NEXT_PUBLIC_COGNITO_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID || 'placeholder' }}
-        run: pnpm --filter @innova/teacher build
-
-      - name: TypeCheck mobile
-        run: pnpm --filter @innova/mobile exec tsc --noEmit
+      - name: Typecheck
+        run: pnpm typecheck
         continue-on-error: true
 
-      - name: Unit tests
+      - name: Lint
+        run: pnpm lint
+        continue-on-error: true
+
+      - name: Unit tests (Vitest)
         run: pnpm test:unit
+
+      # apps/web is scaffolded in M9; keep tolerant until it lands.
+      - name: Build web
+        env:
+          NEXT_PUBLIC_API_URL: https://api.superprofes.app
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
+        run: pnpm --filter @innova/web... build
         continue-on-error: true
+
+      # Playwright smoke vs SuperProfes-Design-System/preview baselines.
+      # Wired in M9 — see docs/SMOKE_TESTING.md.
+      # - name: Playwright smoke
+      #   run: pnpm --filter @innova/web exec playwright test --reporter=github

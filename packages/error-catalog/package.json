@@ -1,0 +1,17 @@
+{
+  "name": "@innova/error-catalog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SuperProfes v8 error taxonomy — typed domains, subdomains, grade bands, error tags + helpers",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "codegen": "node scripts/codegen.mjs"
+  },
+  "devDependencies": {
+    "typescript": "~5.3.3"
+  }
+}

@@ -4,16 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@design/*": ["SuperProfes-Design-System/*"],
-      "@design": ["SuperProfes-Design-System"],
-      "@components/*": ["components/*"],
-      "@components": ["components"],
-      "@shared/*": ["components/*"],
-      "@shared": ["components"],
-      "@app/*": ["apps/*"],
-      "@app": ["apps"]
+      "@design": ["SuperProfes-Design-System"]
     }
   },
-  "include": ["apps/**/*", "components/**/*", "SuperProfes-Design-System/**/*", "landing/**/*"],
+  "include": ["apps/**/*", "packages/**/*", "SuperProfes-Design-System/**/*"],
   "exclude": [
     "node_modules",
     "dist",
