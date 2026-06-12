@@ -1,124 +1,72 @@
-'use client';
+import { Card } from '@innova/ui';
+import { getGradeBand, gradeLabel, type Grade } from '@innova/error-catalog';
+import type { Classroom } from '@innova/api-client';
+import { getServerApi } from '@/lib/api.server';
+import { DashboardClient, type CourseView } from '@/components/teacher/DashboardClient';
 
-import { useMemo, useState } from 'react';
-import {
-  GradeBandSelector,
-  HeatmapCollapsedByUnit,
-  type HeatmapStudentRow,
-  type HeatmapUnit,
-} from '@innova/ui';
-import { GRADE_BANDS, gradeLabel, type Grade } from '@innova/error-catalog';
+// Server Component: fetches the teacher's real courses from GET /classrooms/mine.
+// Per-course mastery is fetched on demand (client side) when a course is opened.
+export const dynamic = 'force-dynamic';
 
-// Mock courses/heatmap until GET /teacher/courses + /heatmap-by-unit are wired (v8 C2.4).
-interface Course {
-  id: string;
-  name: string;
-  bandCode: string;
-  grade: Grade;
-  students: number;
-  attemptsWeek: number;
-  alerts: number;
+function toGrade(gradeLevel: number): Grade | null {
+  if (!Number.isInteger(gradeLevel) || gradeLevel < 1 || gradeLevel > 12) return null;
+  return `G${gradeLevel}` as Grade;
 }
 
-const COURSES: Course[] = [
-  { id: 'c1', name: '3°A Matemática', bandCode: 'BASICA_BAJA', grade: 'G3', students: 28, attemptsWeek: 142, alerts: 3 },
-  { id: 'c2', name: '6°B Matemática', bandCode: 'BASICA_ALTA', grade: 'G6', students: 31, attemptsWeek: 98, alerts: 1 },
-  { id: 'c3', name: '8°A Matemática', bandCode: 'SEPTIMO_OCTAVO', grade: 'G8', students: 26, attemptsWeek: 120, alerts: 2 },
-  { id: 'c4', name: '1° medio B Matemática', bandCode: 'MEDIA_1_2', grade: 'G9', students: 34, attemptsWeek: 76, alerts: 4 },
-];
-
-const UNITS: HeatmapUnit[] = [
-  { code: 'U1', name_es: 'Números' },
-  { code: 'U2', name_es: 'Operatoria' },
-  { code: 'U3', name_es: 'Fracciones' },
-  { code: 'U4', name_es: 'Geometría' },
-  { code: 'U5', name_es: 'Datos' },
-];
-
-function mockStudents(seed: number): HeatmapStudentRow[] {
-  const names = ['Antonia F.', 'Benjamín S.', 'Catalina P.', 'Diego V.', 'Emilia R.', 'Felipe N.'];
-  return names.map((studentName, i) => ({
-    studentId: `s${seed}-${i}`,
-    studentName,
-    cells: Object.fromEntries(
-      UNITS.map((u, j) => [u.code, Math.round((((i + 1) * (j + 2) * (seed + 3)) % 10) / 10 * 100) / 100]),
-    ),
-  }));
+function toCourseView(c: Classroom): CourseView {
+  const grade = toGrade(c.gradeLevel);
+  return {
+    id: c.id,
+    name: c.name,
+    grade,
+    gradeLabel: grade ? gradeLabel(grade) : `Nivel ${c.gradeLevel}`,
+    bandCode: grade ? (getGradeBand(grade)?.code ?? null) : null,
+  };
 }
 
-export default function TeacherDashboardPage(): JSX.Element {
-  const [band, setBand] = useState<string>('BASICA_BAJA');
-  const [courseId, setCourseId] = useState<string | null>(null);
+export default async function TeacherDashboardPage(): Promise<JSX.Element> {
+  const api = getServerApi();
+  const me = await api.getMe();
 
-  const bandsWithCourses = useMemo(
-    () => GRADE_BANDS.filter((b) => COURSES.some((c) => c.bandCode === b.code)),
-    [],
-  );
-  const courses = COURSES.filter((c) => c.bandCode === band);
-  const course = COURSES.find((c) => c.id === courseId) ?? null;
-  const students = useMemo(() => (course ? mockStudents(course.grade.length) : []), [course]);
+  if (!me.ok) {
+    return (
+      <Card>
+        <p className="text-sm font-bold text-slate-800">No pudimos cargar tu panel</p>
+        <p className="mt-1 text-sm text-slate-500">
+          {me.error.kind === 'http' && me.error.status === 401
+            ? 'Tu sesión no está activa. Vuelve a entrar.'
+            : 'Hubo un problema de conexión con el servidor. Intenta de nuevo en un momento.'}
+        </p>
+      </Card>
+    );
+  }
+
+  const classrooms = await api.getMyClassrooms();
+  if (!classrooms.ok) {
+    return (
+      <Card>
+        <p className="text-sm font-bold text-slate-800">No pudimos cargar tus cursos</p>
+        <p className="mt-1 text-sm text-slate-500">Intenta de nuevo en un momento.</p>
+      </Card>
+    );
+  }
+
+  const courses = classrooms.data.map(toCourseView);
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Mis cursos</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Navega por banda de grado y abre el heatmap por unidad.
-          </p>
-        </div>
-        <GradeBandSelector
-          value={band}
-          onChange={(c) => {
-            setBand(c);
-            setCourseId(null);
-          }}
-          bands={bandsWithCourses}
-        />
+    <div data-testid="dashboard-root">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Mis cursos</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Navega por banda de grado y abre el heatmap de dominio por alumno.
+        </p>
       </div>
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {courses.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setCourseId(c.id === courseId ? null : c.id)}
-            className={[
-              'rounded-xl border bg-white p-5 text-left shadow-card transition',
-              c.id === courseId ? 'border-sky-500 ring-2 ring-sky-500/30' : 'border-slate-100 hover:border-sky-300',
-            ].join(' ')}
-          >
-            <p className="text-base font-bold text-slate-900">{c.name}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{gradeLabel(c.grade)}</p>
-            <div className="mt-3 flex gap-4 text-xs text-slate-600">
-              <span>{c.students} alumnos</span>
-              <span>{c.attemptsWeek} intentos/sem</span>
-              {c.alerts > 0 ? (
-                <span className="font-semibold text-[#7a1a1a]">{c.alerts} alertas</span>
-              ) : null}
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {course ? (
-        <section className="mt-8">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Heatmap por unidad · {course.name}
-            </h2>
-            <span className="text-xs text-slate-500">Click en una celda para ver los temas</span>
-          </div>
-          <HeatmapCollapsedByUnit
-            units={UNITS}
-            students={students}
-            onUnitDrillDown={(unitCode, studentId) =>
-              // eslint-disable-next-line no-alert
-              alert(`Drill-down: ${unitCode} · ${studentId} → temas de la unidad (v8 C2.3)`)
-            }
-          />
-        </section>
+      {courses.length === 0 ? (
+        <p className="mt-8 text-sm text-slate-400">
+          Aún no tienes cursos asignados. Pide a tu administrador que te agregue a uno.
+        </p>
       ) : (
-        <p className="mt-8 text-sm text-slate-400">Selecciona un curso para ver su heatmap.</p>
+        <DashboardClient courses={courses} />
       )}
     </div>
   );
