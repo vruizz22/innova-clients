@@ -6,6 +6,7 @@ const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx}',
     '../../packages/ui-components/src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
@@ -37,7 +38,7 @@ const config: Config = {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        sm: '4px', md: '8px', lg: '12px', xl: '16px', pill: '9999px',
+        sm: '4px', md: '8px', lg: '12px', xl: '16px', '2xl': '24px', pill: '9999px',
       },
       boxShadow: {
         card: '0 1px 2px rgba(15,42,61,0.04), 0 1px 3px rgba(15,42,61,0.06)',
