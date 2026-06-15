@@ -39,4 +39,13 @@ export {
   FileIcon,
   CheckIcon,
   ShieldIcon,
+  CircleIcon,
+  ClockIcon,
+  PencilIcon,
+  UploadIcon,
+  ImageIcon,
+  ArrowLeftIcon,
+  ChevronLeftIcon,
+  PlusIcon,
+  LoaderIcon,
 } from './icons';

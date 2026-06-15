@@ -1,6 +1,13 @@
 import React from 'react';
+import { AlertTriangleIcon, SearchIcon, TrendingDownIcon, CheckIcon } from '../icons';
 
 type AlertType = 'AT_RISK_SKILL' | 'COMMON_ERROR_DETECTED' | 'STUDENT_DROP';
+
+type AlertIcon = React.ComponentType<{
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}>;
 
 interface AlertCardProps {
   alertType: AlertType;
@@ -14,7 +21,7 @@ interface AlertCardProps {
 
 const alertConfig: Record<
   AlertType,
-  { border: string; bg: string; badgeText: string; badgeBg: string; badgeColor: string; icon: string }
+  { border: string; bg: string; badgeText: string; badgeBg: string; badgeColor: string; icon: AlertIcon }
 > = {
   AT_RISK_SKILL: {
     border: '#f5b8b8',
@@ -22,7 +29,7 @@ const alertConfig: Record<
     badgeText: 'En riesgo',
     badgeBg: '#fce8e8',
     badgeColor: '#7a1a1a',
-    icon: '⚠️',
+    icon: AlertTriangleIcon,
   },
   COMMON_ERROR_DETECTED: {
     border: '#F0D9A0',
@@ -30,7 +37,7 @@ const alertConfig: Record<
     badgeText: 'Error común',
     badgeBg: '#FFF4DB',
     badgeColor: '#7A4F00',
-    icon: '🔍',
+    icon: SearchIcon,
   },
   STUDENT_DROP: {
     border: '#CDD3DD',
@@ -38,7 +45,7 @@ const alertConfig: Record<
     badgeText: 'Caída de actividad',
     badgeBg: '#E5E9F0',
     badgeColor: '#232C3A',
-    icon: '📉',
+    icon: TrendingDownIcon,
   },
 };
 
@@ -52,6 +59,7 @@ export function AlertCard({
   className = '',
 }: AlertCardProps): JSX.Element {
   const cfg = alertConfig[alertType];
+  const Icon = cfg.icon;
 
   return (
     <div
@@ -60,9 +68,7 @@ export function AlertCard({
         .join(' ')}
       style={{ borderColor: cfg.border, backgroundColor: cfg.bg }}
     >
-      <span className="text-xl leading-none mt-0.5" aria-hidden="true">
-        {cfg.icon}
-      </span>
+      <Icon size={20} className="mt-0.5 shrink-0" style={{ color: cfg.badgeColor }} />
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 flex-wrap">
           <p className="text-sm font-semibold text-[#1F2937]">{title}</p>
@@ -95,7 +101,9 @@ export function AlertCard({
             </button>
           ) : null}
           {resolved ? (
-            <span className="text-xs text-[#3DAA72] font-semibold">✓ Resuelta</span>
+            <span className="inline-flex items-center gap-1 text-xs text-[#3DAA72] font-semibold">
+              <CheckIcon size={13} /> Resuelta
+            </span>
           ) : null}
         </div>
       </div>

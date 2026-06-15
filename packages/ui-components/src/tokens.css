@@ -71,6 +71,7 @@
   --bg-subtle:    var(--slate-50);
   --bg-student:   var(--sky-50);
   --bg-parent:    var(--mint-50);
+  --bg-canvas:    var(--bg-subtle);   /* working-surface bg — alias of --bg-subtle */
 
   --fg-1:         var(--slate-800);
   --fg-2:         var(--slate-500);
@@ -133,6 +134,7 @@
   --r-md:   8px;
   --r-lg:   12px;
   --r-xl:   16px;
+  --r-2xl:  24px;
   --r-pill: 9999px;
 
   /* -------- SHADOWS --------------------------------------- */
