@@ -1,9 +1,15 @@
 import type { ErrorTag } from './types';
 
 /**
- * Representative local seed of the v8 catalog (~2540 target). Spans every grade band
- * so the teacher/exercise-bank/heatmap UIs render real-looking data without the backend.
- * Replace wholesale with `codegen:error-tags` (DB → error-tags.generated.ts) once available.
+ * Typed DEV/OFFLINE FALLBACK seed of the v8 catalog (~2540 target). Spans every
+ * grade band so the teacher/exercise-bank/heatmap UIs render real-looking data
+ * with no backend running.
+ *
+ * NOT the source of truth: the live catalog grows continuously on the backend
+ * (innova-ai-engine → import-error-catalog → error_tags). Product surfaces show
+ * the backend's curated `errorTagName` at runtime and only fall back to
+ * `formatHumanName(code)` here when the API omits it. Domain grouping is
+ * reconciled across short/long codes via `normalizeDomainCode` (domain-aliases.ts).
  * Curated entries cite Brown & VanLehn (1980) / Resnick-Ford (1981) per error-taxonomy.md.
  */
 export const ERROR_TAGS: readonly ErrorTag[] = [
