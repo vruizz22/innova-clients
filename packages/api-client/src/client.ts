@@ -68,6 +68,14 @@ import {
   type UpdateGuideQuestionInput,
   type UpdateGuideSolutionInput,
 } from './guides';
+import {
+  adminErrorTagSchema,
+  adminErrorTagListSchema,
+  type AdminErrorTag,
+  type AdminErrorTagList,
+  type AdminErrorTagSource,
+  type AdminErrorTagStatus,
+} from './admin';
 
 export interface ListGuidesParams {
   readonly courseId?: string;
@@ -79,6 +87,17 @@ export interface ListGuidesParams {
 export interface ListItemsParams {
   readonly skillKey?: string;
   readonly topic?: string;
+  readonly limit?: number;
+}
+
+export interface ListErrorTagsParams {
+  readonly status?: AdminErrorTagStatus;
+  /** Backend SHORT domain code (e.g. ARITH) — from the `domains` facet. */
+  readonly domainCode?: string;
+  readonly source?: AdminErrorTagSource;
+  readonly q?: string;
+  /** Keyset cursor: the `code` returned as `nextCursor`. */
+  readonly cursor?: string;
   readonly limit?: number;
 }
 
@@ -184,6 +203,17 @@ export interface InnovaApiClient {
     input: OverrideSubmissionErrorInput,
     signal?: AbortSignal
   ): Promise<ApiResult<OverrideErrorAck>>;
+
+  // -- admin: live error-tag catalog ----------------------------------------
+  listErrorTags(
+    params?: ListErrorTagsParams,
+    signal?: AbortSignal
+  ): Promise<ApiResult<AdminErrorTagList>>;
+  updateErrorTagStatus(
+    code: string,
+    status: AdminErrorTagStatus,
+    signal?: AbortSignal
+  ): Promise<ApiResult<AdminErrorTag>>;
 }
 
 export function createApiClient(config: ApiClientConfig): InnovaApiClient {
@@ -482,6 +512,35 @@ export function createApiClient(config: ApiClientConfig): InnovaApiClient {
         )}/error-tag`,
         schema: overrideErrorAckSchema,
         json: { errorTagCode: input.errorTagCode },
+        ...(signal ? { signal } : {}),
+      });
+    },
+    listErrorTags(params, signal) {
+      const query =
+        params === undefined
+          ? undefined
+          : {
+              status: params.status,
+              domainCode: params.domainCode,
+              source: params.source,
+              q: params.q,
+              cursor: params.cursor,
+              limit: params.limit,
+            };
+      return request(config, {
+        method: 'GET',
+        path: '/admin/error-tags',
+        schema: adminErrorTagListSchema,
+        ...(query ? { query } : {}),
+        ...(signal ? { signal } : {}),
+      });
+    },
+    updateErrorTagStatus(code, status, signal) {
+      return request(config, {
+        method: 'PATCH',
+        path: `/admin/error-tags/${encodeURIComponent(code)}/status`,
+        schema: adminErrorTagSchema,
+        json: { status },
         ...(signal ? { signal } : {}),
       });
     },

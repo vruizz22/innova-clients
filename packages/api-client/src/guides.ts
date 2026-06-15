@@ -279,6 +279,9 @@ export const guideResultQuestionSchema = z.object({
   score: z.number().nullable(),
   isCorrect: z.boolean().nullable(),
   errorTagCode: z.string().nullable(),
+  // nullish (not nullable) so the schema tolerates the rollout window before
+  // the backend Fase A ships this field; tighten to .nullable() post-deploy.
+  errorTagName: z.string().nullish(),
   solution: guideSolutionSchema.nullable(),
 });
 export const guideResultsSchema = z.object({

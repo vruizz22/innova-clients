@@ -131,6 +131,8 @@ const attemptHistorySchema = z.object({
   exercisePrompt: z.string(),
   isCorrect: z.boolean(),
   errorTagCode: z.string().nullable(),
+  // nullish: tolerate the rollout window before backend Fase A ships this field.
+  errorTagName: z.string().nullish(),
   classifierSource: z.string(),
   confidence: z.number().nullable(),
   createdAt: z.string(),
@@ -138,6 +140,8 @@ const attemptHistorySchema = z.object({
 
 const errorFrequencySchema = z.object({
   errorTagCode: z.string(),
+  // nullish: tolerate the rollout window before backend Fase A ships this field.
+  errorTagName: z.string().nullish(),
   count: z.number(),
   percentage: z.number(),
 });
