@@ -9,7 +9,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "codegen": "node scripts/codegen.mjs"
+    "codegen": "node scripts/codegen.mjs",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
     "typescript": "~5.3.3"
