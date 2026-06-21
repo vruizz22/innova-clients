@@ -11,7 +11,7 @@ interface Props {
 const {
   title = 'SuperProfes — Detecta el error antes de la prueba',
   description = 'Tu asistente de diagnóstico matemático. Ve exactamente qué procedimiento está fallando cada alumno, antes de la evaluación.',
-  ogImage = 'https://superprofes.app/og-image.png',
+  ogImage = '/og-image.png',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -23,8 +23,15 @@ const imageURL = new URL(ogImage, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#18506D" />
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F2A3D" media="(prefers-color-scheme: dark)" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Favicon / icons (brand mark) -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/favicon.svg" color="#3FA7D6" />
     <meta name="author" content="Innova EdTech" />
     <meta
       name="keywords"
@@ -42,7 +49,11 @@ const imageURL = new URL(ogImage, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={imageURL} />
-    <meta property="og:image:alt" content="SuperProfes dashboard de dominio matemático por alumno" />
+    <meta property="og:image:secure_url" content={imageURL} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SuperProfes — detecta el error antes de la prueba" />
     <meta property="og:locale" content="es_CL" />
     <meta property="og:site_name" content="SuperProfes" />
 
@@ -51,11 +62,13 @@ const imageURL = new URL(ogImage, Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageURL} />
-    <meta name="twitter:image:alt" content="SuperProfes dashboard de dominio matemático por alumno" />
+    <meta
+      name="twitter:image:alt"
+      content="SuperProfes dashboard de dominio matemático por alumno"
+    />
 
     <!-- Design tokens + fonts (vendorized Inter) -->
     <link rel="stylesheet" href={DESIGN_CSS_PATH} />
-
   </head>
   <body class="bg-[var(--bg)] text-[var(--fg-1)] antialiased">
     <slot />
