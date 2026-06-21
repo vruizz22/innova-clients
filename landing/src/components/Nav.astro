@@ -4,28 +4,15 @@
 import { registerUrl, teacherUrl, practiceUrl, parentUrl } from '@config/urls'
 const loginUrl = '/auth'
 import SmartLoginButton from '@components/SmartLoginButton.astro'
+import Logo from '@components/Logo.astro'
 
 const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'
 ---
 
 <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
-  <!-- Logo -->
-  <a href="/" class="flex items-center gap-2 group" aria-label="SuperProfes — ir a inicio">
-    <img
-      src="/design-system/assets/superprofes-logo-inverse.svg"
-      alt="SuperProfes"
-      width="140"
-      height="32"
-      class="h-8 w-auto"
-      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
-    />
-    <!-- Fallback text logo -->
-    <span
-      class="hidden text-xl font-black text-white tracking-tight"
-      aria-hidden="true"
-    >
-      Super<span class="text-[var(--sky-300)]">Profes</span>
-    </span>
+  <!-- Brand logo — shared DS wordmark, white on the dark hero -->
+  <a href="/" class="group flex items-center text-white" aria-label="SuperProfes — ir a inicio">
+    <Logo variant="full" height={28} class="text-white" />
   </a>
 
   <!-- Links -->

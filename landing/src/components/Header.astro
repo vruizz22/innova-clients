@@ -2,6 +2,7 @@
 // Header — sticky, semi-transparent with blur on scroll
 import { loginUrl, registerUrl, teacherUrl, practiceUrl, parentUrl } from '@config/urls';
 import SmartLoginButton from '@components/SmartLoginButton.astro';
+import Logo from '@components/Logo.astro';
 
 const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 ---
@@ -11,12 +12,9 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
   class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
 >
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-8 lg:px-10">
-    <!-- Logo — DS spec: Inter 700, "Super" slate-900 on light / white on dark, "Profes" sky-500 -->
-    <a href="/" class="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sky-500)] rounded-lg" aria-label="SuperProfes — inicio">
-      <img src="/design-system/assets/superprofes-mark.svg" alt="" class="h-9 w-9 rounded-xl shadow-md" />
-      <span class="hidden text-base font-bold text-white sm:block">
-        Super<span style="color: var(--sky-400);">Profes</span>
-      </span>
+    <!-- Brand logo — shared DS wordmark, white on the dark hero -->
+    <a href="/" class="flex items-center rounded-lg text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sky-500)]" aria-label="SuperProfes — inicio">
+      <Logo variant="full" height={28} class="text-white" />
     </a>
 
     <!-- Desktop nav -->
