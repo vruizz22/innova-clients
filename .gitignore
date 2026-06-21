@@ -70,6 +70,9 @@ web_modules/
 .env.*
 !.env.example
 
+# Supabase local asymmetric JWT signing key (private — never commit)
+supabase/signing_keys.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -165,3 +168,7 @@ apps/mobile/app.config.js
 **/public/design-system/*.js
 **/uploads/*.js
 **/*.js.map
+
+.agents/
+
+.impeccable/
