@@ -3,6 +3,7 @@ import type { Config } from 'tailwindcss';
 // SuperProfes palette (design system colors_and_type.css). Student = sky/mint,
 // teacher/parent = slate. Mastery scale never uses alarm red.
 const config: Config = {
+  darkMode: 'media',
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,6 +13,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Semantic tokens → CSS vars that flip automatically in dark mode
+        // (prefers-color-scheme). Prefer these over raw palette classes so
+        // surfaces theme themselves; nothing hardcoded.
+        canvas: 'var(--bg)',
+        'canvas-student': 'var(--bg-student)',
+        'canvas-parent': 'var(--bg-parent)',
+        'canvas-teacher': 'var(--bg-teacher)',
+        surface: 'var(--surface)',
+        'surface-2': 'var(--surface-2)',
+        ink: 'var(--fg-1)',
+        'ink-muted': 'var(--fg-2)',
+        'ink-subtle': 'var(--fg-3)',
+        'ink-inverse': 'var(--fg-inverse)',
+        line: 'var(--border)',
+        'line-strong': 'var(--border-strong)',
+        brand: 'var(--primary)',
+        'brand-hover': 'var(--primary-hover)',
+        'brand-press': 'var(--primary-press)',
+        'brand-fg': 'var(--primary-fg)',
+        'mark-bg': 'var(--brand-mark-bg)',
         primary: '#3FA7D6',
         'primary-hover': '#2F8DBA',
         'primary-press': '#226E94',
@@ -41,8 +62,19 @@ const config: Config = {
         sm: '4px', md: '8px', lg: '12px', xl: '16px', '2xl': '24px', pill: '9999px',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(15,42,61,0.04), 0 1px 3px rgba(15,42,61,0.06)',
-        pop: '0 8px 24px rgba(15,42,61,0.10), 0 2px 6px rgba(15,42,61,0.06)',
+        card: 'var(--shadow-card)',
+        pop: 'var(--shadow-pop)',
+      },
+      // Semantic z-index scale — never arbitrary 999/9999.
+      zIndex: {
+        base: '0',
+        dropdown: '10',
+        sticky: '20',
+        'modal-backdrop': '30',
+        modal: '40',
+        popover: '50',
+        toast: '60',
+        tooltip: '70',
       },
     },
   },
