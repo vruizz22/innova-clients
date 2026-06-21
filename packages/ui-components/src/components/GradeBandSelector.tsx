@@ -22,7 +22,7 @@ export function GradeBandSelector({
     <div
       role="tablist"
       aria-label="Banda de grado"
-      className={['inline-flex flex-wrap gap-1 rounded-full bg-[#E5E9F0] p-1', className]
+      className={['inline-flex flex-wrap gap-1 rounded-full bg-[var(--surface-2)] p-1', className]
         .filter(Boolean)
         .join(' ')}
     >
@@ -39,8 +39,8 @@ export function GradeBandSelector({
             className={[
               'min-h-[36px] rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
               active
-                ? 'bg-white text-[#1F2937] shadow-[0_1px_3px_rgba(15,42,61,0.1)]'
-                : 'text-[#4F5868] hover:text-[#1F2937]',
+                ? 'bg-[var(--primary)] text-[var(--primary-fg)] shadow-[0_1px_3px_rgba(15,42,61,0.1)]'
+                : 'text-[var(--fg-2)] hover:text-[var(--fg-1)]',
             ].join(' ')}
           >
             {band.name_es}

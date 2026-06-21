@@ -18,10 +18,12 @@ interface ErrorTagChipProps {
 }
 
 // Procedural errors are amber, never alarm red (design system principle #4).
+// rgba tints layer over light/dark surfaces; text uses --fg-1 so it stays
+// legible on both themes (a fixed dark ink would vanish in dark mode).
 const SEVERITY_STYLES: Record<Severity, string> = {
-  LOW: 'bg-[#FFFBF0] text-[#7A4F00] border-[#F0D9A0]',
-  MEDIUM: 'bg-[#FFF4DB] text-[#7A4F00] border-[#F0D9A0]',
-  HIGH: 'bg-[#FCE3E3] text-[#7a1a1a] border-[#f5b8b8]',
+  LOW: 'bg-[rgba(232,163,61,0.14)] text-[var(--fg-1)] border-[rgba(232,163,61,0.30)]',
+  MEDIUM: 'bg-[rgba(232,163,61,0.22)] text-[var(--fg-1)] border-[rgba(232,163,61,0.40)]',
+  HIGH: 'bg-[rgba(216,96,96,0.20)] text-[var(--fg-1)] border-[rgba(216,96,96,0.40)]',
 };
 
 export function ErrorTagChip({
@@ -34,7 +36,7 @@ export function ErrorTagChip({
   const resolved = tag ?? getErrorTag(code);
   const deprecated = resolved?.status === 'DEPRECATED';
   const styles = deprecated
-    ? 'bg-[#F7F8FA] text-[#717A8B] border-[#CDD3DD] line-through'
+    ? 'bg-[var(--surface-2)] text-[var(--fg-3)] border-[var(--border)] line-through'
     : SEVERITY_STYLES[resolved?.severity ?? 'MEDIUM'];
   const label = showCode ? code : formatHumanName(code);
   const Tag = onClick ? 'button' : 'span';
@@ -53,7 +55,7 @@ export function ErrorTagChip({
         .join(' ')}
     >
       {resolved?.status === 'DRAFT' ? (
-        <span className="rounded bg-[#DCEDF6] px-1 text-[10px] font-bold text-[#18506D]">
+        <span className="rounded bg-[var(--info-bg)] px-1 text-[10px] font-bold text-[var(--info-fg)]">
           DRAFT
         </span>
       ) : null}

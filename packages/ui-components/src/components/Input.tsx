@@ -21,7 +21,7 @@ export function Input({
       {label ? (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-[#1F2937]"
+          className="text-sm font-medium text-[var(--fg-1)]"
         >
           {label}
         </label>
@@ -30,12 +30,12 @@ export function Input({
         id={inputId}
         {...props}
         className={[
-          'w-full rounded-xl border px-3 py-2 text-sm text-[#1F2937] placeholder:text-[#A5ADBC]',
+          'w-full rounded-xl border px-3 py-2 text-sm text-[var(--fg-1)] placeholder:text-[var(--fg-3)]',
           'transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1',
           error
-            ? 'border-[#D86060] focus:ring-[#D86060] bg-[#fff8f8]'
-            : 'border-[#CDD3DD] focus:ring-[#3FA7D6] bg-white hover:border-[#A5ADBC]',
-          props.disabled ? 'opacity-50 cursor-not-allowed bg-[#F7F8FA]' : '',
+            ? 'border-[#D86060] focus:ring-[#D86060] bg-[var(--surface)]'
+            : 'border-[var(--border-strong)] focus:ring-[var(--focus-ring)] bg-[var(--surface)] hover:border-[var(--fg-3)]',
+          props.disabled ? 'opacity-50 cursor-not-allowed bg-[var(--surface-2)]' : '',
           className,
         ]
           .filter(Boolean)
@@ -47,7 +47,7 @@ export function Input({
         </p>
       ) : null}
       {!error && helperText ? (
-        <p className="text-xs text-[#4F5868]">{helperText}</p>
+        <p className="text-xs text-[var(--fg-2)]">{helperText}</p>
       ) : null}
     </div>
   );

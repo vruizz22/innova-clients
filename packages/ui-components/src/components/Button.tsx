@@ -12,13 +12,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#3FA7D6] text-white hover:bg-[#2F8DBA] active:bg-[#226E94] focus-visible:ring-[#3FA7D6]',
+    'bg-[var(--primary)] text-[var(--primary-fg)] hover:bg-[var(--primary-hover)] active:bg-[var(--primary-press)] focus-visible:ring-[var(--focus-ring)]',
   secondary:
-    'bg-white text-[#1F2937] border border-[#CDD3DD] hover:bg-[#F7F8FA] active:bg-[#E5E9F0] focus-visible:ring-[#3FA7D6]',
+    'bg-[var(--surface)] text-[var(--fg-1)] border border-[var(--border-strong)] hover:bg-[var(--surface-2)] active:bg-[var(--surface-2)] focus-visible:ring-[var(--focus-ring)]',
   danger:
     'bg-[#D86060] text-white hover:bg-[#c05050] active:bg-[#a84040] focus-visible:ring-[#D86060]',
   ghost:
-    'bg-transparent text-[#4F5868] hover:bg-[#F7F8FA] active:bg-[#E5E9F0] focus-visible:ring-[#3FA7D6]',
+    'bg-transparent text-[var(--fg-2)] hover:bg-[var(--surface-2)] active:bg-[var(--surface-2)] focus-visible:ring-[var(--focus-ring)]',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
