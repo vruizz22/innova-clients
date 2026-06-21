@@ -1,6 +1,8 @@
 // SuperProfes shared UI components
 // All components follow strict TypeScript + Tailwind CSS conventions
 
+export { Logo } from './components/Logo';
+export { Dropzone } from './components/Dropzone';
 export { Button } from './components/Button';
 export { Card } from './components/Card';
 export { Badge } from './components/Badge';
