@@ -17,8 +17,8 @@ export interface MathKeypadProps {
   disabled?: boolean;
 }
 
-const DIGIT = 'bg-white text-slate-800 hover:bg-slate-50 active:bg-slate-100 border-slate-200';
-const OP = 'bg-sky-50 text-sky-700 hover:bg-sky-100 active:bg-sky-200 border-sky-200';
+const DIGIT = 'bg-[var(--surface)] text-[var(--fg-1)] hover:bg-[var(--surface-2)] active:bg-[var(--surface-2)] border-[var(--border)]';
+const OP = 'bg-[var(--info-bg)] text-sky-700 hover:bg-sky-100 active:bg-sky-200 border-sky-200';
 const CTRL = 'bg-amber-50 text-amber-700 hover:bg-amber-100 active:bg-amber-200 border-amber-200';
 
 // 4-col layout: digits + the arithmetic operators a student needs to write a full
