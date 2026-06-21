@@ -20,6 +20,9 @@ export type Difficulty = z.infer<typeof difficultySchema>;
 export const meSchema = z.object({
   id: z.string(),
   email: z.string(),
+  // Display name from user_metadata.full_name. Optional so the schema stays
+  // compatible with backends deployed before /auth/me started returning it.
+  name: z.string().nullish(),
   role: z.string(),
   profileId: z.string().nullable(),
 });
