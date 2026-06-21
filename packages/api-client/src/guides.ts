@@ -97,6 +97,14 @@ export const guidesListSchema = z.object({
 export type GuidesList = z.infer<typeof guidesListSchema>;
 
 // ------------------------------------------------------------- guide detail ----
+/** A {id, code, name} reference to a curriculum topic or a taxonomy domain/subdomain. */
+export const taxonomyRefSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+});
+export type TaxonomyRef = z.infer<typeof taxonomyRefSchema>;
+
 export const guideSolutionSchema = z.object({
   id: z.string(),
   version: z.number(),
@@ -123,7 +131,11 @@ export const guideQuestionSchema = z.object({
   topicId: z.string().nullable(),
   topicConfidence: z.number().nullable().optional(),
   topicSource: z.string().nullable().optional(),
-  topic: z.object({ id: z.string(), code: z.string(), name: z.string() }).nullable().optional(),
+  topic: taxonomyRefSchema.nullable().optional(),
+  // Taxonomy classification (domain/subdomain) — the primary topic shown in the
+  // wizard since v9.1; derived from the error catalog, not the curriculum topics.
+  domain: taxonomyRefSchema.nullable().optional(),
+  subdomain: taxonomyRefSchema.nullable().optional(),
   solutions: z.array(guideSolutionSchema),
 });
 export type GuideQuestion = z.infer<typeof guideQuestionSchema>;
@@ -158,7 +170,31 @@ export interface UpdateGuideQuestionInput {
   readonly label?: string;
   readonly points?: number;
   readonly topicId?: string;
+  readonly subdomainId?: string;
   readonly status?: 'APPROVED' | 'EXCLUDED';
+}
+
+// ----------------------------------------------------------- taxonomy ----
+/** GET /skills/taxonomy → domains, each with its subdomains (classification catalog). */
+export const taxonomyDomainSchema = taxonomyRefSchema.extend({
+  subdomains: z.array(taxonomyRefSchema),
+});
+export const taxonomySchema = z.array(taxonomyDomainSchema);
+export type TaxonomyDomain = z.infer<typeof taxonomyDomainSchema>;
+
+/** GET /skills/error-tags → live ACTIVE catalog matches for the manual-override typeahead. */
+export const catalogErrorSchema = z.object({
+  code: z.string(),
+  name: z.string().nullable(),
+  subdomainCode: z.string().nullable(),
+  domainCode: z.string().nullable(),
+});
+export const catalogErrorListSchema = z.array(catalogErrorSchema);
+export type CatalogError = z.infer<typeof catalogErrorSchema>;
+export interface SearchCatalogErrorsInput {
+  readonly q?: string;
+  readonly domainCode?: string;
+  readonly limit?: number;
 }
 
 export interface UpdateGuideSolutionInput {
