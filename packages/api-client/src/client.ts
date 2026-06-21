@@ -48,6 +48,10 @@ import {
   solutionAckSchema,
   studentGuidesSchema,
   submissionStatusResultSchema,
+  taxonomySchema,
+  catalogErrorListSchema,
+  type CatalogError,
+  type SearchCatalogErrorsInput,
   type CreateGuideInput,
   type CreateGuideResult,
   type CreateSubmissionInput,
@@ -64,6 +68,7 @@ import {
   type Quiz,
   type StudentGuideListItem,
   type SubmissionStatusResult,
+  type TaxonomyDomain,
   type UpdateGuideInput,
   type UpdateGuideQuestionInput,
   type UpdateGuideSolutionInput,
@@ -113,20 +118,19 @@ export interface InnovaApiClient {
     classroomId: string,
     signal?: AbortSignal
   ): Promise<ApiResult<CourseStudentMastery[]>>;
-  getCourseHeatmap(
-    courseId: string,
-    signal?: AbortSignal
-  ): Promise<ApiResult<CourseHeatmap>>;
+  getCourseHeatmap(courseId: string, signal?: AbortSignal): Promise<ApiResult<CourseHeatmap>>;
   listItems(params?: ListItemsParams, signal?: AbortSignal): Promise<ApiResult<Item[]>>;
   getAlerts(courseId: string, signal?: AbortSignal): Promise<ApiResult<Alert[]>>;
   listTopics(signal?: AbortSignal): Promise<ApiResult<TopicCatalogEntry[]>>;
+  listTaxonomy(signal?: AbortSignal): Promise<ApiResult<TaxonomyDomain[]>>;
+  searchCatalogErrors(
+    params: SearchCatalogErrorsInput,
+    signal?: AbortSignal
+  ): Promise<ApiResult<CatalogError[]>>;
 
   // --- v9 parent (C12) ---
   listChildren(signal?: AbortSignal): Promise<ApiResult<ParentChild[]>>;
-  getChildSummary(
-    studentId: string,
-    signal?: AbortSignal
-  ): Promise<ApiResult<ParentChildSummary>>;
+  getChildSummary(studentId: string, signal?: AbortSignal): Promise<ApiResult<ParentChildSummary>>;
   createAttempt(input: CreateAttemptInput, signal?: AbortSignal): Promise<ApiResult<AttemptResult>>;
   ocrExtract(image: Blob, signal?: AbortSignal): Promise<ApiResult<OcrExtractResult>>;
   reportAttemptError(
@@ -301,6 +305,27 @@ export function createApiClient(config: ApiClientConfig): InnovaApiClient {
         method: 'GET',
         path: '/skills',
         schema: topicCatalogSchema,
+        ...(signal ? { signal } : {}),
+      });
+    },
+    listTaxonomy(signal) {
+      return request(config, {
+        method: 'GET',
+        path: '/skills/taxonomy',
+        schema: taxonomySchema,
+        ...(signal ? { signal } : {}),
+      });
+    },
+    searchCatalogErrors(params, signal) {
+      return request(config, {
+        method: 'GET',
+        path: '/skills/error-tags',
+        schema: catalogErrorListSchema,
+        query: {
+          q: params.q,
+          domainCode: params.domainCode,
+          limit: params.limit,
+        },
         ...(signal ? { signal } : {}),
       });
     },
