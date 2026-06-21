@@ -1,8 +1,25 @@
 module.exports = {
+    darkMode: 'media',
     content: ['./src/**/*.{astro,js,ts,jsx,tsx}'],
     theme: {
         extend: {
             colors: {
+                // Semantic tokens → CSS vars that flip automatically in dark mode
+                // (prefers-color-scheme). Backed by the design-system tokens.
+                canvas: 'var(--bg)',
+                surface: 'var(--surface)',
+                'surface-2': 'var(--surface-2)',
+                ink: 'var(--fg-1)',
+                'ink-muted': 'var(--fg-2)',
+                'ink-subtle': 'var(--fg-3)',
+                'ink-inverse': 'var(--fg-inverse)',
+                line: 'var(--border)',
+                'line-strong': 'var(--border-strong)',
+                brand: 'var(--primary)',
+                'brand-hover': 'var(--primary-hover)',
+                'brand-press': 'var(--primary-press)',
+                'brand-fg': 'var(--primary-fg)',
+                'mark-bg': 'var(--brand-mark-bg)',
                 primary: '#3FA7D6',
                 'primary-hover': '#2F8DBA',
                 'primary-press': '#226E94',
