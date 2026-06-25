@@ -1,11 +1,10 @@
 name: Deploy Web (Vercel)
-# Single unified app → app.superprofes.app. Replaces the old 3-job
-# practice/teacher/parent pipeline. Secret VERCEL_PROJECT_ID_WEB points at
-# the `superprofes-web` Vercel project.
+# DEPRECATED auto-deploy. The `superprofes-web` Vercel project now owns web
+# deploys via native Git integration (auto-deploy on push to main, previews on
+# PRs), with env vars configured in the Vercel dashboard. This workflow is kept
+# for manual/CLI deploys only (workflow_dispatch) to avoid double deploys.
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
