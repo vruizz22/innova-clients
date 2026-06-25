@@ -1,0 +1,755 @@
+# Instincts generated from https://github.com/vruizz22/innova-clients
+# Generated: 2026-06-25T05:10:15.190Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: innova-clients-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, refactor, docs, chore
+
+## Evidence
+
+- 52 commits analyzed
+- Detected conventional commit pattern
+- Examples: refactor(fonts): switch to Inter Variable via rsms.me CDN with local fallback, docs(design-system): add DS update plan for innova-clients reconciliation
+
+---
+id: innova-clients-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Commit Length
+
+## Action
+
+Write moderate-length commit messages (~63 characters)
+
+## Evidence
+
+- Average commit message length: 63 chars
+- Based on 52 commits
+
+---
+id: innova-clients-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: innova-clients-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: innova-clients-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: innova-clients-arch-type-based
+trigger: "when adding new code"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Arch Type Based
+
+## Action
+
+Place code in the appropriate type folder (components/, services/, utils/, etc.)
+
+## Evidence
+
+- Type-based module organization detected
+- Folders: 
+
+---
+id: innova-clients-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.ts
+
+---
+id: innova-clients-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: innova-clients-test-mocking
+trigger: "when mocking dependencies in tests"
+confidence: 0.75
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Test Mocking
+
+## Action
+
+Use msw for mocking
+
+## Evidence
+
+- Mocking pattern detected: msw
+- Consistent across test files
+
+---
+id: innova-clients-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Test Types
+
+## Action
+
+Write unit, integration tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration
+- Coverage config: no
+
+---
+id: innova-clients-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~28x per month
+- Files: superprofes-design-system/*, superprofes-design-system/preview/*, superprofes-design-system/preview/v9/*
+
+---
+id: innova-clients-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/**/*
+
+---
+id: innova-clients-workflow-add-or-update-ui-component
+trigger: "when doing add or update ui component"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Add Or Update Ui Component
+
+## Action
+
+Follow the add-or-update-ui-component workflow:
+1. Create or modify component file in packages/ui-components/src/components/
+2. Update packages/ui-components/src/index.ts to export the new/updated component
+3. Optionally update packages/ui-components/src/tokens.css for new tokens or styles
+4. Optionally update packages/ui-components/package.json if dependencies/scripts change
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: packages/ui-components/src/components/*.tsx, packages/ui-components/src/index.ts, packages/ui-components/src/tokens.css
+
+---
+id: innova-clients-workflow-add-or-update-api-client-endpoint
+trigger: "when doing add or update api client endpoint"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Add Or Update Api Client Endpoint
+
+## Action
+
+Follow the add-or-update-api-client-endpoint workflow:
+1. Create or modify endpoint file in packages/api-client/src/
+2. Update packages/api-client/src/schemas.ts if new types are needed
+3. Update packages/api-client/src/index.ts if needed
+4. Optionally add or update tests for the endpoint
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: packages/api-client/src/*.ts, packages/api-client/src/schemas.ts, packages/api-client/src/index.ts
+
+---
+id: innova-clients-workflow-design-system-bundle-sync-or-copy
+trigger: "when doing design system bundle sync or copy"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Design System Bundle Sync Or Copy
+
+## Action
+
+Follow the design-system-bundle-sync-or-copy workflow:
+1. Copy or update design system files (tokens, css, preview html, images) from SuperProfes-Design-System/ to landing/public/design-system/ or similar public directory
+2. Optionally update copy scripts (landing/scripts/copy-design-system.js)
+3. Optionally update documentation or README
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: SuperProfes-Design-System/**/*, landing/public/design-system/**/*, landing/scripts/copy-design-system.js
+
+---
+id: innova-clients-workflow-feature-development-multi-app
+trigger: "when doing feature development multi app"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Feature Development Multi App
+
+## Action
+
+Follow the feature-development-multi-app workflow:
+1. Create or update app route files (apps/web/app/(role)/feature/page.tsx)
+2. Create or update supporting components in apps/web/components/
+3. Update or add shared libraries in apps/web/lib/ if needed
+4. Optionally update design system or API client if new UI or API is needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/web/app/(student)/**/*, apps/web/app/(teacher)/**/*, apps/web/app/(admin)/**/*
+
+---
+id: innova-clients-workflow-add-or-update-shared-library
+trigger: "when doing add or update shared library"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Add Or Update Shared Library
+
+## Action
+
+Follow the add-or-update-shared-library workflow:
+1. Create or modify implementation files in packages/<lib>/src/
+2. Update types in packages/<lib>/src/types.ts if needed
+3. Update packages/<lib>/package.json if dependencies/scripts change
+4. Optionally add or update codegen scripts or tests
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: packages/*/src/*.ts, packages/*/src/*.tsx, packages/*/src/types.ts
+
+---
+id: innova-clients-workflow-add-or-update-deployment-or-ci-config
+trigger: "when doing add or update deployment or ci config"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/vruizz22/innova-clients
+---
+
+# Innova Clients Workflow Add Or Update Deployment Or Ci Config
+
+## Action
+
+Follow the add-or-update-deployment-or-ci-config workflow:
+1. Modify or add .github/workflows/*.yml for CI/CD
+2. Update docs/DEPLOY_*.md for deployment instructions
+3. Optionally update pnpm-lock.yaml or turbo.json for monorepo build changes
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .github/workflows/*.yml, docs/DEPLOY_*.md, pnpm-lock.yaml
+
+---
+id: innova-clients-instinct-file-naming-camelCase
+trigger: "When creating a new file in the codebase"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct File Naming CamelCase
+
+## Action
+
+Name the file using camelCase convention
+
+## Evidence
+
+- Naming conventions section: files = camelCase
+- Pattern in packages/ui-components/src/components/Badge.tsx
+
+---
+id: innova-clients-instinct-function-naming-camelCase
+trigger: "When defining a new function"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Function Naming CamelCase
+
+## Action
+
+Name the function using camelCase convention
+
+## Evidence
+
+- Naming conventions section: functions = camelCase
+
+---
+id: innova-clients-instinct-class-naming-PascalCase
+trigger: "When defining a new class"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Class Naming PascalCase
+
+## Action
+
+Name the class using PascalCase convention
+
+## Evidence
+
+- Naming conventions section: classes = PascalCase
+
+---
+id: innova-clients-instinct-constant-naming-SCREAMING_SNAKE_CASE
+trigger: "When defining a constant"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Constant Naming SCREAMING_SNAKE_CASE
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE convention
+
+## Evidence
+
+- Naming conventions section: constants = SCREAMING_SNAKE_CASE
+
+---
+id: innova-clients-instinct-import-alias
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Import Alias
+
+## Action
+
+Use alias import style
+
+## Evidence
+
+- importStyle: alias
+
+---
+id: innova-clients-instinct-export-mixed
+trigger: "When exporting modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Export Mixed
+
+## Action
+
+Use both named and default exports as appropriate (mixed export style)
+
+## Evidence
+
+- exportStyle: mixed
+
+---
+id: innova-clients-instinct-test-file-pattern
+trigger: "When creating a test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Test File Pattern
+
+## Action
+
+Name the file with the pattern *.test.ts
+
+## Evidence
+
+- testing.filePattern: *.test.ts
+- Pattern in packages/api-client/src/*.test.ts
+
+---
+id: innova-clients-instinct-test-framework-vitest
+trigger: "When writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Test Framework Vitest
+
+## Action
+
+Use the Vitest testing framework
+
+## Evidence
+
+- testing.framework: vitest
+
+---
+id: innova-clients-instinct-test-types-unit-integration
+trigger: "When deciding on test types"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Test Types Unit Integration
+
+## Action
+
+Write both unit and integration tests as appropriate
+
+## Evidence
+
+- testing.testTypes: unit, integration
+
+---
+id: innova-clients-instinct-mocking-msw
+trigger: "When mocking APIs in tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Mocking Msw
+
+## Action
+
+Use msw (Mock Service Worker) for mocking
+
+## Evidence
+
+- testing.mockingStyle: msw
+
+---
+id: innova-clients-instinct-commit-conventional-format
+trigger: "When writing a commit message"
+confidence: 0.95
+domain: git
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Commit Conventional Format
+
+## Action
+
+Use Conventional Commits format: <type>(<scope>): <description>
+
+## Evidence
+
+- commits.type: conventional
+- commits.prefixes: feat, refactor, docs, chore
+- Example: feat(api-client): add new admin tag errors
+
+---
+id: innova-clients-instinct-commit-average-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Commit Average Length
+
+## Action
+
+Keep the commit message concise, around 63 characters on average
+
+## Evidence
+
+- commits.averageLength: 63
+
+---
+id: innova-clients-instinct-add-or-update-ui-component
+trigger: "When someone wants to add a new reusable UI component or update an existing one in the design system"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Add Or Update Ui Component
+
+## Action
+
+Create or modify component file in packages/ui-components/src/components/, update index.ts, and optionally update tokens.css and package.json
+
+## Evidence
+
+- Workflow: add-or-update-ui-component
+- Files: packages/ui-components/src/components/*.tsx, packages/ui-components/src/index.ts
+
+---
+id: innova-clients-instinct-add-or-update-api-client-endpoint
+trigger: "When someone wants to add a new API endpoint to the client library or update an existing one"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Add Or Update Api Client Endpoint
+
+## Action
+
+Create or modify endpoint file in packages/api-client/src/, update schemas.ts and index.ts, and optionally add or update tests
+
+## Evidence
+
+- Workflow: add-or-update-api-client-endpoint
+- Files: packages/api-client/src/*.ts, packages/api-client/src/schemas.ts, packages/api-client/src/index.ts
+
+---
+id: innova-clients-instinct-design-system-bundle-sync-or-copy
+trigger: "When someone wants to update the public-facing design system assets after changes in the main design system"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Design System Bundle Sync Or Copy
+
+## Action
+
+Copy or update design system files from SuperProfes-Design-System/ to landing/public/design-system/ and optionally update copy scripts or documentation
+
+## Evidence
+
+- Workflow: design-system-bundle-sync-or-copy
+- Files: SuperProfes-Design-System/**/*, landing/public/design-system/**/*
+
+---
+id: innova-clients-instinct-feature-development-multi-app
+trigger: "When someone wants to add a new feature that touches several user roles or app sections"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Feature Development Multi App
+
+## Action
+
+Create or update app route files in apps/web/app/(role)/, supporting components, and shared libraries as needed
+
+## Evidence
+
+- Workflow: feature-development-multi-app
+- Files: apps/web/app/(student)/**/*, apps/web/app/(teacher)/**/*, apps/web/components/**/*
+
+---
+id: innova-clients-instinct-add-or-update-shared-library
+trigger: "When someone wants to add a new shared utility or update an existing one used by multiple apps"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Add Or Update Shared Library
+
+## Action
+
+Create or modify implementation files in packages/<lib>/src/, update types, package.json, and optionally codegen scripts or tests
+
+## Evidence
+
+- Workflow: add-or-update-shared-library
+- Files: packages/*/src/*.ts, packages/*/src/types.ts, packages/*/package.json
+
+---
+id: innova-clients-instinct-add-or-update-deployment-or-ci-config
+trigger: "When someone wants to change deployment targets, CI steps, or add new environments"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: vruizz22/innova-clients
+---
+
+# Innova Clients Instinct Add Or Update Deployment Or Ci Config
+
+## Action
+
+Modify or add .github/workflows/*.yml for CI/CD, update deployment docs, and optionally update pnpm-lock.yaml or turbo.json
+
+## Evidence
+
+- Workflow: add-or-update-deployment-or-ci-config
+- Files: .github/workflows/*.yml, docs/DEPLOY_*.md
+
