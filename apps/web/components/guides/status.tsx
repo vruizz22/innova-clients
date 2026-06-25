@@ -6,29 +6,32 @@ interface BadgeStyle {
 }
 
 const GUIDE_STATUS: Record<GuideStatus, BadgeStyle> = {
-  UPLOADED: { label: 'Cargada', cls: 'bg-slate-100 text-slate-600' },
-  EXTRACTING: { label: 'Extrayendo…', cls: 'bg-sky-100 text-sky-700' },
-  EXTRACTION_FAILED: { label: 'Falló extracción', cls: 'bg-rose-100 text-rose-700' },
-  GENERATING_SOLUTIONS: { label: 'Generando pauta…', cls: 'bg-sky-100 text-sky-700' },
-  GENERATION_FAILED: { label: 'Falló pauta', cls: 'bg-rose-100 text-rose-700' },
-  REVIEW: { label: 'Por revisar', cls: 'bg-amber-100 text-amber-800' },
-  PUBLISHED: { label: 'Publicada', cls: 'bg-emerald-100 text-emerald-700' },
-  ARCHIVED: { label: 'Archivada', cls: 'bg-slate-100 text-slate-400' },
+  UPLOADED: { label: 'Cargada', cls: 'bg-[var(--surface-2)] text-[var(--fg-2)]' },
+  EXTRACTING: { label: 'Extrayendo…', cls: 'bg-[var(--info-bg)] text-[var(--info-fg)]' },
+  EXTRACTION_FAILED: { label: 'Falló extracción', cls: 'bg-danger/15 text-danger' },
+  GENERATING_SOLUTIONS: {
+    label: 'Generando pauta…',
+    cls: 'bg-[var(--info-bg)] text-[var(--info-fg)]',
+  },
+  GENERATION_FAILED: { label: 'Falló pauta', cls: 'bg-danger/15 text-danger' },
+  REVIEW: { label: 'Por revisar', cls: 'bg-[var(--warning-bg)] text-[var(--warning-fg)]' },
+  PUBLISHED: { label: 'Publicada', cls: 'bg-[var(--success-bg)] text-[var(--success-fg)]' },
+  ARCHIVED: { label: 'Archivada', cls: 'bg-[var(--surface-2)] text-[var(--fg-3)]' },
 };
 
 const QUESTION_STATUS: Record<GuideQuestionStatus, BadgeStyle> = {
-  EXTRACTED: { label: 'Extraída', cls: 'bg-slate-100 text-slate-600' },
-  NEEDS_REVIEW: { label: 'Por revisar', cls: 'bg-amber-100 text-amber-800' },
-  APPROVED: { label: 'Aprobada', cls: 'bg-emerald-100 text-emerald-700' },
-  EXCLUDED: { label: 'Excluida', cls: 'bg-slate-100 text-slate-400 line-through' },
+  EXTRACTED: { label: 'Extraída', cls: 'bg-[var(--surface-2)] text-[var(--fg-2)]' },
+  NEEDS_REVIEW: { label: 'Por revisar', cls: 'bg-[var(--warning-bg)] text-[var(--warning-fg)]' },
+  APPROVED: { label: 'Aprobada', cls: 'bg-[var(--success-bg)] text-[var(--success-fg)]' },
+  EXCLUDED: { label: 'Excluida', cls: 'bg-[var(--surface-2)] text-[var(--fg-3)] line-through' },
 };
 
 const SUBMISSION_STATUS: Record<SubmissionStatus, BadgeStyle> = {
-  UPLOADED: { label: 'Enviada', cls: 'bg-slate-100 text-slate-600' },
-  TRANSCRIBING: { label: 'Leyendo…', cls: 'bg-sky-100 text-sky-700' },
-  GRADING: { label: 'Corrigiendo…', cls: 'bg-sky-100 text-sky-700' },
-  GRADED: { label: 'Corregida', cls: 'bg-emerald-100 text-emerald-700' },
-  FAILED: { label: 'Error', cls: 'bg-rose-100 text-rose-700' },
+  UPLOADED: { label: 'Enviada', cls: 'bg-[var(--surface-2)] text-[var(--fg-2)]' },
+  TRANSCRIBING: { label: 'Leyendo…', cls: 'bg-[var(--info-bg)] text-[var(--info-fg)]' },
+  GRADING: { label: 'Corrigiendo…', cls: 'bg-[var(--info-bg)] text-[var(--info-fg)]' },
+  GRADED: { label: 'Corregida', cls: 'bg-[var(--success-bg)] text-[var(--success-fg)]' },
+  FAILED: { label: 'Error', cls: 'bg-danger/15 text-danger' },
 };
 
 function Pill({ style }: { style: BadgeStyle }): JSX.Element {
