@@ -94,6 +94,7 @@ export const classroomSchema = z.object({
   id: z.string(),
   name: z.string(),
   gradeLevel: z.number(),
+  letter: z.string().nullable().optional(),
   academicYear: z.number().optional(),
   subjectId: z.string().optional(),
   schoolId: z.string().optional(),
@@ -101,6 +102,27 @@ export const classroomSchema = z.object({
 });
 export const classroomsSchema = z.array(classroomSchema);
 export type Classroom = z.infer<typeof classroomSchema>;
+
+// POST /classrooms (CreateClassroomDto) — teacher creates a course.
+export interface CreateClassroomInput {
+  readonly name?: string;
+  readonly description?: string;
+  readonly gradeLevel?: number;
+  readonly letter?: string;
+  readonly subjectCode?: string;
+}
+
+// POST /classrooms/:id/invite → an invitation code + shareable join URL.
+export const classroomInviteSchema = z.object({
+  code: z.string(),
+  url: z.string(),
+});
+export type ClassroomInvite = z.infer<typeof classroomInviteSchema>;
+
+// POST /classrooms/join (JoinClassroomDto) — student joins with an invite code.
+export interface JoinClassroomInput {
+  readonly code: string;
+}
 
 // ----------------------------------------------------------------- items ----
 // GET /items → ItemView[]
@@ -113,13 +135,32 @@ export const itemSchema = z.object({
     prompt: z.string(),
     problem: z.string().optional(),
     expectedAnswer: z.union([z.number(), z.string(), z.null()]).optional(),
+    correct_answer_latex: z.string().nullish(),
   }),
   difficulty: difficultySchema,
   irtA: z.number(),
   irtB: z.number(),
+  source: z.enum(['SYSTEM', 'TEACHER_AUTHORED', 'LLM_GENERATED', 'GUIDE_EXTRACTED']).nullish(),
+  n: z.number().nullish(),
+  pCorrect: z.number().nullish(),
 });
 export const itemsSchema = z.array(itemSchema);
 export type Item = z.infer<typeof itemSchema>;
+
+// ─── exercise generation (POST /items/generate) ───────────────────────────────
+export const generateItemsInputSchema = z.object({
+  subdomainCode: z.string().min(1),
+  gradeLevel: z.number().int().min(1).max(12),
+  targetErrorCodes: z.array(z.string()).min(1),
+  count: z.number().int().min(1).max(10),
+});
+export type GenerateItemsInput = z.infer<typeof generateItemsInputSchema>;
+
+export const generateItemsResultSchema = z.object({
+  generated: z.number(),
+  message: z.string().optional(),
+});
+export type GenerateItemsResult = z.infer<typeof generateItemsResultSchema>;
 
 // --------------------------------------------------------------- mastery ----
 const masteryTopicSchema = z.object({
@@ -257,6 +298,21 @@ export const attemptResultSchema = z.object({
 });
 export type AttemptResult = z.infer<typeof attemptResultSchema>;
 
+// GET /attempts/:id/status → live classification.
+// `status` is PENDING while an UNCLASSIFIED attempt waits for the async LLM
+// worker, then CLASSIFIED once the real error tag is written. `/scan` polls this
+// for parity with guides (which poll the submission status).
+export const attemptStatusSchema = z.object({
+  attemptId: z.string(),
+  status: z.string(),
+  isCorrect: z.boolean(),
+  errorTagCode: z.string().nullable(),
+  errorTagName: z.string().nullable(),
+  classifierSource: z.string(),
+  confidence: z.number().nullable(),
+});
+export type AttemptStatus = z.infer<typeof attemptStatusSchema>;
+
 /** Request body for POST /attempts (CreateAttemptDto). */
 export interface CreateAttemptInput {
   readonly studentId: string;
@@ -270,12 +326,36 @@ export interface CreateAttemptInput {
   readonly subtrahend?: number;
 }
 
-// POST /attempts/ocr-extract → OcrExtractResult
-export const ocrExtractSchema = z.object({
+// POST /attempts/solve-adhoc → { attemptId } (poll status for classification).
+// Used when evalArithmetic can't derive the expected answer client-side (algebra).
+export const solveAdhocResultSchema = z.object({
+  attemptId: z.string(),
+});
+export type SolveAdhocResult = z.infer<typeof solveAdhocResultSchema>;
+
+/** Request body for POST /attempts/solve-adhoc (SolveAdhocDto). */
+export interface SolveAdhocInput {
+  readonly studentId: string;
+  readonly problemLatex: string;
+  readonly studentSteps?: readonly string[];
+  readonly studentFinalAnswer: string;
+  readonly courseId?: string;
+  readonly gradeLevel?: number;
+}
+
+// POST /attempts/ocr-extract → OcrExtractResult.
+// A worksheet photo may hold several exercises; the OCR returns one entry each.
+export const ocrExerciseSchema = z.object({
+  problem: z.string(),
   rawSteps: z.array(attemptStepSchema),
   finalAnswer: z.string(),
   topicHint: z.string().nullable(),
   confidence: z.number(),
+});
+export type OcrExercise = z.infer<typeof ocrExerciseSchema>;
+
+export const ocrExtractSchema = z.object({
+  exercises: z.array(ocrExerciseSchema),
 });
 export type OcrExtractResult = z.infer<typeof ocrExtractSchema>;
 
@@ -313,3 +393,63 @@ export const alertSchema = z.object({
 });
 export const alertsSchema = z.array(alertSchema);
 export type Alert = z.infer<typeof alertSchema>;
+
+// ─── mastery recommend (GET /mastery/recommend/:courseId/:studentId) ──────────
+
+export const recommendResultSchema = z.object({
+  exercise: z.object({
+    id: z.string(),
+    problem: z.string(),
+    topicCode: z.string(),
+    topicName: z.string(),
+    irtA: z.number(),
+    irtB: z.number(),
+  }),
+  studentTheta: z.number(),
+  reasoning: z.string(),
+});
+export type RecommendResult = z.infer<typeof recommendResultSchema>;
+
+// ─── attempt detail (GET /attempts/:id/detail) ────────────────────────────────
+
+export const attemptStepViewSchema = z.object({
+  stepIndex: z.number(),
+  contentLatex: z.string(),
+  isCorrect: z.boolean().nullable(),
+});
+
+export const attemptDetailSchema = z.object({
+  attemptId: z.string(),
+  status: z.string(),
+  isCorrect: z.boolean(),
+  errorTagCode: z.string().nullable(),
+  errorTagName: z.string().nullable(),
+  classifierSource: z.string(),
+  confidence: z.number().nullable(),
+  steps: z.array(attemptStepViewSchema),
+  submission: z
+    .object({
+      photoUrls: z.array(z.string()),
+      transcriptionLatex: z.string().nullable(),
+      transcriptionJson: z.unknown().nullable(),
+      transcriptionConfidence: z.number().nullable(),
+    })
+    .nullable(),
+});
+export type AttemptDetail = z.infer<typeof attemptDetailSchema>;
+export type AttemptStepView = z.infer<typeof attemptStepViewSchema>;
+
+// POST /practice/assign → AssignmentView (one call per student)
+export interface AssignPracticeInput {
+  readonly studentId: string;
+  readonly itemIds: readonly string[];
+  readonly dueAt?: string;
+}
+
+export const assignPracticeResultSchema = z.object({
+  id: z.string(),
+  studentId: z.string(),
+  itemIds: z.array(z.string()),
+  dueAt: z.string().optional(),
+});
+export type AssignPracticeResult = z.infer<typeof assignPracticeResultSchema>;

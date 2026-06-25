@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest): Promise<SessionResult
           }
         },
       },
-    },
+    }
   );
 
   const {

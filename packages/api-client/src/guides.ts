@@ -211,6 +211,9 @@ export const guideSchema = z.object({
 });
 export type Guide = z.infer<typeof guideSchema>;
 
+export const guideSourceUrlSchema = z.object({ url: z.string() });
+export type GuideSourceUrl = z.infer<typeof guideSourceUrlSchema>;
+
 export const guideQuestionAckSchema = z.object({
   id: z.string(),
   status: guideQuestionStatusSchema,
@@ -415,3 +418,30 @@ export const overrideErrorAckSchema = z.object({
   isOverridden: z.boolean(),
 });
 export type OverrideErrorAck = z.infer<typeof overrideErrorAckSchema>;
+
+// -------------------------------------------------- scan-page (endpoint #7) --
+
+/** Response from GET /student/guides/:id/scan-page-url */
+export const scanPageUploadUrlSchema = z.object({
+  photoKey: z.string(),
+  presignedUrl: z.string(),
+});
+export type ScanPageUploadUrl = z.infer<typeof scanPageUploadUrlSchema>;
+
+/** One question matched/skipped in the scan-page response. */
+export const scanPageSubmissionSchema = z.object({
+  questionId: z.string(),
+  sequence: z.number(),
+  submissionId: z.string().nullable(),
+  skipped: z.boolean(),
+  reason: z.string().optional(),
+});
+export type ScanPageSubmission = z.infer<typeof scanPageSubmissionSchema>;
+
+/** Response from POST /student/guides/:id/scan-page */
+export const scanPageResultSchema = z.object({
+  photoKey: z.string(),
+  matched: z.number(),
+  submissions: z.array(scanPageSubmissionSchema),
+});
+export type ScanPageResult = z.infer<typeof scanPageResultSchema>;

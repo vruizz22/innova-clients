@@ -8,11 +8,7 @@ import { z } from 'zod';
  */
 
 export const errorTagStatusSchema = z.enum(['ACTIVE', 'DRAFT', 'DEPRECATED']);
-export const errorTagSourceSchema = z.enum([
-  'CURATED',
-  'LLM_GENERATED',
-  'FIELD_REPORTED',
-]);
+export const errorTagSourceSchema = z.enum(['CURATED', 'LLM_GENERATED', 'FIELD_REPORTED']);
 export const errorTagSeveritySchema = z.enum(['LOW', 'MED', 'HIGH', 'CRITICAL']);
 
 export const adminErrorTagSchema = z.object({
@@ -55,8 +51,51 @@ export const adminErrorTagListSchema = z.object({
 
 export type AdminErrorTag = z.infer<typeof adminErrorTagSchema>;
 export type AdminErrorTagList = z.infer<typeof adminErrorTagListSchema>;
-export type AdminErrorTagDomainFacet = z.infer<
-  typeof adminErrorTagDomainFacetSchema
->;
+export type AdminErrorTagDomainFacet = z.infer<typeof adminErrorTagDomainFacetSchema>;
 export type AdminErrorTagStatus = z.infer<typeof errorTagStatusSchema>;
 export type AdminErrorTagSource = z.infer<typeof errorTagSourceSchema>;
+
+// ─── admin/status — pipeline health snapshot ──────────────────────────────────
+
+export const queueStatusSchema = z.object({
+  depth: z.number(),
+  dlqDepth: z.number(),
+  processedLastHour: z.number(),
+});
+
+export const costByModelSchema = z.object({
+  model: z.string(),
+  calls: z.number(),
+  inputTokens: z.number(),
+  outputTokens: z.number(),
+  costUsd: z.number(),
+});
+
+export const adminStatusSchema = z.object({
+  queues: z.record(z.string(), queueStatusSchema),
+  pipeline: z.object({
+    attemptsLastHour: z.number(),
+    submissionsLastHour: z.number(),
+    classifiedLastHour: z.number(),
+    pendingGuides: z.number(),
+  }),
+  cost: z.object({
+    todayUsd: z.number(),
+    monthUsd: z.number(),
+    byModel: z.array(costByModelSchema),
+  }),
+  killswitches: z.record(z.string(), z.boolean()),
+});
+
+export type AdminStatus = z.infer<typeof adminStatusSchema>;
+export type QueueStatus = z.infer<typeof queueStatusSchema>;
+export type CostByModel = z.infer<typeof costByModelSchema>;
+
+// ─── admin/status/killswitches — toggle result ────────────────────────────────
+
+export const killswitchToggleResultSchema = z.object({
+  key: z.string(),
+  enabled: z.boolean(),
+});
+
+export type KillswitchToggleResult = z.infer<typeof killswitchToggleResultSchema>;

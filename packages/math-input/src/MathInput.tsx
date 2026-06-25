@@ -28,7 +28,12 @@ const FIELD =
  * lines to "show their work", then enter a final answer. Output maps directly onto
  * POST /attempts `rawSteps` (each working line + the final answer with isFinal).
  */
-export function MathInput({ problem, onSubmit, submitting = false, submitLabel = 'Enviar respuesta' }: MathInputProps): JSX.Element {
+export function MathInput({
+  problem,
+  onSubmit,
+  submitting = false,
+  submitLabel = 'Enviar respuesta',
+}: MathInputProps): JSX.Element {
   const startedAtRef = useRef<number>(Date.now());
   const [steps, setSteps] = useState<WorkingStep[]>([]);
   const [finalAnswer, setFinalAnswer] = useState('');
@@ -41,7 +46,9 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
         return;
       }
       const idx = active.index;
-      setSteps((rows) => rows.map((row, i) => (i === idx ? { ...row, value: transform(row.value) } : row)));
+      setSteps((rows) =>
+        rows.map((row, i) => (i === idx ? { ...row, value: transform(row.value) } : row))
+      );
     },
     [active]
   );
@@ -63,7 +70,10 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
     setActive({ kind: 'final' });
   }
 
-  const canSubmit = useMemo(() => finalAnswer.trim().length > 0 && !submitting, [finalAnswer, submitting]);
+  const canSubmit = useMemo(
+    () => finalAnswer.trim().length > 0 && !submitting,
+    [finalAnswer, submitting]
+  );
 
   function handleSubmit(): void {
     if (!canSubmit) return;
@@ -86,7 +96,9 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
 
       {steps.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]">Tu desarrollo</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]">
+            Tu desarrollo
+          </p>
           {steps.map((step, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
@@ -118,7 +130,10 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
       )}
 
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]" htmlFor="final-answer">
+        <label
+          className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]"
+          htmlFor="final-answer"
+        >
           Respuesta final
         </label>
         <input
@@ -134,7 +149,12 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
         />
       </div>
 
-      <MathKeypad onChar={onChar} onBackspace={onBackspace} onClear={onClear} disabled={submitting} />
+      <MathKeypad
+        onChar={onChar}
+        onBackspace={onBackspace}
+        onClear={onClear}
+        disabled={submitting}
+      />
 
       <div className="flex items-center justify-between gap-3">
         <button
