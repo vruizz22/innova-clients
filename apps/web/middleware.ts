@@ -15,7 +15,8 @@ const ROLE_BY_PREFIX: ReadonlyArray<{ prefix: string; role: AppRole }> = [
   { prefix: '/exercise-bank', role: 'teacher' },
   { prefix: '/attempts', role: 'teacher' },
   { prefix: '/family', role: 'parent' },
-  { prefix: '/admin', role: 'admin' },
+  { prefix: '/error-catalog', role: 'admin' },
+  { prefix: '/status', role: 'admin' },
 ];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
@@ -52,7 +53,5 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
