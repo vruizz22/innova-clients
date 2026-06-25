@@ -24,20 +24,20 @@ export function Card({
   return (
     <div
       className={[
-        'bg-white rounded-2xl border border-[#E5E9F0] shadow-[0_6px_20px_rgba(17,24,39,0.06)]',
+        'bg-[var(--surface)] rounded-2xl border border-[var(--border)] shadow-[var(--shadow-card)]',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
       {header ? (
-        <div className="px-5 py-3 border-b border-[#E5E9F0] font-semibold text-[#1F2937]">
+        <div className="px-5 py-3 border-b border-[var(--border)] font-semibold text-[var(--fg-1)]">
           {header}
         </div>
       ) : null}
       <div className={paddingClasses[padding]}>{children}</div>
       {footer ? (
-        <div className="px-5 py-3 border-t border-[#E5E9F0] text-sm text-[#4F5868]">
+        <div className="px-5 py-3 border-t border-[var(--border)] text-sm text-[var(--fg-2)]">
           {footer}
         </div>
       ) : null}

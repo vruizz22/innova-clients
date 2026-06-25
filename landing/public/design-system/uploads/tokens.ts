@@ -28,4 +28,4 @@ export const SP_TOKENS = {
   },
 } as const;
 
-export type SuperProfesTokens = typeof SP_TOKENS
+export type SuperProfesTokens = typeof SP_TOKENS;

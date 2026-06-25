@@ -3,6 +3,8 @@ export {
   APP_ROLES,
   ROLE_HOME,
   getUserRole,
+  getUserDisplayName,
+  getUserInitials,
   isAppRole,
   roleHome,
   type AppRole,

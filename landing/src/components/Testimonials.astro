@@ -38,14 +38,14 @@ const testimonials: Testimonial[] = [
 ];
 ---
 
-<section class="bg-white py-20 md:py-28">
+<section class="bg-[var(--bg)] py-20 md:py-28">
   <div class="mx-auto max-w-7xl px-4 md:px-8 lg:px-10">
     <!-- Section header -->
     <div class="mx-auto mb-14 max-w-2xl text-center">
       <p class="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--sky-600)]">
         Testimonios
       </p>
-      <h2 class="text-3xl font-bold tracking-tight text-[var(--slate-800)] md:text-4xl">
+      <h2 class="text-3xl font-bold tracking-tight text-[var(--fg-1)] md:text-4xl">
         Lo que dicen los profesores
       </h2>
     </div>
@@ -53,7 +53,7 @@ const testimonials: Testimonial[] = [
     <!-- Testimonials grid -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {testimonials.map((t) => (
-        <blockquote class="flex flex-col gap-6 rounded-2xl border border-[var(--border)] bg-[var(--slate-50)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-pop)]">
+        <blockquote class="flex flex-col gap-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-pop)]">
           <!-- Quote icon -->
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="var(--sky-100)" stroke="var(--sky-300)" stroke-width="1" aria-hidden="true">
             <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
@@ -72,7 +72,7 @@ const testimonials: Testimonial[] = [
               {t.initials}
             </div>
             <div>
-              <p class="text-sm font-semibold text-[var(--slate-800)]">{t.name}</p>
+              <p class="text-sm font-semibold text-[var(--fg-1)]">{t.name}</p>
               <p class="text-xs text-[var(--fg-2)]">{t.role} · {t.school}</p>
             </div>
           </footer>
@@ -81,24 +81,24 @@ const testimonials: Testimonial[] = [
     </div>
 
     <!-- Social proof bar -->
-    <div class="mt-12 flex flex-wrap items-center justify-center gap-8 rounded-2xl border border-[var(--border)] bg-[var(--slate-50)] px-6 py-5">
+    <div class="mt-12 flex flex-wrap items-center justify-center gap-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-5">
       <div class="flex flex-col items-center">
-        <span class="text-2xl font-bold text-[var(--sky-700)]">20+</span>
+        <span class="text-2xl font-bold text-[var(--primary)]">20+</span>
         <span class="text-xs text-[var(--fg-2)]">colegios en piloto</span>
       </div>
       <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
       <div class="flex flex-col items-center">
-        <span class="text-2xl font-bold text-[var(--sky-700)]">5.000+</span>
+        <span class="text-2xl font-bold text-[var(--primary)]">5.000+</span>
         <span class="text-xs text-[var(--fg-2)]">alumnos activos</span>
       </div>
       <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
       <div class="flex flex-col items-center">
-        <span class="text-2xl font-bold text-[var(--sky-700)]">92%</span>
+        <span class="text-2xl font-bold text-[var(--primary)]">92%</span>
         <span class="text-xs text-[var(--fg-2)]">profesores recomendarían</span>
       </div>
       <div class="hidden h-8 w-px bg-[var(--border)] md:block"></div>
       <div class="flex flex-col items-center">
-        <span class="text-2xl font-bold text-[var(--sky-700)]">+31%</span>
+        <span class="text-2xl font-bold text-[var(--primary)]">+31%</span>
         <span class="text-xs text-[var(--fg-2)]">mejora en dominio promedio</span>
       </div>
     </div>

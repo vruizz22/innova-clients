@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Card } from '@innova/ui';
+import { Card, EmptyState } from '@innova/ui';
 import { formatHumanName } from '@innova/error-catalog';
 import { getServerApi } from '@/lib/api.server';
 import { masteryLevel, MASTERY_SOFT_BG, MASTERY_LABEL } from '@/lib/mastery-color';
+import { AttemptDetailPanel } from './attempt-detail.client';
+import { AssignRecommendButton } from '@/components/teacher/AssignRecommendButton';
 
-// Server Component: per-student drill-down (C12) — mastery by topic, recent
-// attempts and frequent errors. Reuses the course mastery payload.
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -16,22 +16,29 @@ export default async function StudentDrilldownPage({ params }: PageProps): Promi
   const courseId = decodeURIComponent(params.courseId);
   const studentId = decodeURIComponent(params.studentId);
   const api = getServerApi();
-  const mastery = await api.getClassroomMastery(courseId);
+
+  const [mastery, recommend] = await Promise.all([
+    api.getClassroomMastery(courseId),
+    api.recommendNextExercise(courseId, studentId),
+  ]);
 
   const student = mastery.ok ? mastery.data.find((s) => s.studentId === studentId) : undefined;
 
   if (!mastery.ok || !student) {
     return (
       <div className="mx-auto max-w-[640px]">
-        <Card>
-          <p className="text-sm font-bold text-slate-800">No pudimos cargar al alumno</p>
-          <Link
-            href={`/courses/${courseId}/heatmap`}
-            className="mt-3 inline-block text-sm font-medium text-sky-600"
-          >
-            ← Volver al heatmap
-          </Link>
-        </Card>
+        <EmptyState
+          kind="error"
+          title="No pudimos cargar al alumno"
+          action={
+            <Link
+              href={`/courses/${courseId}/heatmap`}
+              className="text-sm font-medium text-[var(--primary)] hover:text-[var(--primary-hover)]"
+            >
+              ← Volver al heatmap
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -40,15 +47,16 @@ export default async function StudentDrilldownPage({ params }: PageProps): Promi
     <div className="mx-auto max-w-[820px]" data-testid="student-drilldown-root">
       <Link
         href={`/courses/${courseId}/heatmap`}
-        className="text-sm font-medium text-sky-600 hover:text-sky-700"
+        className="text-sm font-medium text-[var(--primary)] hover:text-[var(--primary-hover)]"
       >
         ← Heatmap del curso
       </Link>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900">
+      <h1 className="mt-3 text-2xl font-bold tracking-tight text-[var(--fg-1)]">
         {student.displayName}
       </h1>
 
-      <h2 className="mb-3 mt-6 text-sm font-bold text-slate-700">Dominio por tema</h2>
+      {/* ── dominio por tema ─────────────────────────────────────────────── */}
+      <h2 className="mb-3 mt-6 text-sm font-bold text-[var(--fg-1)]">Dominio por tema</h2>
       <div className="flex flex-col gap-2">
         {student.topics.map((t) => {
           const lvl = masteryLevel(t.pKnown);
@@ -56,18 +64,18 @@ export default async function StudentDrilldownPage({ params }: PageProps): Promi
             <Card key={t.topicCode}>
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-slate-800">{t.topicName}</p>
-                  <p className="text-xs text-slate-400">{t.attemptsCount} intentos</p>
+                  <p className="truncate text-sm font-bold text-[var(--fg-1)]">{t.topicName}</p>
+                  <p className="text-xs text-[var(--fg-3)]">{t.attemptsCount} intentos</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-2 w-32 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2 w-32 overflow-hidden rounded-full bg-[var(--surface-2)]">
                     <div
                       className={
                         lvl === 'high'
-                          ? 'h-full bg-emerald-500'
+                          ? 'h-full bg-mastery-strong'
                           : lvl === 'mid'
-                            ? 'h-full bg-amber-400'
-                            : 'h-full bg-rose-500'
+                            ? 'h-full bg-mastery-medium'
+                            : 'h-full bg-mastery-weak'
                       }
                       style={{ width: `${Math.round(t.pKnown * 100)}%` }}
                     />
@@ -87,20 +95,19 @@ export default async function StudentDrilldownPage({ params }: PageProps): Promi
         })}
       </div>
 
-      <h2 className="mb-3 mt-8 text-sm font-bold text-slate-700">Errores frecuentes</h2>
+      {/* ── errores frecuentes ───────────────────────────────────────────── */}
+      <h2 className="mb-3 mt-8 text-sm font-bold text-[var(--fg-1)]">Errores frecuentes</h2>
       {student.errorFrequency.length === 0 ? (
-        <Card>
-          <p className="text-sm text-slate-500">Sin errores registrados todavía.</p>
-        </Card>
+        <EmptyState kind="no-data" title="Sin errores registrados todavía." />
       ) : (
         <div className="flex flex-wrap gap-2">
           {student.errorFrequency.map((e) => (
             <span
               key={e.errorTagCode}
-              className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--warning-bg)] px-3 py-1 text-xs font-semibold text-[var(--warning-fg)]"
             >
-              {formatHumanName(e.errorTagCode)}
-              <span className="rounded-full bg-rose-200 px-1.5 text-[10px] text-rose-800">
+              {e.errorTagName ?? formatHumanName(e.errorTagCode)}
+              <span className="tabular-nums rounded-full bg-[var(--warning-fg)]/15 px-1.5 text-[10px] font-bold text-[var(--warning-fg)]">
                 {Math.round(e.percentage * 100)}%
               </span>
             </span>
@@ -108,27 +115,59 @@ export default async function StudentDrilldownPage({ params }: PageProps): Promi
         </div>
       )}
 
-      <h2 className="mb-3 mt-8 text-sm font-bold text-slate-700">Últimos intentos</h2>
-      <div className="flex flex-col gap-2">
-        {student.attempts.slice(0, 12).map((a) => (
-          <Card key={a.id}>
-            <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 truncate text-sm text-slate-700">
-                {a.exercisePrompt || 'Ejercicio'}
-              </p>
-              <span
-                className={[
-                  'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold',
-                  a.isCorrect ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700',
-                ].join(' ')}
-              >
-                {a.isCorrect ? '✓' : a.errorTagCode ? formatHumanName(a.errorTagCode) : '✗'}
-              </span>
+      {/* ── próximo ejercicio recomendado (IRT Fisher-info) ──────────────── */}
+      <div className="mt-10">
+        <div className="flex items-center gap-3">
+          <h2 className="text-sm font-bold text-[var(--fg-1)]">Próximo ejercicio recomendado</h2>
+          <span className="rounded-full bg-[var(--info-bg)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--info-fg)]">
+            IRT · Fisher-info
+          </span>
+        </div>
+
+        {recommend.ok ? (
+          <>
+            <div className="mt-3 flex items-start gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[var(--shadow-card)]">
+              <div className="min-w-0 flex-1">
+                <p className="math text-base font-black text-[var(--fg-1)]">
+                  {recommend.data.exercise.problem}
+                </p>
+                <p className="mt-1 text-xs text-[var(--fg-2)]">
+                  {recommend.data.exercise.topicName}
+                </p>
+                <p className="mt-2 font-mono text-[11px] text-[var(--fg-3)]">
+                  θ = {recommend.data.studentTheta.toFixed(2)} · a = {recommend.data.exercise.irtA.toFixed(2)} · b = {recommend.data.exercise.irtB.toFixed(2)}
+                </p>
+              </div>
+              <AssignRecommendButton
+                studentId={studentId}
+                exerciseId={recommend.data.exercise.id}
+              />
             </div>
-          </Card>
-        ))}
+            <p className="mt-1.5 text-[11px] text-[var(--fg-3)]">{recommend.data.reasoning}</p>
+          </>
+        ) : (
+          <p className="mt-3 text-sm text-[var(--fg-3)]">
+            Sin ejercicios disponibles para este alumno — puede que no tenga dominios con datos de
+            dominio aún o que haya completado todos recientemente.
+          </p>
+        )}
       </div>
-      <p className="mt-2 text-[11px] text-slate-400">{MASTERY_LABEL.high} ≥70% · {MASTERY_LABEL.mid} 40–70% · {MASTERY_LABEL.low} &lt;40%</p>
+
+      {/* ── últimos intentos ─────────────────────────────────────────────── */}
+      <h2 className="mb-3 mt-8 text-sm font-bold text-[var(--fg-1)]">Últimos intentos</h2>
+      <AttemptDetailPanel
+        attempts={student.attempts.slice(0, 12).map((a) => ({
+          id: a.id,
+          exercisePrompt: a.exercisePrompt,
+          isCorrect: a.isCorrect,
+          errorTagCode: a.errorTagCode,
+          errorTagName: a.errorTagName ?? null,
+        }))}
+      />
+
+      <p className="mt-4 text-[11px] text-[var(--fg-3)]">
+        {MASTERY_LABEL.high} ≥70% · {MASTERY_LABEL.mid} 40–70% · {MASTERY_LABEL.low} &lt;40%
+      </p>
     </div>
   );
 }

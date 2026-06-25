@@ -166,7 +166,10 @@ jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
 # jwt_issuer = ""
 # Path to JWT signing key. DO NOT commit your signing keys file to git.
-# signing_keys_path = "./signing_keys.json"
+# Asymmetric ES256 → JWKS endpoint exposes the public key so the backend
+# (SupabaseJwtStrategy, algorithms ['ES256','RS256']) can validate user logins.
+# Without this, Supabase signs HS256 → JWKS empty → real browser login 401s.
+signing_keys_path = "./signing_keys.json"
 # If disabled, the refresh token will never expire.
 enable_refresh_token_rotation = true
 # Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.

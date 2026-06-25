@@ -10,7 +10,10 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "vitest run",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown"
   },
   "peerDependencies": {
     "react": ">=18"

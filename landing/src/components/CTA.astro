@@ -2,8 +2,6 @@
 // CTA — bottom call-to-action section
 import { loginUrl, registerUrl, teacherUrl, practiceUrl, parentUrl } from '@config/urls';
 import SmartLoginButton from '@components/SmartLoginButton.astro';
-
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 ---
 
 <section
@@ -38,13 +36,13 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
       <a
         href={registerUrl}
         class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--sky-500)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-black/25 transition-all hover:bg-[var(--sky-600)] hover:-translate-y-px active:scale-95 sm:w-auto"
+        data-auth-cta="register"
       >
         Comenzar gratis
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
       </a>
       <SmartLoginButton
         loginUrl={loginUrl}
-        apiUrl={apiUrl}
         teacherUrl={teacherUrl}
         practiceUrl={practiceUrl}
         parentUrl={parentUrl}

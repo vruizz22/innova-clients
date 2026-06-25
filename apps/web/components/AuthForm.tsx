@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Logo } from '@innova/ui';
 import { createClient } from '@innova/supabase/client';
 import { getUserRole, roleHome } from '@innova/supabase';
 
@@ -21,11 +22,90 @@ const TITLES: Record<Mode, { title: string; sub: string }> = {
   reset: { title: 'Nueva contraseña', sub: 'Define tu nueva contraseña.' },
 };
 
+const fieldClass =
+  'h-11 w-full rounded-xl border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-subtle transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30';
+
+/** Text field with a label rendered above the input (never placeholder-as-label). */
+function Field({ label, children }: { label: string; children: ReactNode }): JSX.Element {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-sm font-semibold text-ink-muted">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+/** Password field with a show/hide toggle (accessible, keyboard-operable). */
+function PasswordField({
+  label,
+  value,
+  onChange,
+  autoComplete,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  autoComplete: string;
+  placeholder?: string;
+}): JSX.Element {
+  const [visible, setVisible] = useState(false);
+  const id = useId();
+  return (
+    <Field label={label}>
+      <div className="relative">
+        <input
+          id={id}
+          type={visible ? 'text' : 'password'}
+          required
+          minLength={8}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder ?? 'Mínimo 8 caracteres'}
+          className={`${fieldClass} pr-11`}
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          aria-pressed={visible}
+          className="absolute right-1 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-ink-subtle transition-colors hover:bg-surface-2 hover:text-ink"
+        >
+          {visible ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                d="M9.88 9.88a3 3 0 0 0 4.24 4.24M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.39-1.61M2 2l20 20"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path
+                d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.7" />
+            </svg>
+          )}
+        </button>
+      </div>
+    </Field>
+  );
+}
+
 export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
   const supabase = createClient();
   const router = useRouter();
   const params = useSearchParams();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -61,7 +141,10 @@ export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { role }, emailRedirectTo: `${window.location.origin}/auth/callback` },
+          options: {
+            data: { role, full_name: name.trim() },
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
         });
         if (error) throw error;
         if (data.session) {
@@ -97,25 +180,34 @@ export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
 
   return (
     <div className="w-full max-w-[420px]">
-      <div className="mb-6 flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-700 text-xs font-black text-white">
-          SP
-        </div>
-        <span className="text-base font-extrabold text-slate-800">SuperProfes</span>
-      </div>
+      <a
+        href="/"
+        className="mb-8 inline-flex items-center text-ink"
+        aria-label="SuperProfes — inicio"
+      >
+        <Logo height={30} />
+      </a>
 
-      <h1 className="text-2xl font-bold tracking-tight text-slate-800">{title}</h1>
-      <p className="mb-6 mt-1 text-sm text-slate-500">{sub}</p>
+      <h1 className="text-2xl font-bold tracking-tight text-ink">{title}</h1>
+      <p className="mb-6 mt-1 text-sm text-ink-muted">{sub}</p>
 
       {message ? (
         <div
           role="alert"
-          className={[
-            'mb-4 rounded-lg border px-3 py-2.5 text-sm',
+          className="mb-4 rounded-lg border px-3 py-2.5 text-sm"
+          style={
             isError
-              ? 'border-[#f5b8b8] bg-[#fff8f8] text-[#7a1a1a]'
-              : 'border-mint-200 bg-mint-50 text-mint-800',
-          ].join(' ')}
+              ? {
+                  borderColor: 'var(--error-border)',
+                  background: 'var(--error-bg)',
+                  color: 'var(--error-fg)',
+                }
+              : {
+                  borderColor: 'var(--success-fg)',
+                  background: 'var(--success-bg)',
+                  color: 'var(--success-fg)',
+                }
+          }
         >
           {message}
         </div>
@@ -123,29 +215,45 @@ export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {mode === 'register' ? (
-          <div className="flex gap-2" role="group" aria-label="Rol">
-            {(Object.keys(ROLE_LABELS) as SignupRole[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                aria-pressed={role === r}
-                onClick={() => setRole(r)}
-                className={[
-                  'min-h-[44px] flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
-                  role === r
-                    ? 'border-sky-500 bg-sky-50 text-sky-800'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300',
-                ].join(' ')}
-              >
-                {ROLE_LABELS[r]}
-              </button>
-            ))}
+          <div className="flex flex-col gap-1.5" role="group" aria-label="Rol">
+            <span className="text-sm font-semibold text-ink-muted">Soy</span>
+            <div className="flex gap-2">
+              {(Object.keys(ROLE_LABELS) as SignupRole[]).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  aria-pressed={role === r}
+                  onClick={() => setRole(r)}
+                  className={[
+                    'min-h-[44px] flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
+                    role === r
+                      ? 'border-brand bg-canvas-student text-brand'
+                      : 'border-line bg-surface text-ink-muted hover:border-line-strong hover:text-ink',
+                  ].join(' ')}
+                >
+                  {ROLE_LABELS[r]}
+                </button>
+              ))}
+            </div>
           </div>
         ) : null}
 
+        {mode === 'register' ? (
+          <Field label="Nombre">
+            <input
+              type="text"
+              required
+              autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Tu nombre y apellido"
+              className={fieldClass}
+            />
+          </Field>
+        ) : null}
+
         {mode !== 'reset' ? (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-semibold text-slate-600">Correo</span>
+          <Field label="Correo">
             <input
               type="email"
               required
@@ -153,44 +261,35 @@ export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tucorreo@colegio.cl"
-              className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
+              className={fieldClass}
             />
-          </label>
+          </Field>
         ) : null}
 
         {mode === 'login' || mode === 'register' || mode === 'reset' ? (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-semibold text-slate-600">Contraseña</span>
-            <input
-              type="password"
-              required
-              minLength={8}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 8 caracteres"
-              className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-            />
-          </label>
+          <PasswordField
+            label="Contraseña"
+            value={password}
+            onChange={setPassword}
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+          />
         ) : null}
 
         {mode === 'register' ? (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-semibold text-slate-600">Confirmar contraseña</span>
-            <input
-              type="password"
-              required
-              minLength={8}
-              autoComplete="new-password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className="h-11 rounded-xl border border-slate-200 px-3 text-sm text-slate-800 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-            />
-          </label>
+          <PasswordField
+            label="Confirmar contraseña"
+            value={confirm}
+            onChange={setConfirm}
+            autoComplete="new-password"
+            placeholder="Repite tu contraseña"
+          />
         ) : null}
 
         {mode === 'login' ? (
-          <a href="/forgot" className="self-end text-sm font-semibold text-sky-600 hover:text-sky-700">
+          <a
+            href="/forgot"
+            className="self-end text-sm font-semibold text-brand hover:text-brand-hover"
+          >
             ¿Olvidaste tu contraseña?
           </a>
         ) : null}
@@ -198,30 +297,30 @@ export function AuthForm({ mode }: { mode: Mode }): JSX.Element {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 h-12 rounded-xl bg-gradient-to-br from-sky-500 to-mint-600 text-base font-bold text-white shadow-pop transition hover:-translate-y-px disabled:opacity-70"
+          className="mt-1 h-12 rounded-xl bg-brand text-base font-bold text-brand-fg shadow-card transition-all hover:bg-brand-hover active:scale-[0.99] disabled:opacity-60"
         >
           {loading
             ? '…'
             : mode === 'register'
-              ? 'Crear cuenta'
-              : mode === 'login'
-                ? 'Entrar'
-                : mode === 'reset'
-                  ? 'Cambiar contraseña'
-                  : 'Enviar enlace'}
+            ? 'Crear cuenta'
+            : mode === 'login'
+            ? 'Entrar'
+            : mode === 'reset'
+            ? 'Cambiar contraseña'
+            : 'Enviar enlace'}
         </button>
       </form>
 
-      <p className="mt-5 text-center text-sm text-slate-500">
+      <p className="mt-5 text-center text-sm text-ink-muted">
         {mode === 'login' ? (
           <>
             ¿No tienes cuenta?{' '}
-            <a href="/register" className="font-semibold text-sky-600 hover:text-sky-700">
+            <a href="/register" className="font-semibold text-brand hover:text-brand-hover">
               Crea una
             </a>
           </>
         ) : (
-          <a href="/login" className="font-semibold text-sky-600 hover:text-sky-700">
+          <a href="/login" className="font-semibold text-brand hover:text-brand-hover">
             ← Volver a iniciar sesión
           </a>
         )}

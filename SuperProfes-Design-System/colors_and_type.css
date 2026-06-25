@@ -65,6 +65,11 @@
   --bg-subtle:    var(--slate-50);
   --bg-student:   var(--sky-50);
   --bg-parent:    var(--mint-50);
+  --bg-teacher:   var(--slate-50);
+  --bg-canvas:    var(--bg-subtle);    /* working-surface bg — alias of --bg-subtle */
+  --surface:      #FFFFFF;             /* cards / raised surfaces */
+  --surface-2:    var(--slate-50);     /* nested / inset surfaces */
+  --brand-mark-bg: var(--sky-50);      /* square behind the logo mark */
 
   --fg-1:         var(--slate-800);   /* primary text */
   --fg-2:         var(--slate-500);   /* secondary text, captions */
@@ -98,21 +103,21 @@
   --text-caption:   12px;
 
   /* line heights */
-  --lh-tight:   1.15;
-  --lh-snug:    1.30;
-  --lh-normal:  1.40;
-  --lh-relaxed: 1.55;
+  --lh-tight:   1.15;  /* @kind font */
+  --lh-snug:    1.30;  /* @kind font */
+  --lh-normal:  1.40;  /* @kind font */
+  --lh-relaxed: 1.55;  /* @kind font */
 
   /* letter spacing */
-  --ls-display:  -0.02em;
-  --ls-body:      0;
-  --ls-allcaps:   0.04em;
+  --ls-display:  -0.02em;  /* @kind font */
+  --ls-body:      0;       /* @kind font */
+  --ls-allcaps:   0.04em;  /* @kind font */
 
   /* weights */
-  --fw-regular:  400;
-  --fw-medium:   500;
-  --fw-semibold: 600;
-  --fw-bold:     700;
+  --fw-regular:  400;  /* @kind font */
+  --fw-medium:   500;  /* @kind font */
+  --fw-semibold: 600;  /* @kind font */
+  --fw-bold:     700;  /* @kind font */
 
   /* -------- SPACING (4px base) ---------------------------- */
   --sp-1:  4px;
@@ -131,6 +136,7 @@
   --r-md:   8px;
   --r-lg:   12px;
   --r-xl:   16px;
+  --r-2xl:  24px;
   --r-pill: 9999px;
 
   /* -------- SHADOWS --------------------------------------- */
@@ -140,10 +146,10 @@
                  0 2px 6px rgba(15, 42, 61, 0.06);
 
   /* -------- MOTION ---------------------------------------- */
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast:   120ms;
-  --dur-base:   180ms;
-  --dur-slow:   240ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);  /* @kind other */
+  --dur-fast:   120ms;  /* @kind other */
+  --dur-base:   180ms;  /* @kind other */
+  --dur-slow:   240ms;  /* @kind other */
 
   /* -------- TOUCH ----------------------------------------- */
   --touch-min: 44px;
@@ -270,23 +276,23 @@ html, body {
 .btn-primary:active { background: var(--primary-press); }
 
 .btn-secondary {
-  background: var(--bg);
+  background: var(--surface);
   color: var(--fg-1);
   border-color: var(--border-strong);
 }
-.btn-secondary:hover { background: var(--slate-50); }
+.btn-secondary:hover { background: var(--surface-2); }
 
 .btn-ghost {
   background: transparent;
   color: var(--fg-1);
 }
-.btn-ghost:hover { background: var(--slate-50); }
+.btn-ghost:hover { background: var(--surface-2); }
 
 /* ============================================================
    Cards
    ============================================================ */
 .card {
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--sp-6);
@@ -311,3 +317,58 @@ html, body {
 .mastery-strong { background: color-mix(in oklch, var(--mastery-strong) 22%, white); color: var(--mint-900); }
 .mastery-medium { background: color-mix(in oklch, var(--mastery-medium) 24%, white); color: #6B4400; }
 .mastery-weak   { background: color-mix(in oklch, var(--mastery-weak)   22%, white); color: #5A1F1F; }
+
+/* ============================================================
+   Dark theme — follows the OS (prefers-color-scheme). Only semantic
+   tokens flip; the raw sky/mint/slate ramps stay put so the brand is
+   preserved. Mirror of packages/ui-components/src/tokens.css.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #0E141B;
+    --bg-subtle:    #131A23;
+    --bg-student:   #0D1820;
+    --bg-parent:    #0C1A15;
+    --bg-teacher:   #111722;
+    --bg-canvas:    var(--bg-subtle);
+    --surface:      #18212C;
+    --surface-2:    #1F2A37;
+    --brand-mark-bg: rgba(63, 167, 214, 0.16);
+
+    --fg-1:         #EAF0F6;
+    --fg-2:         #A7B2C0;
+    --fg-3:         #74808F;
+    --fg-inverse:   var(--slate-900);
+    --fg-on-sky:    var(--sky-100);
+    --fg-on-mint:   var(--mint-100);
+
+    --border:        rgba(233, 239, 247, 0.10);
+    --border-strong: rgba(233, 239, 247, 0.18);
+
+    --primary:       var(--sky-400);
+    --primary-hover: var(--sky-300);
+    --primary-press: var(--sky-500);
+    --primary-fg:    var(--slate-900);
+
+    --focus-ring:    var(--sky-400);
+
+    --error-bg:     rgba(232, 163, 61, 0.15);
+    --error-fg:     #F2C982;
+    --error-border: rgba(232, 163, 61, 0.32);
+    --info-bg:      rgba(63, 167, 214, 0.15);
+    --info-fg:      #9AD3EC;
+    --success-bg:   rgba(61, 170, 114, 0.15);
+    --success-fg:   #82D2A6;
+    --warning-bg:   rgba(232, 163, 61, 0.15);
+    --warning-fg:   #F2C982;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.40), 0 1px 3px rgba(0, 0, 0, 0.30);
+    --shadow-pop:  0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Mastery cells: blend toward the dark surface instead of white so the
+     tile reads as tinted, not washed-out. Procedural, never alarm-red. */
+  .mastery-strong { background: color-mix(in oklch, var(--mastery-strong) 30%, var(--surface)); color: #BBF0D2; }
+  .mastery-medium { background: color-mix(in oklch, var(--mastery-medium) 30%, var(--surface)); color: #F4D9A6; }
+  .mastery-weak   { background: color-mix(in oklch, var(--mastery-weak)   30%, var(--surface)); color: #F2C2C2; }
+}

@@ -1,4 +1,5 @@
 export * from './types';
+export { SHORT_TO_LONG_DOMAIN, normalizeDomainCode } from './domain-aliases';
 export { DOMAINS } from './domains';
 export { ERROR_TAGS } from './seed';
 export { GRADE_BANDS, gradeLabel, getGradeBand } from './grade-bands';

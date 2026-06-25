@@ -10,14 +10,15 @@ The product is shipped from the `vruizz22/innova-*` repos (legacy internal name)
 
 ## Products in scope
 
-This design system covers four client surfaces. The codebase repo `innova-clients` is currently a stub (only README + LICENSE), so the UI kits in this system are **derived from the product spec, error taxonomy, and backend domain model** — not from existing client code. Flag any deviation from intended UX and we'll iterate.
+This design system covers **five** client surfaces.
 
 | Surface | Stack | Audience | Purpose |
 |---|---|---|---|
 | **Practice App** (`apps/practice`) | Next.js 14 (web) + Expo (mobile) | Students 3°–6° | Solve digital problems or upload worksheet photos; receive procedural feedback |
 | **Teacher Dashboard** (`apps/teacher`) | Next.js 14 | Classroom teachers | Mastery heatmap, alerts panel, student drill-down, practice assignment |
 | **Parent App** (`apps/parent`) | Expo | Parents | Mastery summary (no raw numbers), supervision flow, push notifications |
-| **Landing** (`apps/landing`) | Astro + Tailwind | Schools, parents (acquisition) | Marketing site |
+| **Landing** (`apps/landing`) | Next.js / Astro | Schools, parents (acquisition) | Public marketing site |
+| **Admin Dashboard** (`apps/admin`) | Next.js 14 | Internal (ops) | System status, killswitches, queue health, cost tracking |
 
 ---
 
@@ -38,6 +39,8 @@ This design system covers four client surfaces. The codebase repo `innova-client
 |---|---|
 | `README.md` | This document — context, content + visual foundations, iconography |
 | `colors_and_type.css` | CSS custom properties: color palette, type scale, semantic tokens |
+| `styles.css` | Entry point — `@import`s fonts + tokens; link this single file in consumers |
+| `tokens.ts` / `index.ts` | TypeScript token layer — `SP_TOKENS` typed constants referencing CSS vars |
 | `SKILL.md` | Skill manifest for Claude Code / Skills usage |
 | `assets/superprofes-logo.svg` | Wordmark (light) |
 | `assets/superprofes-logo-inverse.svg` | Wordmark (dark surface) |
@@ -45,10 +48,13 @@ This design system covers four client surfaces. The codebase repo `innova-client
 | `assets/illustrations/` | Flat 2-color empty-state illustrations |
 | `assets/lucide-cdn.txt` | Icon-set substitution notes |
 | `preview/` | Design-system cards rendered for the Design System tab |
-| `ui_kits/teacher/` | Teacher Dashboard UI kit + click-thru prototype |
-| `ui_kits/practice/` | Student Practice App UI kit + click-thru prototype |
-| `ui_kits/parent/` | Parent App UI kit + click-thru prototype |
-| `ui_kits/landing/` | Astro marketing landing page UI kit |
+| `ui_kits/teacher/` | Teacher Dashboard — 8 screens (index, alerts-inbox, assign-practice, attempt-detail, classrooms, items, skills, student-profile) |
+| `ui_kits/practice/` | Practice App — 3 screens (index, web, ocr-upload) + PracticeComponents.jsx |
+| `ui_kits/parent/` | Parent App — 3 screens (index, web, onboarding) + ParentComponents.jsx |
+| `ui_kits/auth/` | Auth flows — 2 screens (index, mobile) |
+| `ui_kits/admin/` | Admin Dashboard — System Status (killswitches, queues, cost) |
+| `ui_kits/shared/` | Shared components: Icon, VisualErrorRenderer, ios-frame |
+| `landing/` | Public landing page — full SEO/OG implementation |
 
 ---
 
@@ -131,7 +137,7 @@ Two parallel palettes — *calming* sky/mint for student surfaces, *grounded* sl
 ### Borders, shadows, radii
 
 - **Border:** 1px slate-100. Never thicker in product UI.
-- **Radius:** 4 / 8 / 12 / 16 / pill. Cards = 12. Buttons = 8. Math keys = 12.
+- **Radius:** 4 / 8 / 12 / 16 / 24 / pill. Cards = 12. Buttons = 8. Math keys = 12. Overlays / modals = 24.
 - **Shadows.** Two only — `--shadow-card` (resting) and `--shadow-pop` (overlay).
 - **No inner shadows, no glassmorphism** except the camera viewfinder safe-area chrome (`backdrop-filter: blur(8px)`).
 
@@ -161,6 +167,6 @@ When real photography appears (landing only): warm-cool balanced, classroom-auth
 
 ## Open issues / iteration asks
 
-1. **No real client codebase yet.** Designs are spec-derived. Reconcile when `innova-clients` ships.
+1. **Reconciled ✓** — `innova-clients` now has a real implementation. All screens imported and TS token layer aligned with CSS.
 2. **Inter via Google Fonts.** Self-host whenever you have `.woff2` files.
 3. **Lucide as substitute icon set.** Swap to your final choice when ready.

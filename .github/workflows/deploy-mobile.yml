@@ -1,10 +1,13 @@
 name: EAS Build (mobile)
-# On-demand only (tag `mobile-v*`) so we don't burn EAS build minutes on
-# every merge. EAS_TOKEN = Account Access Token from expo.dev.
+# PARKED until the native apps land: `apps/mobile-student` and
+# `apps/mobile-parent` do NOT exist in the monorepo yet (only `apps/web`),
+# so a `mobile-v*` tag push would fail the matrix. Manual-only for now.
+# Re-enable the tag trigger once the Expo apps are scaffolded.
+# EAS_TOKEN = Account Access Token from expo.dev.
 
 on:
-  push:
-    tags: ["mobile-v*"]
+  # push:
+  #   tags: ["mobile-v*"]
   workflow_dispatch:
 
 concurrency:
@@ -19,11 +22,11 @@ jobs:
       matrix:
         app: [mobile-student, mobile-parent]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: pnpm

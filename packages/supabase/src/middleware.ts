@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { User } from '@supabase/supabase-js';
 import type { Database } from './database.types';
+import { withSharedDomain } from './cookie-domain';
 
 export interface SessionResult {
   /** Response with refreshed auth cookies — must be returned (or its cookies copied). */
@@ -31,11 +32,11 @@ export async function updateSession(request: NextRequest): Promise<SessionResult
           }
           response = NextResponse.next({ request });
           for (const { name, value, options } of cookiesToSet) {
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, withSharedDomain(options));
           }
         },
       },
-    },
+    }
   );
 
   const {

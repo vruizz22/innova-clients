@@ -1,8 +1,6 @@
 ---
 import { practiceUrl, teacherUrl, parentUrl } from '@config/urls';
 
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
-
 const studentLoginUrl = `${practiceUrl.replace(/\/$/, '')}/login`;
 const teacherLoginUrl = `${teacherUrl.replace(/\/$/, '')}/login`;
 const parentLoginUrl = `${parentUrl.replace(/\/$/, '')}/login`;
@@ -417,35 +415,66 @@ const parentRegUrl = `${parentUrl.replace(/\/$/, '')}/register`;
       </div>
     </div>
 
-    <script define:vars={{ apiUrl, teacherUrl, practiceUrl, parentUrl }}>
-      // If already logged in, redirect immediately
-      (async () => {
-        const raw = localStorage.getItem('innova.auth.session');
-        if (!raw) return;
-        try {
-          const session = JSON.parse(raw);
-          if (!session?.accessToken) return;
-          const overlay = document.getElementById('redirect-msg');
-          if (overlay) overlay.style.display = 'flex';
-          const res = await fetch(`${apiUrl}/auth/me`, {
-            headers: { Authorization: `Bearer ${session.accessToken}` },
-          });
-          if (!res.ok) {
-            localStorage.removeItem('innova.auth.session');
-            if (overlay) overlay.style.display = 'none';
-            return;
+    <script define:vars={{ teacherUrl, practiceUrl, parentUrl }}>
+      // If already logged in (shared Supabase cookie on .superprofes.app),
+      // redirect to the role dashboard. Same detection as SmartLoginButton:
+      // read the cookie session, no localStorage, no network round-trip.
+      (() => {
+        const APP_ROLES = ['student', 'teacher', 'parent', 'admin'];
+        const trim = (u) => String(u || '').replace(/\/$/, '');
+        const homeByRole = {
+          teacher: `${trim(teacherUrl)}/dashboard`,
+          student: `${trim(practiceUrl)}/practice`,
+          parent: `${trim(parentUrl)}/family`,
+          admin: `${trim(teacherUrl)}/error-catalog`,
+        };
+
+        function readSession() {
+          const all = document.cookie ? document.cookie.split('; ') : [];
+          const chunks = [];
+          for (const entry of all) {
+            const eq = entry.indexOf('=');
+            if (eq === -1) continue;
+            const name = entry.slice(0, eq);
+            if (!/^sb-.+-auth-token(\.\d+)?$/.test(name)) continue;
+            const m = name.match(/\.(\d+)$/);
+            chunks.push({ idx: m ? parseInt(m[1], 10) : 0, value: entry.slice(eq + 1) });
           }
-          const body = await res.json();
-          const role = body?.data?.user?.role ?? body?.user?.role;
-          const urls = {
-            teacher: `${teacherUrl}/dashboard`,
-            student: `${practiceUrl}/practice`,
-            parent: `${parentUrl}/dashboard`,
-          };
-          window.location.replace(urls[role] ?? '/');
-        } catch {
-          // Stay on page
+          if (chunks.length === 0) return null;
+          chunks.sort((a, b) => a.idx - b.idx);
+          let raw = chunks.map((c) => decodeURIComponent(c.value)).join('');
+          if (raw.startsWith('base64-')) {
+            try {
+              const b64 = raw.slice(7).replace(/-/g, '+').replace(/_/g, '/');
+              const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+              const bin = atob(b64 + pad);
+              const bytes = Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
+              raw = new TextDecoder().decode(bytes);
+            } catch {
+              return null;
+            }
+          }
+          try {
+            return JSON.parse(raw);
+          } catch {
+            return null;
+          }
         }
+
+        const session = readSession();
+        const user = session?.user ?? session?.currentSession?.user ?? null;
+        if (!user) return;
+        const expEpoch = session?.expires_at ?? session?.expiresAt;
+        if (typeof expEpoch === 'number' && expEpoch * 1000 < Date.now()) return;
+
+        const app = user?.app_metadata?.role;
+        const meta = user?.user_metadata?.role;
+        const role = APP_ROLES.includes(app) ? app : APP_ROLES.includes(meta) ? meta : null;
+        if (!role) return;
+
+        const overlay = document.getElementById('redirect-msg');
+        if (overlay) overlay.style.display = 'flex';
+        window.location.replace(homeByRole[role]);
       })();
     </script>
   </body>

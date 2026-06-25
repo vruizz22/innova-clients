@@ -1,0 +1,499 @@
+<!-- @dsCard group="UI Kit — Shared" name="v9 Flow Map + Component Sheet" subtitle="Flujos por rol · 8 componentes nuevos con props y estados" viewport="1600x900" -->
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1600"/>
+<title>SuperProfes v9 · Flow Map + Component Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--p50:#f0f9ff;--p100:#e0f2fe;--p500:#0ea5e9;--p600:#0284c7;--p700:#0369a1;--s50:#f0fdf4;--s500:#22c55e;--a500:#f97316;--a100:#ffedd5;--n50:#f9fafb;--n100:#f3f4f6;--n200:#e5e7eb;--n300:#d1d5db;--n400:#9ca3af;--n500:#6b7280;--n600:#4b5563;--n700:#374151;--n800:#1f2937;--n900:#111827;--bd:#e5e7eb;--bds:#d1d5db;--sc:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);--sp:0 8px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.06)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#dde3eb;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--n800)}
+.canvas{padding:40px;display:flex;flex-direction:column;gap:52px}
+.sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:16px}
+.sprint{display:inline-block;background:var(--p500);color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:20px;padding:2px 8px;margin-right:6px;vertical-align:middle}
+.artboard{background:#fff;border-radius:16px;box-shadow:var(--sp);overflow:hidden;border:1px solid var(--bd);padding:28px}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:700;color:var(--n900);letter-spacing:-.02em}
+h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--n800)}
+h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--n700)}
+.cap{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--n400)}
+.card{background:#fff;border-radius:12px;border:1px solid var(--bd);box-shadow:var(--sc);padding:14px}
+.code{font-family:'Fira Code',monospace;font-size:11px;background:var(--n900);color:#e2e8f0;border-radius:8px;padding:12px 14px;line-height:1.6;overflow-x:auto}
+.code .kw{color:#93c5fd}
+.code .str{color:#86efac}
+.code .ty{color:#fde68a}
+.code .cm{color:#6b7280}
+/* Flow diagram */
+.flow{display:flex;flex-direction:column;gap:0}
+.flow-row{display:flex;align-items:center;gap:0}
+.flow-box{border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;white-space:nowrap;min-width:140px;text-align:center;border:1.5px solid transparent}
+.fb-neutral{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
+.fb-working{background:var(--p100);color:var(--p700);border-color:var(--p500)}
+.fb-gate{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.fb-pub{background:var(--s50);color:#047857;border-color:var(--s500)}
+.fb-fail{background:#fff1f2;color:#be123c;border-color:#fca5a5}
+.fb-photo{background:#f3e8ff;color:#7c3aed;border-color:#c4b5fd}
+.flow-arrow{color:var(--n400);font-size:18px;margin:0 6px;flex-shrink:0}
+.flow-label{font-size:10px;color:var(--n400);text-align:center;margin-top:4px}
+.flow-branch{display:flex;flex-direction:column;gap:6px;margin-left:14px;border-left:2px solid var(--n200);padding-left:12px}
+/* Role section */
+.role-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.role-badge{border-radius:9px;padding:5px 12px;font-size:11px;font-weight:700}
+.rb-profe{background:var(--p100);color:var(--p700)}
+.rb-alumno{background:var(--s50);color:#047857}
+.rb-parent{background:#faf5ff;color:#7c3aed}
+/* Component card */
+.comp-card{border-radius:14px;border:1px solid var(--bd);box-shadow:var(--sc);overflow:hidden}
+.comp-header{padding:12px 16px;background:var(--n50);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.comp-body{padding:16px}
+.comp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+/* Badges */
+.bdg{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700}
+.b-ext{background:var(--n100);color:#475569}
+.b-nrev{background:#fef3c7;color:#92400e}
+.b-appr{background:var(--s50);color:#047857}
+.b-excl{background:var(--n100);color:var(--n400);text-decoration:line-through}
+.b-tran{background:var(--p100);color:var(--p700)}
+.b-grd{background:var(--s50);color:#047857}
+.b-fail{background:#fff1f2;color:#be123c}
+.b-up{background:var(--n100);color:#475569}
+.dot-p{display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Prop table */
+.prop-table{width:100%;border-collapse:collapse;font-size:11px}
+.prop-table th{text-align:left;padding:5px 8px;background:var(--n50);color:var(--n500);font-weight:700;font-size:10px;letter-spacing:.04em;border-bottom:1px solid var(--bd)}
+.prop-table td{padding:5px 8px;border-bottom:1px solid var(--n100);vertical-align:top}
+.prop-table td:first-child{font-family:'Fira Code',monospace;color:var(--p600);font-weight:500}
+.prop-table td:nth-child(2){color:var(--n500)}
+.prop-table td:nth-child(3){color:var(--n600)}
+/* State variants */
+.states-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.state-chip{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:600;border:1px solid transparent}
+/* Timeline demo */
+.tl-demo{display:flex;flex-direction:column;gap:0}
+.tl-s{display:flex;gap:10px;padding-bottom:14px;position:relative}
+.tl-s:not(:last-child)::before{content:'';position:absolute;left:9px;top:20px;bottom:0;width:2px;background:var(--n200)}
+.tl-s.done::before{background:var(--s500)}
+.tl-d{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;background:var(--n200);color:var(--n500);z-index:1}
+.tl-d.done{background:var(--s500);color:#fff}
+.tl-d.act{background:var(--p500);color:#fff}
+.tl-d.fail{background:#ef4444;color:#fff}
+/* Upload zone demo */
+.upz{border:2px dashed var(--n300);border-radius:12px;padding:18px;text-align:center;font-size:12px;color:var(--n500)}
+.upz.has{border-color:var(--p500);border-style:solid;background:var(--p50)}
+/* Heatmap cell */
+.hc{width:44px;height:30px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.h-hi{background:#10b981;color:#fff}.h-md{background:#fbbf24;color:#451a03}.h-lo{background:#f43f5e;color:#fff}
+/* Matrix cell */
+.mc{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800}
+.mc-ok{background:#10b981;color:#fff}.mc-no{background:#f43f5e;color:#fff}.mc-pnd{background:var(--n200);color:var(--n400)}.mc-wip{background:var(--p100);color:var(--p700)}
+.row{display:flex;align-items:center;gap:8px}
+.rowb{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.col{display:flex;flex-direction:column;gap:6px}
+.f1{flex:1}
+.mt1{margin-top:4px}.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}
+.txt-xs{font-size:11px}.txt-muted{color:var(--n500)}.txt-str{font-weight:700}
+.divider{height:1px;background:var(--bd);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="canvas">
+
+<!-- ═══ FLOW MAPS ═══════════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title">Flow maps por rol — estados del pipeline v9</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+
+<!-- PROFE -->
+<div class="artboard" style="padding:22px">
+  <div class="role-header"><span class="role-badge rb-profe">👩‍🏫 Profe</span><span class="txt-xs txt-muted">C8 → C9 → C11 → C12</span></div>
+  <div class="flow">
+    <div class="flow-row"><div class="flow-box fb-neutral">Lista de guías</div><div class="flow-arrow">→</div><div class="flow-box fb-neutral">Nueva guía (PDF)</div></div>
+    <div style="margin-left:160px;border-left:2px solid var(--n200);height:14px"></div>
+    <div class="flow-row" style="margin-left:160px"><div class="flow-arrow" style="transform:rotate(90deg);margin:0">→</div></div>
+    <div class="flow-row">
+      <div style="flex:1"></div>
+      <div class="flow-box fb-working" style="min-width:120px"><span class="dot-p"></span> EXTRACTING</div>
+    </div>
+    <div style="display:flex;margin-left:auto;width:fit-content;gap:8px;margin-top:4px">
+      <div class="flow-box fb-fail" style="min-width:110px;font-size:10px">EXTRACTION_FAILED<div style="font-size:9px;margin-top:2px">→ retry</div></div>
+      <div class="flow-arrow">·</div>
+      <div class="flow-box fb-working" style="min-width:120px"><span class="dot-p"></span> GEN_SOLUTIONS</div>
+    </div>
+    <div style="margin-left:auto;width:fit-content;display:flex;gap:8px;margin-top:4px">
+      <div class="flow-box fb-fail" style="min-width:110px;font-size:10px">GENERATION_FAILED<div style="font-size:9px;margin-top:2px">→ retry</div></div>
+      <div class="flow-arrow">·</div>
+      <div class="flow-box fb-gate" style="min-width:120px">⚡ REVIEW (wizard)</div>
+    </div>
+    <div style="margin-left:auto;width:fit-content;margin-top:4px">
+      <div class="flow-box fb-pub" style="min-width:120px">● PUBLISHED</div>
+    </div>
+    <div class="divider"></div>
+    <div class="flow-row">
+      <div class="flow-box fb-neutral" style="font-size:11px">Results matrix</div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-box fb-neutral" style="font-size:11px">Entregas GRADED</div>
+    </div>
+    <div class="row mt2" style="gap:6px">
+      <div class="flow-box fb-neutral" style="font-size:10px;min-width:80px">Heatmap</div>
+      <div class="flow-arrow" style="font-size:12px">→</div>
+      <div class="flow-box fb-neutral" style="font-size:10px;min-width:80px">Drill-down</div>
+      <div class="flow-arrow" style="font-size:12px">→</div>
+      <div class="flow-box fb-neutral" style="font-size:10px;min-width:80px">Intentos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ALUMNO -->
+<div class="artboard" style="padding:22px">
+  <div class="role-header"><span class="role-badge rb-alumno">👨‍🎓 Alumno</span><span class="txt-xs txt-muted">C10 · web + Expo C13</span></div>
+  <div class="flow">
+    <div class="flow-row"><div class="flow-box fb-neutral">Lista de guías</div><div class="flow-arrow">→</div><div class="flow-box fb-pub">PUBLISHED</div></div>
+    <div style="margin-left:200px;border-left:2px solid var(--s500);height:14px"></div>
+    <div class="flow-row" style="margin-left:200px"><div class="flow-arrow" style="transform:rotate(90deg);color:var(--s500);margin:0">→</div></div>
+    <div class="flow-row"><div style="flex:1"></div><div class="flow-box fb-neutral" style="min-width:120px;background:#f3e8ff;border-color:#c4b5fd;color:#7c3aed">Quiz view (sidebar)</div></div>
+    <div style="margin-left:auto;width:fit-content;display:flex;gap:6px;margin-top:4px;align-items:center">
+      <div class="flow-box" style="font-size:10px;min-width:90px;background:#f3f4f6;border-color:#d1d5db;color:#374151">Por pregunta:</div>
+      <div class="flow-box fb-photo" style="min-width:100px;font-size:11px">📷 Sube foto</div>
+    </div>
+    <div style="margin-left:auto;width:fit-content;display:flex;gap:6px;margin-top:4px">
+      <div class="flow-box fb-working" style="min-width:130px;font-size:10px"><span class="dot-p"></span> TRANSCRIBING/GRADING<div style="font-size:9px">No bloquea otras preguntas</div></div>
+    </div>
+    <div style="margin-left:auto;width:fit-content;display:flex;gap:8px;margin-top:4px">
+      <div class="flow-box fb-pub" style="min-width:60px;font-size:10px">✓ GRADED<div style="font-size:9px">correcto</div></div>
+      <div class="flow-box fb-gate" style="min-width:60px;font-size:10px">✗ GRADED<div style="font-size:9px">incorrecto</div></div>
+      <div class="flow-box fb-fail" style="min-width:60px;font-size:10px">ILLEGIBLE<div style="font-size:9px">re-foto</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="flow-row"><div class="flow-box fb-neutral" style="font-size:11px">Resultados propios</div></div>
+  </div>
+</div>
+
+<!-- APODERADO -->
+<div class="artboard" style="padding:22px">
+  <div class="role-header"><span class="role-badge rb-parent">👨‍👩‍👧 Apoderado</span><span class="txt-xs txt-muted">C12 web · C14 Expo</span></div>
+  <div class="flow col" style="gap:10px">
+    <div class="flow-row"><div class="flow-box fb-neutral">Selector de hijo</div><div class="flow-arrow">→</div><div class="flow-box fb-neutral">Resumen del hijo</div></div>
+    <div class="card" style="padding:12px;background:var(--n50)">
+      <p class="cap mb2">Resumen muestra:</p>
+      <div class="col" style="gap:5px">
+        <div class="row" style="gap:6px"><span style="color:var(--s500)">✓</span><span class="txt-xs">Barras de banda <b>low/mid/high</b></span></div>
+        <div class="row" style="gap:6px"><span style="color:var(--s500)">✓</span><span class="txt-xs">Guías recientes (X de N)</span></div>
+        <div class="row" style="gap:6px"><span style="color:var(--s500)">✓</span><span class="txt-xs">Alertas suaves por severidad</span></div>
+        <div class="row" style="gap:6px"><span style="color:#ef4444">✗</span><span class="txt-xs" style="text-decoration:line-through">p_known raw (COPPA)</span></div>
+        <div class="row" style="gap:6px"><span style="color:#ef4444">✗</span><span class="txt-xs" style="text-decoration:line-through">Fotos del desarrollo</span></div>
+        <div class="row" style="gap:6px"><span style="color:#ef4444">✗</span><span class="txt-xs" style="text-decoration:line-through">Pauta / respuestas</span></div>
+      </div>
+    </div>
+    <div class="card" style="padding:12px;background:#faf5ff">
+      <p class="cap mb2" style="color:#7c3aed">Expo C14 — Push</p>
+      <div class="col" style="gap:4px">
+        <div class="txt-xs">🔔 <b>Guía publicada</b> → nueva tarea del hijo</div>
+        <div class="txt-xs">🔔 <b>Guía corregida</b> → tiene resultado</div>
+        <div class="txt-xs">⚠️ <b>Alerta del profe</b> → severidad MED/HIGH</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ COMPONENT SHEET ═══════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title">Component sheet — 8 componentes nuevos v9 · packages/ui-components</p>
+<div class="comp-grid">
+
+<!-- 1. QuestionStatusBadge -->
+<div class="comp-card">
+  <div class="comp-header"><h3>QuestionStatusBadge</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Badge de estado de una <code>GuideQuestion</code> en el wizard y en la lista.</p>
+    <div class="states-row">
+      <span class="bdg b-ext">Extraída</span>
+      <span class="bdg b-nrev">⚡ Por revisar</span>
+      <span class="bdg b-appr">Aprobada</span>
+      <span class="bdg b-excl">Excluida</span>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>status</td><td>GuideQuestionStatus</td><td>Estado del enum</td></tr>
+        <tr><td>confidence?</td><td>number 0–1</td><td>Si definido, muestra %</td></tr>
+        <tr><td>size?</td><td>'sm'|'md'</td><td>Default: md</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. SubmissionStateChip -->
+<div class="comp-card">
+  <div class="comp-header"><h3>SubmissionStateChip</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Chip de estado de una <code>GuideSubmission</code>. Animado en estados in-flight.</p>
+    <div class="states-row">
+      <span class="bdg b-up">Enviada</span>
+      <span class="bdg b-tran"><span class="dot-p"></span> Leyendo…</span>
+      <span class="bdg b-tran"><span class="dot-p"></span> Corrigiendo…</span>
+      <span class="bdg b-grd">Corregida</span>
+      <span class="bdg b-fail">Error</span>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>status</td><td>SubmissionStatus</td><td>Estado del enum</td></tr>
+        <tr><td>animated?</td><td>boolean</td><td>Pulsa en TRANSCRIBING/GRADING</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 3. GuideTimeline -->
+<div class="comp-card">
+  <div class="comp-header"><h3>GuideTimeline</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Timeline vertical del pipeline. Polling vía <code>useGuideStatusPolling</code>.</p>
+    <div class="tl-demo">
+      <div class="tl-s done"><div class="tl-d done">✓</div><div><div style="font-size:11px;font-weight:600;color:var(--n600)">PDF cargado</div></div></div>
+      <div class="tl-s done"><div class="tl-d done">✓</div><div><div style="font-size:11px;font-weight:600;color:var(--n600)">Leyendo PDF</div></div></div>
+      <div class="tl-s act"><div class="tl-d act"><span class="dot-p" style="width:6px;height:6px"></span></div><div><div style="font-size:11px;font-weight:600;color:var(--p700)">Generando pauta ←</div></div></div>
+      <div class="tl-s"><div class="tl-d">4</div><div><div style="font-size:11px;color:var(--n400)">Listo para revisar</div></div></div>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>guideId</td><td>string</td><td>Para polling</td></tr>
+        <tr><td>initialStatus</td><td>GuideStatus</td><td>Estado al montar</td></tr>
+        <tr><td>failureReason?</td><td>string</td><td>Mensaje accionable</td></tr>
+        <tr><td>onRetry?</td><td>() → void</td><td>CTA en estado FAILED</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 4. StudentQuestionMatrix -->
+<div class="comp-card">
+  <div class="comp-header"><h3>StudentQuestionMatrix</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Tabla Student×Question. Sticky left col. Click celda → drawer.</p>
+    <div style="overflow:auto;border:1px solid var(--bd);border-radius:8px">
+      <table style="border-collapse:collapse;font-size:10px">
+        <thead><tr>
+          <th style="padding:5px 8px;background:var(--n50);text-align:left;font-size:9px;color:var(--n500);border-bottom:1px solid var(--bds)">Alumno</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;font-size:9px;color:var(--n500);border-bottom:1px solid var(--bds)">P1</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;font-size:9px;color:var(--n500);border-bottom:1px solid var(--bds)">P2</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;font-size:9px;color:var(--n500);border-bottom:1px solid var(--bds)">P3</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:3px 8px;font-weight:600;font-size:10px">Antonia G.</td><td style="padding:2px 3px;text-align:center"><div class="mc mc-ok">✓</div></td><td style="padding:2px 3px;text-align:center"><div class="mc mc-no">✗</div></td><td style="padding:2px 3px;text-align:center"><div class="mc mc-ok">✓</div></td></tr>
+          <tr><td style="padding:3px 8px;font-weight:600;font-size:10px">Benjamín L.</td><td style="padding:2px 3px;text-align:center"><div class="mc mc-wip">⏳</div></td><td style="padding:2px 3px;text-align:center"><div class="mc mc-ok">✓</div></td><td style="padding:2px 3px;text-align:center"><div class="mc mc-pnd">·</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>matrix</td><td>GuideResultsMatrix</td><td>Contrato API</td></tr>
+        <tr><td>onCellSelect</td><td>(cell: MatrixCell) → void</td><td>Abre drawer</td></tr>
+        <tr><td>cellPatch?</td><td>Record&lt;id, Partial&gt;</td><td>Override optimista</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 5. LatexEditor -->
+<div class="comp-card">
+  <div class="comp-header"><h3>LatexEditor</h3><span class="cap">NEW · packages/latex</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Textarea LaTeX con preview KaTeX en vivo debajo. Usado en el wizard (pauta + enunciado).</p>
+    <div style="border:1px solid var(--bds);border-radius:8px;overflow:hidden">
+      <textarea style="width:100%;padding:8px 10px;font-size:12px;border:none;border-bottom:1px solid var(--bds);font-family:'Fira Code',monospace;resize:vertical;min-height:52px;background:var(--n50)">3.47 - 1.80 = \frac{347-180}{100}</textarea>
+      <div style="padding:8px 12px;background:#fff;font-family:Georgia,serif;font-style:italic;font-size:14px;min-height:36px;color:var(--n700)">3.47 − 1.80 = (347 − 180)/100</div>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>value</td><td>string</td><td>LaTeX raw</td></tr>
+        <tr><td>onChange</td><td>(v: string) → void</td><td>Controlled</td></tr>
+        <tr><td>rows?</td><td>number</td><td>Altura mínima</td></tr>
+        <tr><td>disabled?</td><td>boolean</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 6. MathPhotoUploader -->
+<div class="comp-card">
+  <div class="comp-header"><h3>MathPhotoUploader</h3><span class="cap">NEW · packages/upload-scanner</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">1–3 fotos. Preview + re-tomar. Web: <code>input[capture]</code>. Expo: <code>expo-camera</code>. EXIF-strip + compresión ~1600px.</p>
+    <div class="upz has">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+        <div style="aspect-ratio:1;background:var(--n200);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">🖼</div>
+        <div style="aspect-ratio:1;background:var(--n200);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px">🖼</div>
+        <div style="aspect-ratio:1;border:1.5px dashed var(--p400);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--p500)">+</div>
+      </div>
+      <p style="font-size:10px;color:var(--p600)">2 fotos · toca + para agregar</p>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>value</td><td>File[]</td><td>Archivos actuales</td></tr>
+        <tr><td>onChange</td><td>(files: File[]) → void</td><td></td></tr>
+        <tr><td>maxPhotos?</td><td>number</td><td>Default: 3</td></tr>
+        <tr><td>disabled?</td><td>boolean</td><td>Durante upload</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 7. GuideQuestionSidebar -->
+<div class="comp-card">
+  <div class="comp-header"><h3>GuideQuestionSidebar</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Navegación libre de preguntas estilo Canvas. Icono por estado de entrega.</p>
+    <div class="col" style="gap:3px">
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1.5px solid var(--p500);background:var(--p50);font-size:11px;font-weight:700"><span>⬜</span><span>Pregunta 1</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid var(--bd);font-size:11px"><span style="color:#10b981">✅</span><span>Pregunta 2</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid var(--bd);font-size:11px"><span>⏳</span><span>Pregunta 3</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid var(--bd);font-size:11px"><span style="color:#f43f5e">❌</span><span>Pregunta 4</span></div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid var(--bd);font-size:11px"><span>📤</span><span>Pregunta 5</span></div>
+    </div>
+    <div class="divider"></div>
+    <p class="cap mb1">Leyenda de iconos</p>
+    <div class="col" style="gap:3px;font-size:10px;color:var(--n600)">
+      <div>⬜ Sin responder &nbsp;·&nbsp; 📤 Subida</div>
+      <div>⏳ Corrigiendo &nbsp;·&nbsp; ✅ Correcto</div>
+      <div>❌ Incorrecto &nbsp;·&nbsp; ⚠️ ILLEGIBLE/FAILED</div>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>questions</td><td>QuizQuestion[]</td><td></td></tr>
+        <tr><td>subStates</td><td>Record&lt;id, SubState&gt;</td><td>Estado local por Q</td></tr>
+        <tr><td>selectedId</td><td>string</td><td></td></tr>
+        <tr><td>onSelect</td><td>(id: string) → void</td><td>Navegación libre</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 8. HeatmapCollapsedByUnit -->
+<div class="comp-card">
+  <div class="comp-header"><h3>HeatmapCollapsedByUnit</h3><span class="cap">NEW</span></div>
+  <div class="comp-body">
+    <p class="txt-xs txt-muted" style="line-height:1.5;margin-bottom:10px">Heatmap Student×Unit virtualizado. Clic = drilldown a topics; doble-clic = attempts. Filtros: errorTag / OA / guía.</p>
+    <!-- Mini demo -->
+    <div style="overflow:auto;border:1px solid var(--bd);border-radius:8px">
+      <table style="border-collapse:collapse;font-size:10px">
+        <thead><tr>
+          <th style="padding:5px 8px;background:var(--n50);text-align:left;border-bottom:1px solid var(--bds);font-size:9px;color:var(--n500)">Alumno</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;border-bottom:1px solid var(--bds);font-size:9px;color:var(--n500)">U1</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;border-bottom:1px solid var(--bds);font-size:9px;color:var(--n500)">U2</th>
+          <th style="padding:5px 4px;background:var(--n50);text-align:center;border-bottom:1px solid var(--bds);font-size:9px;color:var(--n500)">U3</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:3px 8px;font-weight:600;font-size:9px">Antonia G.</td><td style="padding:2px 3px;text-align:center"><div class="hc h-hi" style="width:36px;height:24px;font-size:8px">0.82</div></td><td style="padding:2px 3px;text-align:center"><div class="hc h-md" style="width:36px;height:24px;font-size:8px">0.58</div></td><td style="padding:2px 3px;text-align:center"><div class="hc h-hi" style="width:36px;height:24px;font-size:8px">0.74</div></td></tr>
+          <tr><td style="padding:3px 8px;font-weight:600;font-size:9px">Camila M.</td><td style="padding:2px 3px;text-align:center"><div class="hc h-lo" style="width:36px;height:24px;font-size:8px">0.28</div></td><td style="padding:2px 3px;text-align:center"><div class="hc h-lo" style="width:36px;height:24px;font-size:8px">0.35</div></td><td style="padding:2px 3px;text-align:center"><div class="hc h-md" style="width:36px;height:24px;font-size:8px">0.49</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="divider"></div>
+    <table class="prop-table">
+      <thead><tr><th>Prop</th><th>Tipo</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>data</td><td>CourseHeatmap</td><td>Contrato API</td></tr>
+        <tr><td>onCellClick</td><td>(sid, uid) → void</td><td>Drilldown topics</td></tr>
+        <tr><td>onCellDblClick</td><td>(sid, uid) → void</td><td>Ver intentos</td></tr>
+        <tr><td>filters?</td><td>{errorTag, oaCode, guideId}</td><td>Filtrado cliente</td></tr>
+      </tbody>
+    </table>
+    <div class="divider"></div>
+    <p class="cap mb1">Leyenda mastery</p>
+    <div class="row" style="gap:8px">
+      <div class="row" style="gap:3px"><div class="hc h-hi" style="width:24px;height:16px;font-size:8px">0.7+</div><span style="font-size:9px;color:var(--n500)">Logrado</span></div>
+      <div class="row" style="gap:3px"><div class="hc h-md" style="width:24px;height:16px;font-size:8px">0.4</div><span style="font-size:9px;color:var(--n500)">En progreso</span></div>
+      <div class="row" style="gap:3px"><div class="hc h-lo" style="width:24px;height:16px;font-size:8px">&lt;0.4</div><span style="font-size:9px;color:var(--n500)">Reforzar</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ TOKENS REFERENCE ══════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title">Tokens de referencia — packages/design-tokens · valores usados en v9</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px">
+
+<div class="artboard" style="padding:18px">
+  <h3 style="margin-bottom:12px">Colors · Primary (sky)</h3>
+  <div class="col" style="gap:5px">
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#f0f9ff;border:1px solid var(--bd)"></div><span class="txt-xs txt-muted">primary-50 · #f0f9ff</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#e0f2fe"></div><span class="txt-xs txt-muted">primary-100</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#0ea5e9"></div><span class="txt-xs txt-muted">primary-500 · #0ea5e9</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#0284c7"></div><span class="txt-xs txt-muted">primary-600</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#0369a1"></div><span class="txt-xs txt-muted">primary-700</span></div>
+  </div>
+</div>
+
+<div class="artboard" style="padding:18px">
+  <h3 style="margin-bottom:12px">Colors · Secondary (green) + Accent</h3>
+  <div class="col" style="gap:5px">
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#22c55e"></div><span class="txt-xs txt-muted">secondary-500 · #22c55e</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#f97316"></div><span class="txt-xs txt-muted">accent-500 · #f97316</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#10b981"></div><span class="txt-xs txt-muted">mastery-high · #10b981</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#fbbf24"></div><span class="txt-xs txt-muted">mastery-mid · #fbbf24</span></div>
+    <div class="row" style="gap:8px"><div style="width:32px;height:20px;border-radius:5px;background:#f43f5e"></div><span class="txt-xs txt-muted">mastery-low · #f43f5e</span></div>
+  </div>
+</div>
+
+<div class="artboard" style="padding:18px">
+  <h3 style="margin-bottom:12px">Typography</h3>
+  <div class="col" style="gap:6px">
+    <div><p style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15px">Plus Jakarta Sans 700</p><p class="txt-xs txt-muted">Headings (h1–h3)</p></div>
+    <div><p style="font-family:'Inter',sans-serif;font-size:13px">Inter 400/500/600</p><p class="txt-xs txt-muted">Body, labels, captions</p></div>
+    <div><p style="font-family:'Fira Code',monospace;font-size:12px">Fira Code 400</p><p class="txt-xs txt-muted">LaTeX raw, IDs técnicos</p></div>
+    <div><p style="font-family:Georgia,serif;font-style:italic;font-size:14px">Georgia italic</p><p class="txt-xs txt-muted">LaTeX rendered (KaTeX)</p></div>
+    <div style="font-variant-numeric:tabular-nums"><p style="font-size:13px">0.74 &nbsp; 347 &nbsp; 1.67</p><p class="txt-xs txt-muted">font-variant-numeric: tabular-nums</p></div>
+  </div>
+</div>
+
+<div class="artboard" style="padding:18px">
+  <h3 style="margin-bottom:12px">Spacing · Radii · Shadows</h3>
+  <div class="col" style="gap:6px">
+    <p class="cap">Spacing (8px base)</p>
+    <div class="col" style="gap:3px">
+      <div class="txt-xs txt-muted">sp-1: 4px · sp-2: 8px · sp-3: 12px</div>
+      <div class="txt-xs txt-muted">sp-4: 16px · sp-5: 20px · sp-6: 24px</div>
+      <div class="txt-xs txt-muted">sp-8: 32px · sp-10: 40px</div>
+    </div>
+    <p class="cap mt2">Radii</p>
+    <div class="row" style="gap:6px;flex-wrap:wrap">
+      <div style="width:20px;height:20px;background:var(--p500);border-radius:4px"></div>
+      <div style="width:20px;height:20px;background:var(--p500);border-radius:8px"></div>
+      <div style="width:20px;height:20px;background:var(--p500);border-radius:12px"></div>
+      <div style="width:20px;height:20px;background:var(--p500);border-radius:16px"></div>
+      <div style="width:24px;height:20px;background:var(--p500);border-radius:9999px"></div>
+    </div>
+    <div class="txt-xs txt-muted">4 · 8 · 12 · 16 · pill</div>
+    <p class="cap mt2">Touch targets</p>
+    <div class="txt-xs txt-muted">Mínimo 44×44px · keypad 56px</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+</div>
+</body>
+</html>

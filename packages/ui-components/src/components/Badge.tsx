@@ -9,18 +9,14 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  success: 'bg-[#D2F2E0] text-[#194E34] border-[#A8E5C2]',
-  warning: 'bg-[#FFF4DB] text-[#7A4F00] border-[#F0D9A0]',
-  error:   'bg-[#fce8e8] text-[#7a1a1a] border-[#f5b8b8]',
-  info:    'bg-[#DCEDF6] text-[#18506D] border-[#B6DBED]',
-  neutral: 'bg-[#F7F8FA] text-[#4F5868] border-[#CDD3DD]',
+  success: 'bg-[var(--success-bg)] text-[var(--success-fg)] border-[var(--success-bg)]',
+  warning: 'bg-[var(--warning-bg)] text-[var(--warning-fg)] border-[var(--warning-bg)]',
+  error: 'bg-[var(--error-bg)] text-[var(--error-fg)] border-[var(--error-border)]',
+  info: 'bg-[var(--info-bg)] text-[var(--info-fg)] border-[var(--info-bg)]',
+  neutral: 'bg-[var(--surface-2)] text-[var(--fg-2)] border-[var(--border)]',
 };
 
-export function Badge({
-  variant = 'neutral',
-  children,
-  className = '',
-}: BadgeProps): JSX.Element {
+export function Badge({ variant = 'neutral', children, className = '' }: BadgeProps): JSX.Element {
   return (
     <span
       className={[

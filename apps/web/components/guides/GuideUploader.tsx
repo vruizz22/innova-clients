@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Dropzone, FileIcon } from '@innova/ui';
 import { getBrowserApi } from '@/lib/api.client';
 
 export interface CourseOption {
@@ -23,11 +24,10 @@ type Phase =
   | { readonly kind: 'error'; readonly message: string };
 
 const FIELD =
-  'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100';
+  'w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-[var(--primary)]/20';
 
 export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
   const router = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
   const [courseId, setCourseId] = useState(courses[0]?.id ?? '');
   const [title, setTitle] = useState('');
   const [dueAt, setDueAt] = useState('');
@@ -48,7 +48,8 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
     setFile(f);
   }, []);
 
-  const busy = phase.kind === 'creating' || phase.kind === 'uploading' || phase.kind === 'ingesting';
+  const busy =
+    phase.kind === 'creating' || phase.kind === 'uploading' || phase.kind === 'ingesting';
   const canSubmit = courseId !== '' && title.trim().length > 0 && file !== null && !busy;
 
   const submit = useCallback(async (): Promise<void> => {
@@ -93,15 +94,15 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
     phase.kind === 'creating'
       ? 'Creando…'
       : phase.kind === 'uploading'
-        ? 'Subiendo PDF…'
-        : phase.kind === 'ingesting'
-          ? 'Iniciando lectura…'
-          : 'Subir y generar pauta';
+      ? 'Subiendo PDF…'
+      : phase.kind === 'ingesting'
+      ? 'Iniciando lectura…'
+      : 'Subir y generar pauta';
 
   return (
     <div className="flex flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Curso</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">Curso</span>
         <select
           className={FIELD}
           value={courseId}
@@ -117,7 +118,9 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Título</span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">
+          Título
+        </span>
         <input
           className={FIELD}
           value={title}
@@ -128,7 +131,7 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <span className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">
           Fecha de entrega (opcional)
         </span>
         <input
@@ -140,31 +143,19 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
         />
       </label>
 
-      <input
-        ref={fileRef}
-        type="file"
-        accept="application/pdf"
-        className="hidden"
-        onChange={(e) => {
-          pickFile(e.target.files?.[0]);
-          e.target.value = '';
-        }}
-      />
-      <button
-        type="button"
-        onClick={() => fileRef.current?.click()}
-        disabled={busy}
-        className="flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-white px-6 py-8 text-center hover:border-sky-300 disabled:opacity-60"
-      >
-        <span className="text-4xl">📄</span>
-        <span className="text-sm font-bold text-slate-800">
-          {file ? file.name : 'Elegir PDF de la guía'}
+      <Dropzone accept="application/pdf" disabled={busy} onFiles={(files) => pickFile(files[0])}>
+        <FileIcon size={32} className="text-brand" />
+        <span className="text-sm font-bold text-ink">
+          {file ? file.name : 'Arrastra el PDF aquí o haz clic para elegir'}
         </span>
-        <span className="text-xs text-slate-500">PDF · máximo 25 MB · hasta 40 páginas</span>
-      </button>
+        <span className="text-xs text-ink-muted">PDF · máximo 25 MB · hasta 40 páginas</span>
+      </Dropzone>
 
       {phase.kind === 'error' ? (
-        <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+        <p
+          className="rounded-xl px-4 py-3 text-sm font-medium"
+          style={{ background: 'var(--error-bg)', color: 'var(--error-fg)' }}
+        >
           {phase.message}
         </p>
       ) : null}
@@ -173,7 +164,7 @@ export function GuideUploader({ courses }: GuideUploaderProps): JSX.Element {
         type="button"
         onClick={() => void submit()}
         disabled={!canSubmit}
-        className="rounded-xl bg-sky-500 px-5 py-3 text-base font-bold text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-40"
+        className="rounded-xl bg-brand px-5 py-3 text-base font-bold text-brand-fg transition-all hover:bg-brand-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {busy ? busyLabel : 'Subir y generar pauta'}
       </button>

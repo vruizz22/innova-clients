@@ -1,0 +1,9 @@
+/* ============================================================
+   SuperProfes — Design System entry point
+   Link this single file to load the foundation (fonts + tokens
+   + base type classes). Surface-specific styles under
+   ui_kits/<surface>/styles.css remain opt-in per app.
+   ============================================================ */
+
+@import "./fonts/inter.css";
+@import "./colors_and_type.css";

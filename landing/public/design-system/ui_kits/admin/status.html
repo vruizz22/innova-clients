@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- @dsCard group="UI Kit — Admin" name="Admin · System Status" subtitle="Estado del sistema · killswitches · colas · costo" viewport="1280x900" -->
 <html lang="es-CL">
 <head>
 <meta charset="utf-8"/>
@@ -11,22 +12,22 @@
   .ss-shell { max-width: 1180px; margin: 0 auto; }
   h1 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
   .ss-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-  .ss-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .ss-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl); padding: 18px; }
   .ss-card h3 { margin: 0 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--fg-2); font-weight: 700; }
   .ss-stat { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
   .ss-stat .v { font-family: ui-monospace, monospace; font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .ss-stat .u { font-size: 13px; color: var(--fg-2); }
   .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
   .pill.ok { background: var(--mint-100); color: var(--mint-700); }
-  .pill.warn { background: #FFEFCD; color: var(--error-fg); }
-  .pill.err { background: #FAD9D9; color: #7A2E2E; }
+  .pill.warn { background: var(--warning-bg); color: var(--warning-fg); }
+  .pill.err { background: color-mix(in srgb, var(--mastery-weak) 18%, white); color: color-mix(in srgb, var(--mastery-weak) 70%, black); }
   .pill.paused { background: var(--slate-100); color: var(--slate-700); }
   .ss-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
   .ss-row:last-child { border-bottom: 0; }
   .ss-row .nm { font-weight: 600; }
   .ss-row .meta { color: var(--fg-2); margin-left: auto; font-family: ui-monospace, monospace; font-size: 12px; }
-  .ks { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
-  .ks.is-paused { background: #FFF4DB; border-color: #F0D9A0; }
+  .ks { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1px solid var(--border); border-radius: var(--r-lg); margin-bottom: 10px; }
+  .ks.is-paused { background: var(--warning-bg); border-color: var(--error-border); }
   .ks .lab { font-weight: 700; font-size: 15px; }
   .ks .desc { font-size: 12px; color: var(--fg-2); }
   .toggle { position: relative; width: 44px; height: 24px; background: var(--slate-200); border-radius: 9999px; cursor: pointer; flex-shrink: 0; transition: background .2s; }

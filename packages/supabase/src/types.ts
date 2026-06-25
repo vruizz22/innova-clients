@@ -12,7 +12,9 @@ export function isAppRole(value: unknown): value is AppRole {
  * Reads the role claim. Prefer `app_metadata.role` (set server-side, trusted);
  * fall back to `user_metadata.role` for the pre-trigger window.
  */
-export function getUserRole(user: Pick<User, 'app_metadata' | 'user_metadata'> | null): AppRole | null {
+export function getUserRole(
+  user: Pick<User, 'app_metadata' | 'user_metadata'> | null
+): AppRole | null {
   if (!user) return null;
   const fromApp = user.app_metadata?.['role'];
   if (isAppRole(fromApp)) return fromApp;
@@ -21,12 +23,37 @@ export function getUserRole(user: Pick<User, 'app_metadata' | 'user_metadata'> |
   return null;
 }
 
+/**
+ * Human display name for the navbar / profile. Prefers the name the user set at
+ * signup (`user_metadata.full_name`), then other common metadata keys, and only
+ * falls back to the email local part — never the raw email in chrome.
+ */
+export function getUserDisplayName(user: Pick<User, 'user_metadata' | 'email'> | null): string {
+  if (!user) return '';
+  const meta = user.user_metadata ?? {};
+  for (const key of ['full_name', 'name', 'display_name'] as const) {
+    const value = meta[key];
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim();
+  }
+  const email = user.email ?? '';
+  const local = email.split('@')[0] ?? '';
+  return local || email;
+}
+
+/** Two-letter initials for an avatar, derived from the display name. */
+export function getUserInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
+  return (parts[0]![0]! + parts[parts.length - 1]![0]!).toUpperCase();
+}
+
 /** Landing route per role after login (ADR-103 §5.2). */
 export const ROLE_HOME: Record<AppRole, string> = {
   student: '/practice',
   teacher: '/dashboard',
   parent: '/family',
-  admin: '/admin/error-catalog',
+  admin: '/error-catalog',
 };
 
 export function roleHome(role: AppRole | null): string {

@@ -21,14 +21,19 @@ interface WorkingStep {
 }
 
 const FIELD =
-  'math w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-2xl font-black tabular-nums text-slate-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100';
+  'math w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-2xl font-black tabular-nums text-[var(--fg-1)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100';
 
 /**
  * Numeric step-input for student practice. Students may add intermediate working
  * lines to "show their work", then enter a final answer. Output maps directly onto
  * POST /attempts `rawSteps` (each working line + the final answer with isFinal).
  */
-export function MathInput({ problem, onSubmit, submitting = false, submitLabel = 'Enviar respuesta' }: MathInputProps): JSX.Element {
+export function MathInput({
+  problem,
+  onSubmit,
+  submitting = false,
+  submitLabel = 'Enviar respuesta',
+}: MathInputProps): JSX.Element {
   const startedAtRef = useRef<number>(Date.now());
   const [steps, setSteps] = useState<WorkingStep[]>([]);
   const [finalAnswer, setFinalAnswer] = useState('');
@@ -41,7 +46,9 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
         return;
       }
       const idx = active.index;
-      setSteps((rows) => rows.map((row, i) => (i === idx ? { ...row, value: transform(row.value) } : row)));
+      setSteps((rows) =>
+        rows.map((row, i) => (i === idx ? { ...row, value: transform(row.value) } : row))
+      );
     },
     [active]
   );
@@ -63,7 +70,10 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
     setActive({ kind: 'final' });
   }
 
-  const canSubmit = useMemo(() => finalAnswer.trim().length > 0 && !submitting, [finalAnswer, submitting]);
+  const canSubmit = useMemo(
+    () => finalAnswer.trim().length > 0 && !submitting,
+    [finalAnswer, submitting]
+  );
 
   function handleSubmit(): void {
     if (!canSubmit) return;
@@ -86,7 +96,9 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
 
       {steps.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tu desarrollo</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]">
+            Tu desarrollo
+          </p>
           {steps.map((step, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
@@ -108,7 +120,7 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
                 onClick={() => removeStep(i)}
                 aria-label={`Eliminar paso ${i + 1}`}
                 disabled={submitting}
-                className="h-11 w-11 shrink-0 rounded-xl border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40"
+                className="h-11 w-11 shrink-0 rounded-xl border border-[var(--border)] text-[var(--fg-3)] hover:bg-[var(--surface-2)] disabled:opacity-40"
               >
                 ✕
               </button>
@@ -118,7 +130,10 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
       )}
 
       <div className="flex flex-col gap-2">
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-400" htmlFor="final-answer">
+        <label
+          className="text-xs font-semibold uppercase tracking-wide text-[var(--fg-3)]"
+          htmlFor="final-answer"
+        >
           Respuesta final
         </label>
         <input
@@ -134,14 +149,19 @@ export function MathInput({ problem, onSubmit, submitting = false, submitLabel =
         />
       </div>
 
-      <MathKeypad onChar={onChar} onBackspace={onBackspace} onClear={onClear} disabled={submitting} />
+      <MathKeypad
+        onChar={onChar}
+        onBackspace={onBackspace}
+        onClear={onClear}
+        disabled={submitting}
+      />
 
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={addStep}
           disabled={submitting}
-          className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+          className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--fg-2)] hover:bg-[var(--surface-2)] disabled:opacity-40"
         >
           + Mostrar mi desarrollo
         </button>

@@ -2,8 +2,18 @@
 // IDs are stable: <DOMAIN>_<SUBDOMAIN>_<ERROR>_<GRADE_HINT>. Never renamed.
 
 export const GRADES = [
-  'G1', 'G2', 'G3', 'G4', 'G5', 'G6',
-  'G7', 'G8', 'G9', 'G10', 'G11', 'G12',
+  'G1',
+  'G2',
+  'G3',
+  'G4',
+  'G5',
+  'G6',
+  'G7',
+  'G8',
+  'G9',
+  'G10',
+  'G11',
+  'G12',
 ] as const;
 export type Grade = (typeof GRADES)[number];
 
