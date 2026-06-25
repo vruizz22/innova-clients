@@ -8,7 +8,8 @@
     "build": "node ../scripts/copy-design-system-to-public.js ./public/design-system && astro build",
     "preview": "astro preview",
     "lint": "eslint . --ext .ts,.tsx,.astro",
-    "format": "prettier --write ./src/**/*",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
     "check-paths": "node ../scripts/check-absolute-paths.js ./"
   },
   "devDependencies": {

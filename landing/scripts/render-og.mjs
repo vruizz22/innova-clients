@@ -28,14 +28,27 @@ const fontFace = (weight, file) =>
   `@font-face{font-family:'Inter';font-weight:${weight};src:url('file://${fontsDir}/${file}');}`;
 
 const page = (svg, w, h) => `<!doctype html><html><head><meta charset="utf-8"><style>
-${fontFace(400, 'Inter-Regular.otf')}${fontFace(600, 'Inter-SemiBold.otf')}${fontFace(700, 'Inter-Bold.otf')}
+${fontFace(400, 'Inter-Regular.otf')}${fontFace(600, 'Inter-SemiBold.otf')}${fontFace(
+  700,
+  'Inter-Bold.otf'
+)}
 *{margin:0;padding:0}html,body{width:${w}px;height:${h}px;overflow:hidden;background:transparent}
 svg{display:block;width:${w}px;height:${h}px}</style></head><body>${svg}</body></html>`;
 
 // [source svg, width, height, output paths relative to repo root]
 const jobs = [
-  ['landing/public/og-image.svg', 1200, 630, ['landing/public/og-image.png', 'apps/web/public/og-image.png']],
-  ['landing/public/favicon.svg', 180, 180, ['landing/public/apple-touch-icon.png', 'apps/web/app/apple-icon.png']],
+  [
+    'landing/public/og-image.svg',
+    1200,
+    630,
+    ['landing/public/og-image.png', 'apps/web/public/og-image.png'],
+  ],
+  [
+    'landing/public/favicon.svg',
+    180,
+    180,
+    ['landing/public/apple-touch-icon.png', 'apps/web/app/apple-icon.png'],
+  ],
 ];
 
 const browser = await chromium.launch();

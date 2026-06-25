@@ -1,8 +1,14 @@
 ---
-// SmartLoginButton — shows profile badge if logged in, otherwise links to auth selector
+// SmartLoginButton — auth-aware CTA for the landing.
+// Detects the shared Supabase session from the `.superprofes.app` cookie
+// (`sb-<ref>-auth-token`, httpOnly:false so it is JS-readable, scoped to the
+// parent domain via NEXT_PUBLIC_COOKIE_DOMAIN). When a session is present it
+// swaps the "Iniciar sesión" link for a profile pill that routes to the role's
+// dashboard, and hides sibling "Comenzar gratis" CTAs. No localStorage, no
+// network round-trip — the role + name come straight from the session payload
+// (app_metadata.role is set server-side and trusted).
 interface Props {
   loginUrl: string;
-  apiUrl: string;
   teacherUrl: string;
   practiceUrl: string;
   parentUrl: string;
@@ -12,7 +18,6 @@ interface Props {
 
 const {
   loginUrl,
-  apiUrl,
   teacherUrl,
   practiceUrl,
   parentUrl,
@@ -23,7 +28,7 @@ const {
 const buttonId = `smart-login-${Math.random().toString(36).slice(2)}`;
 ---
 
-<!-- Default: login link. Script replaces with profile badge if session found. -->
+<!-- Default: login link. Script swaps it for a profile pill when a session is found. -->
 <a href={loginUrl} id={buttonId} class={className}>
   {label}
 </a>
@@ -33,74 +38,176 @@ const buttonId = `smart-login-${Math.random().toString(36).slice(2)}`;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px 6px 8px;
+    padding: 6px 14px 6px 8px;
     border-radius: 9999px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     color: #fff;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: background 160ms;
+    transition: background 160ms ease, transform 160ms ease;
   }
-  .slb-profile:hover { background: rgba(255,255,255,0.22); }
+  .slb-profile:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .slb-profile:active {
+    transform: scale(0.97);
+  }
   .slb-avatar {
-    width: 26px; height: 26px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    background: var(--mint-500, #3DAA72);
+    background: var(--mint-500, #3daa72);
     color: #fff;
     font-size: 11px;
     font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .slb-name {
+    max-width: 16ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .slb-go {
+    color: rgba(255, 255, 255, 0.65);
+    flex-shrink: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slb-profile {
+      transition: none;
+    }
+    .slb-profile:active {
+      transform: none;
+    }
   }
 </style>
 
-<script define:vars={{ buttonId, loginUrl, apiUrl, teacherUrl, practiceUrl, parentUrl }}>
-  (async () => {
-    const raw = localStorage.getItem('innova.auth.session');
-    if (!raw) return;
+<script define:vars={{ buttonId, loginUrl, teacherUrl, practiceUrl, parentUrl }}>
+  (() => {
+    const APP_ROLES = ['student', 'teacher', 'parent', 'admin'];
+    const trim = (u) => String(u || '').replace(/\/$/, '');
+    const homeByRole = {
+      teacher: `${trim(teacherUrl)}/dashboard`,
+      student: `${trim(practiceUrl)}/practice`,
+      parent: `${trim(parentUrl)}/family`,
+      admin: `${trim(teacherUrl)}/error-catalog`,
+    };
 
-    let session;
-    try { session = JSON.parse(raw); } catch { return; }
-    if (!session?.accessToken) return;
-
-    const btn = document.getElementById(buttonId);
-    if (!btn) return;
-
-    try {
-      const res = await fetch(`${apiUrl}/auth/me`, {
-        headers: { Authorization: `Bearer ${session.accessToken}` },
-      });
-      if (!res.ok) {
-        localStorage.removeItem('innova.auth.session');
-        return;
+    // --- Read the shared Supabase session from the cookie (chunked + base64url) ---
+    function readSession() {
+      const all = document.cookie ? document.cookie.split('; ') : [];
+      const chunks = [];
+      for (const entry of all) {
+        const eq = entry.indexOf('=');
+        if (eq === -1) continue;
+        const name = entry.slice(0, eq);
+        if (!/^sb-.+-auth-token(\.\d+)?$/.test(name)) continue;
+        const m = name.match(/\.(\d+)$/);
+        chunks.push({ idx: m ? parseInt(m[1], 10) : 0, value: entry.slice(eq + 1) });
       }
-      const body = await res.json();
-      const user = body?.data?.user ?? body?.user;
-      const role = user?.role;
-      const email = user?.email ?? '';
+      if (chunks.length === 0) return null;
+      chunks.sort((a, b) => a.idx - b.idx);
 
-      const roleUrls = {
-        teacher: `${teacherUrl}/dashboard`,
-        student: `${practiceUrl}/practice`,
-        parent: `${parentUrl}/dashboard`,
-      };
-      const dashUrl = roleUrls[role] ?? loginUrl;
-      const initial = email ? email[0].toUpperCase() : '?';
-      const displayEmail = email.length > 22 ? email.slice(0, 20) + '…' : email;
+      let raw = chunks.map((c) => decodeURIComponent(c.value)).join('');
+      if (raw.startsWith('base64-')) {
+        try {
+          const b64 = raw.slice(7).replace(/-/g, '+').replace(/_/g, '/');
+          const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+          const bin = atob(b64 + pad);
+          const bytes = Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
+          raw = new TextDecoder().decode(bytes);
+        } catch {
+          return null;
+        }
+      }
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
 
-      // Replace button with profile badge
+    function pickRole(user) {
+      const app = user?.app_metadata?.role;
+      if (APP_ROLES.includes(app)) return app;
+      const meta = user?.user_metadata?.role;
+      if (APP_ROLES.includes(meta)) return meta;
+      return null;
+    }
+
+    function displayName(user) {
+      const meta = user?.user_metadata || {};
+      for (const key of ['full_name', 'name', 'display_name']) {
+        const v = meta[key];
+        if (typeof v === 'string' && v.trim()) return v.trim();
+      }
+      const email = user?.email || '';
+      return email.split('@')[0] || email || 'Mi cuenta';
+    }
+
+    function initials(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return '?';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function apply() {
+      const session = readSession();
+      const user = session?.user ?? session?.currentSession?.user ?? null;
+      if (!user) return;
+
+      // Drop visibly-expired sessions so we don't promise a panel that bounces to login.
+      const expEpoch = session?.expires_at ?? session?.expiresAt;
+      if (typeof expEpoch === 'number' && expEpoch * 1000 < Date.now()) return;
+
+      const btn = document.getElementById(buttonId);
+      if (!btn) return;
+
+      const role = pickRole(user);
+      const name = displayName(user);
+      const target = (role && homeByRole[role]) || loginUrl;
+
       const badge = document.createElement('a');
-      badge.href = dashUrl;
+      badge.href = target;
       badge.className = 'slb-profile';
-      badge.innerHTML = `
-        <span class="slb-avatar">${initial}</span>
-        <span>${displayEmail}</span>
-      `;
+      badge.setAttribute('aria-label', `Ir al panel — sesión de ${name}`);
+      const avatar = document.createElement('span');
+      avatar.className = 'slb-avatar';
+      avatar.textContent = initials(name);
+      const label = document.createElement('span');
+      label.className = 'slb-name';
+      label.textContent = name;
+      const go = document.createElement('span');
+      go.className = 'slb-go';
+      go.setAttribute('aria-hidden', 'true');
+      go.innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+      badge.append(avatar, label, go);
       btn.replaceWith(badge);
-    } catch {
-      // Network error or parse error — keep login link
+
+      // Hide "Comenzar gratis" CTAs once — a signed-in visitor already has an account.
+      if (!window.__spAuthApplied) {
+        window.__spAuthApplied = true;
+        document.querySelectorAll('[data-auth-cta="register"]').forEach((el) => {
+          el.style.display = 'none';
+        });
+      }
+    }
+
+    // Inline `define:vars` scripts run during parsing — defer to DOMContentLoaded
+    // so the full DOM (later "Comenzar gratis" CTAs included) exists before we
+    // swap the button and hide register CTAs.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', apply, { once: true });
+    } else {
+      apply();
     }
   })();
 </script>

@@ -5,8 +5,6 @@ import { registerUrl, teacherUrl, practiceUrl, parentUrl } from '@config/urls'
 const loginUrl = '/auth'
 import SmartLoginButton from '@components/SmartLoginButton.astro'
 import Logo from '@components/Logo.astro'
-
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'
 ---
 
 <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
@@ -26,7 +24,6 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'
   <div class="flex items-center gap-3">
     <SmartLoginButton
       loginUrl={loginUrl}
-      apiUrl={apiUrl}
       teacherUrl={teacherUrl}
       practiceUrl={practiceUrl}
       parentUrl={parentUrl}
@@ -35,6 +32,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000'
     <a
       href={registerUrl}
       class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-[var(--sky-500)] hover:bg-[var(--sky-600)] transition-all shadow-md"
+      data-auth-cta="register"
     >
       Comenzar gratis
     </a>

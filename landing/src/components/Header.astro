@@ -3,8 +3,6 @@
 import { loginUrl, registerUrl, teacherUrl, practiceUrl, parentUrl } from '@config/urls';
 import SmartLoginButton from '@components/SmartLoginButton.astro';
 import Logo from '@components/Logo.astro';
-
-const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 ---
 
 <header
@@ -27,12 +25,11 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
     <div class="hidden items-center gap-3 lg:flex">
       <SmartLoginButton
         loginUrl={loginUrl}
-        apiUrl={apiUrl}
         teacherUrl={teacherUrl}
         practiceUrl={practiceUrl}
         parentUrl={parentUrl}
       />
-      <a href={registerUrl} class="btn btn-primary">
+      <a href={registerUrl} class="btn btn-primary" data-auth-cta="register">
         Comenzar gratis
       </a>
     </div>
@@ -64,7 +61,6 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
       <div class="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
         <SmartLoginButton
           loginUrl={loginUrl}
-          apiUrl={apiUrl}
           teacherUrl={teacherUrl}
           practiceUrl={practiceUrl}
           parentUrl={parentUrl}
@@ -74,6 +70,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000';
         <a
           href={registerUrl}
           class="rounded-xl bg-[var(--sky-500)] px-4 py-3 text-center text-sm font-semibold text-white"
+          data-auth-cta="register"
         >
           Comenzar gratis
         </a>
