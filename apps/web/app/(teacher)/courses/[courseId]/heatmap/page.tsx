@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Card } from '@innova/ui';
+import { EmptyState } from '@innova/ui';
 import { getServerApi } from '@/lib/api.server';
 import { CourseHeatmapView } from '@/components/heatmap/CourseHeatmapView';
+import { AlertsInbox } from '@/components/teacher/AlertsInbox';
+import { InviteStudentsButton } from '@/components/teacher/InviteStudentsButton';
 
-// Server Component: Student × Unit mastery heatmap for one course (C12).
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -13,20 +14,46 @@ interface PageProps {
 export default async function CourseHeatmapPage({ params }: PageProps): Promise<JSX.Element> {
   const courseId = decodeURIComponent(params.courseId);
   const api = getServerApi();
-  const heatmap = await api.getCourseHeatmap(courseId);
+  const [heatmap, alerts, classrooms] = await Promise.all([
+    api.getCourseHeatmap(courseId),
+    api.getAlerts(courseId),
+    api.getMyClassrooms(),
+  ]);
 
   if (!heatmap.ok) {
     return (
       <div className="mx-auto max-w-[640px]">
-        <Card>
-          <p className="text-sm font-bold text-slate-800">No pudimos cargar el dominio del curso</p>
-          <Link href="/dashboard" className="mt-3 inline-block text-sm font-medium text-sky-600">
-            ← Cursos
-          </Link>
-        </Card>
+        <EmptyState
+          kind="error"
+          title="No pudimos cargar el dominio del curso"
+          action={
+            <Link
+              href="/dashboard"
+              className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--primary-fg)] hover:bg-[var(--primary-hover)]"
+            >
+              ← Volver a mis cursos
+            </Link>
+          }
+        />
       </div>
     );
   }
 
-  return <CourseHeatmapView courseId={courseId} heatmap={heatmap.data} />;
+  const courseName = classrooms.ok
+    ? (classrooms.data.find((c) => c.id === courseId)?.name ?? null)
+    : null;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="mx-auto flex w-full max-w-[1200px] justify-end">
+        <InviteStudentsButton courseId={courseId} />
+      </div>
+      {alerts.ok ? (
+        <div className="mx-auto w-full max-w-[1200px]">
+          <AlertsInbox initial={alerts.data} />
+        </div>
+      ) : null}
+      <CourseHeatmapView courseId={courseId} heatmap={heatmap.data} courseName={courseName} />
+    </div>
+  );
 }
