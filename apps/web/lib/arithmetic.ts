@@ -14,6 +14,28 @@ type Token =
   | { readonly kind: 'lparen' }
   | { readonly kind: 'rparen' };
 
+/**
+ * Converts the common LaTeX the OCR emits into plain arithmetic so fractions,
+ * percentages and × · ÷ evaluate. Symbolic LaTeX (variables, roots, exponents) is
+ * left intact so it fails to parse and routes to the backend pauta instead.
+ */
+function delatex(expr: string): string {
+  let s = expr.replace(/\$/g, ' ').replace(/\\left|\\right/g, '');
+  // \frac{a}{b} / \dfrac{a}{b} → ((a)/(b)); loop for the (rare) nested case.
+  const frac = /\\d?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/;
+  for (let i = 0; i < 6 && frac.test(s); i += 1) {
+    s = s.replace(frac, '(($1)/($2))');
+  }
+  return s
+    .replace(/\\times|\\cdot/g, '*')
+    .replace(/\\div/g, '/')
+    // 35\% or 35% → (35/100)
+    .replace(/(\d+(?:[.,]\d+)?)\s*\\?%/g, '($1/100)')
+    // strip thin-space / stray commands like \, \; \! and a trailing backslash-space
+    .replace(/\\[,;!:]/g, ' ')
+    .replace(/\\\s/g, ' ');
+}
+
 /** Normalises unicode math glyphs to ASCII operators (whitespace preserved). */
 function normalize(expr: string): string {
   return expr
@@ -81,7 +103,11 @@ class Parser {
   private expr(): number | null {
     let left = this.term();
     if (left === null) return null;
-    for (let op = this.peek(); op?.kind === 'op' && (op.value === '+' || op.value === '-'); op = this.peek()) {
+    for (
+      let op = this.peek();
+      op?.kind === 'op' && (op.value === '+' || op.value === '-');
+      op = this.peek()
+    ) {
       this.pos += 1;
       const right = this.term();
       if (right === null) return null;
@@ -93,7 +119,11 @@ class Parser {
   private term(): number | null {
     let left = this.factor();
     if (left === null) return null;
-    for (let op = this.peek(); op?.kind === 'op' && (op.value === '*' || op.value === '/'); op = this.peek()) {
+    for (
+      let op = this.peek();
+      op?.kind === 'op' && (op.value === '*' || op.value === '/');
+      op = this.peek()
+    ) {
       this.pos += 1;
       const right = this.factor();
       if (right === null) return null;
@@ -133,7 +163,7 @@ class Parser {
  * Rounds to 6 decimals to absorb float noise. Returns null when it can't parse.
  */
 export function evalArithmetic(expr: string): number | null {
-  const normalized = normalize(expr);
+  const normalized = normalize(delatex(expr));
   if (normalized.length === 0) return null;
   const tokens = tokenize(normalized);
   if (tokens === null || tokens.length === 0) return null;

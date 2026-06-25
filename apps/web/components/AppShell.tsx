@@ -1,14 +1,18 @@
 import type { ReactNode } from 'react';
+import { Logo } from '@innova/ui';
 import { createClient } from '@innova/supabase/server';
-import { getUserRole, type AppRole } from '@innova/supabase';
+import { getUserRole, getUserDisplayName, roleHome, type AppRole } from '@innova/supabase';
+import { NavLinks } from './shell/NavLinks';
+import { ProfileMenu } from './shell/ProfileMenu';
 
 type Area = 'student' | 'teacher' | 'parent' | 'admin';
 
+// Canvas tint per area — token-backed, so each adapts in dark mode.
 const AREA_BG: Record<Area, string> = {
-  student: 'bg-sky-50',
-  parent: 'bg-mint-50',
-  teacher: 'bg-slate-50',
-  admin: 'bg-slate-50',
+  student: 'bg-canvas-student',
+  parent: 'bg-canvas-parent',
+  teacher: 'bg-canvas-teacher',
+  admin: 'bg-canvas-teacher',
 };
 
 const ROLE_LABEL: Record<AppRole, string> = {
@@ -28,14 +32,24 @@ const AREA_NAV: Record<Area, readonly NavLink[]> = {
     { href: '/practice', label: 'Práctica' },
     { href: '/guides', label: 'Guías' },
     { href: '/scan', label: 'Escanear' },
+    { href: '/scans', label: 'Mis escaneos' },
+    { href: '/join', label: 'Unirse' },
   ],
   teacher: [
-    { href: '/dashboard', label: 'Cursos' },
+    { href: '/dashboard', label: 'Resumen' },
+    { href: '/classrooms', label: 'Alumnos' },
     { href: '/guides', label: 'Guías' },
     { href: '/exercise-bank', label: 'Banco' },
+    { href: '/assign-practice', label: 'Asignar' },
+    { href: '/alerts', label: 'Alertas' },
+    { href: '/skills', label: 'Habilidades' },
+    { href: '/error-search', label: 'Catálogo' },
   ],
   parent: [{ href: '/family', label: 'Mis hijos' }],
-  admin: [{ href: '/error-catalog', label: 'Catálogo' }],
+  admin: [
+    { href: '/error-catalog', label: 'Catálogo' },
+    { href: '/status', label: 'Sistema' },
+  ],
 };
 
 export async function AppShell({
@@ -50,51 +64,46 @@ export async function AppShell({
     data: { user },
   } = await supabase.auth.getUser();
   const role = getUserRole(user);
+  const displayName = getUserDisplayName(user);
 
   return (
     <div className={`min-h-screen ${AREA_BG[area]}`}>
-      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-3 px-5">
-          <a href="/" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500 text-xs font-black text-white">
-              SP
-            </div>
-            <span className="text-[15px] font-bold text-slate-900">
-              Super<span className="text-sky-500">Profes</span>
-            </span>
+      <header className="sticky top-0 z-sticky border-b border-line bg-surface/85 backdrop-blur">
+        <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+          <a
+            href={role ? roleHome(role) : '/'}
+            className="flex items-center text-ink transition-opacity hover:opacity-80"
+            aria-label="SuperProfes — inicio"
+          >
+            <Logo height={26} />
           </a>
           {role ? (
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-slate-600">
+            <span className="rounded-pill bg-surface-2 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-ink-muted">
               {ROLE_LABEL[role]}
             </span>
           ) : null}
-          <div className="ml-auto flex items-center gap-3">
-            {user?.email ? (
-              <span className="hidden text-sm text-slate-500 sm:inline">{user.email}</span>
-            ) : null}
-            <form action="/auth/signout" method="post">
-              <button
-                type="submit"
-                className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+          <div className="ml-auto">
+            {user ? (
+              <ProfileMenu
+                name={displayName}
+                email={user.email ?? ''}
+                roleLabel={role ? ROLE_LABEL[role] : 'Cuenta'}
+              />
+            ) : (
+              <a
+                href="/login"
+                className="rounded-lg border border-line-strong px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-surface-2"
               >
-                Salir
-              </button>
-            </form>
+                Iniciar sesión
+              </a>
+            )}
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1280px] items-center gap-1 px-5 pb-2">
-          {AREA_NAV[area].map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              {link.label}
-            </a>
-          ))}
+        <nav className="mx-auto flex w-full max-w-[1600px] items-center gap-1 overflow-x-auto px-4 pb-2 sm:px-6 lg:px-8">
+          <NavLinks links={AREA_NAV[area]} />
         </nav>
       </header>
-      <main className="mx-auto max-w-[1280px] px-5 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{children}</main>
     </div>
   );
 }
