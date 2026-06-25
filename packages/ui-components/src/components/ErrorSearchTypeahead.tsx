@@ -40,7 +40,7 @@ export function ErrorSearchTypeahead({
   // Local (bundled-seed) search — used only when no async searchFn is provided.
   const local = useMemo(
     () => (searchFn ? [] : searchErrorTags(query, { limit, status, domainCode })),
-    [searchFn, query, limit, status, domainCode],
+    [searchFn, query, limit, status, domainCode]
   );
 
   // Async (live-backend) search — debounced, with a stale-response guard so a

@@ -43,7 +43,10 @@ export function HeatmapCollapsedByUnit({
 }: HeatmapCollapsedByUnitProps): JSX.Element {
   return (
     <div
-      className={['overflow-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card', className]
+      className={[
+        'overflow-auto rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-card',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       role="region"
@@ -76,11 +79,15 @@ export function HeatmapCollapsedByUnit({
                       type="button"
                       disabled={!onUnitDrillDown}
                       onClick={() => onUnitDrillDown?.(u.code, row.studentId)}
-                      title={`${row.studentName} · ${u.name_es} · ${p === undefined ? 's/d' : `${Math.round(p * 100)}%`}`}
+                      title={`${row.studentName} · ${u.name_es} · ${
+                        p === undefined ? 's/d' : `${Math.round(p * 100)}%`
+                      }`}
                       className={[
                         'inline-flex h-9 w-9 items-center justify-center rounded-lg text-[11px] font-bold tabular-nums transition-[outline]',
                         masteryClass(p),
-                        onUnitDrillDown ? 'cursor-pointer hover:outline hover:outline-2 hover:outline-[var(--primary)]' : '',
+                        onUnitDrillDown
+                          ? 'cursor-pointer hover:outline hover:outline-2 hover:outline-[var(--primary)]'
+                          : '',
                       ].join(' ')}
                     >
                       {p === undefined ? '–' : Math.round(p * 100)}

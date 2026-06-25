@@ -1,12 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  formatHumanName,
-  getErrorTag,
-  type ErrorTag,
-  type Severity,
-} from '@innova/error-catalog';
+import { formatHumanName, getErrorTag, type ErrorTag, type Severity } from '@innova/error-catalog';
 
 interface ErrorTagChipProps {
   code: string;

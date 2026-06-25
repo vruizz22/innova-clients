@@ -41,7 +41,15 @@ export function Logo({
         <g transform="translate(10 12)">
           <rect x="0" y="0" width="28" height="5" rx="2.5" fill="var(--primary, #3FA7D6)" />
           <rect x="0" y="10" width="20" height="5" rx="2.5" fill="var(--mint-500, #3DAA72)" />
-          <rect x="0" y="20" width="24" height="5" rx="2.5" fill="var(--primary, #3FA7D6)" opacity="0.55" />
+          <rect
+            x="0"
+            y="20"
+            width="24"
+            height="5"
+            rx="2.5"
+            fill="var(--primary, #3FA7D6)"
+            opacity="0.55"
+          />
         </g>
       </svg>
     );
@@ -60,7 +68,15 @@ export function Logo({
       <g transform="translate(8 12)">
         <rect x="0" y="0" width="32" height="6" rx="3" fill="var(--primary, #3FA7D6)" />
         <rect x="0" y="12" width="22" height="6" rx="3" fill="var(--mint-500, #3DAA72)" />
-        <rect x="0" y="24" width="28" height="6" rx="3" fill="var(--primary, #3FA7D6)" opacity="0.55" />
+        <rect
+          x="0"
+          y="24"
+          width="28"
+          height="6"
+          rx="3"
+          fill="var(--primary, #3FA7D6)"
+          opacity="0.55"
+        />
       </g>
       <text
         x="52"

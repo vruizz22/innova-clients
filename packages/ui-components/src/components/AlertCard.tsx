@@ -21,7 +21,14 @@ interface AlertCardProps {
 
 const alertConfig: Record<
   AlertType,
-  { border: string; bg: string; badgeText: string; badgeBg: string; badgeColor: string; icon: AlertIcon }
+  {
+    border: string;
+    bg: string;
+    badgeText: string;
+    badgeBg: string;
+    badgeColor: string;
+    icon: AlertIcon;
+  }
 > = {
   AT_RISK_SKILL: {
     border: 'var(--error-border)',
@@ -83,9 +90,7 @@ export function AlertCard({
             {cfg.badgeText}
           </span>
         </div>
-        {description ? (
-          <p className="mt-1 text-xs text-[var(--fg-2)]">{description}</p>
-        ) : null}
+        {description ? <p className="mt-1 text-xs text-[var(--fg-2)]">{description}</p> : null}
         <div className="mt-2 flex items-center justify-between">
           {createdAt ? (
             <span className="text-[11px] text-[var(--fg-3)]">

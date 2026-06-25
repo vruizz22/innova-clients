@@ -48,7 +48,10 @@ export function ExerciseCard({
 
   return (
     <article
-      className={['flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card', className]
+      className={[
+        'flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >
@@ -65,7 +68,8 @@ export function ExerciseCard({
       </div>
 
       <p className="text-sm text-[var(--fg-2)]">
-        Solución: <span className="math font-semibold text-[var(--fg-1)]">{exercise.canonicalSolution}</span>
+        Solución:{' '}
+        <span className="math font-semibold text-[var(--fg-1)]">{exercise.canonicalSolution}</span>
       </p>
 
       {exercise.targetErrorTags.length > 0 ? (

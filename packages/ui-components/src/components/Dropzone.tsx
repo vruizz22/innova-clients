@@ -43,7 +43,7 @@ export function Dropzone({
       if (files.length === 0) return;
       onFiles(multiple ? files : files.slice(0, 1));
     },
-    [multiple, onFiles],
+    [multiple, onFiles]
   );
 
   return (
@@ -77,7 +77,9 @@ export function Dropzone({
       }}
       className={[
         'flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors duration-150',
-        dragging ? 'border-brand bg-canvas-student' : 'border-line-strong bg-surface hover:border-brand',
+        dragging
+          ? 'border-brand bg-canvas-student'
+          : 'border-line-strong bg-surface hover:border-brand',
         disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
         className,
       ]

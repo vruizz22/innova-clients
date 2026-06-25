@@ -11,11 +11,19 @@ export { MasteryBar } from './components/MasteryBar';
 export { MasteryCell } from './components/MasteryCell';
 export { AlertCard } from './components/AlertCard';
 
+export { EmptyState, type EmptyStateProps, type EmptyStateKind } from './components/EmptyState';
+export { Toaster } from './components/Toaster';
+export { toast } from 'sonner';
+export { Sheet, type SheetProps } from './components/Sheet';
+
 // v8 components — multi-grade teacher, exercise bank, error catalog
 export { GradeBandSelector } from './components/GradeBandSelector';
 export { ErrorTagChip } from './components/ErrorTagChip';
 export { ExerciseCard, type ExerciseCardData } from './components/ExerciseCard';
 export { ErrorSearchTypeahead } from './components/ErrorSearchTypeahead';
+export { ImageLightbox, type ImageLightboxProps } from './components/ImageLightbox';
+export { MathField, type MathFieldProps } from './components/MathField';
+export { StatCard, type StatCardProps } from './components/StatCard';
 export {
   HeatmapCollapsedByUnit,
   type HeatmapUnit,

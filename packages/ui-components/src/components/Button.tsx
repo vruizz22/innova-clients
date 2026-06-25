@@ -54,12 +54,7 @@ export function Button({
         .join(' ')}
     >
       {loading ? (
-        <svg
-          className="animate-spin h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
+        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle
             className="opacity-25"
             cx="12"
