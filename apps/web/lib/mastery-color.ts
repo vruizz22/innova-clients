@@ -7,16 +7,18 @@ export function masteryLevel(pKnown: number): MasteryLevel {
   return 'low';
 }
 
+// Cell fills use the exact DS mastery tokens (#3DAA72 / #E8A33D / #D86060) — never an
+// alarm red. Amber keeps a dark-brown ink for AA contrast; green/rose carry white.
 export const MASTERY_CELL_BG: Record<MasteryLevel, string> = {
-  high: 'bg-emerald-500 text-white',
-  mid: 'bg-amber-400 text-amber-950',
-  low: 'bg-rose-500 text-white',
+  high: 'bg-mastery-strong text-white',
+  mid: 'bg-mastery-medium text-[#4a3300]',
+  low: 'bg-mastery-weak text-white',
 };
 
 export const MASTERY_SOFT_BG: Record<MasteryLevel, string> = {
-  high: 'bg-emerald-100 text-emerald-700',
-  mid: 'bg-amber-100 text-amber-800',
-  low: 'bg-rose-100 text-rose-700',
+  high: 'bg-[var(--success-bg)] text-[var(--success-fg)]',
+  mid: 'bg-[var(--warning-bg)] text-[var(--warning-fg)]',
+  low: 'bg-danger/15 text-danger',
 };
 
 export const MASTERY_LABEL: Record<MasteryLevel, string> = {

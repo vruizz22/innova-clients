@@ -1,3 +1,4 @@
+import { normalizeDomainCode } from './domain-aliases';
 import { DOMAINS } from './domains';
 import { ERROR_TAGS } from './seed';
 import { SPECIAL_ERROR_CODES } from './types';
@@ -5,7 +6,7 @@ import type { CatalogStatus, Domain, ErrorTag, Grade, Subdomain } from './types'
 
 const DOMAIN_BY_CODE = new Map<string, Domain>(DOMAINS.map((d) => [d.code, d]));
 const SUBDOMAIN_BY_CODE = new Map<string, Subdomain>(
-  DOMAINS.flatMap((d) => d.subdomains).map((s) => [s.code, s]),
+  DOMAINS.flatMap((d) => d.subdomains).map((s) => [s.code, s])
 );
 const TAG_BY_CODE = new Map<string, ErrorTag>(ERROR_TAGS.map((t) => [t.code, t]));
 
@@ -17,7 +18,9 @@ const SPECIAL_NAMES: Record<string, string> = {
 };
 
 export function getDomain(code: string): Domain | undefined {
-  return DOMAIN_BY_CODE.get(code);
+  // Alias-aware: resolves both the backend SHORT codes (ARITH, FRACT, …) and
+  // the FE LONG codes (ARITHMETIC, FRACTIONS, …) to the same Domain.
+  return DOMAIN_BY_CODE.get(normalizeDomainCode(code));
 }
 
 export function getSubdomain(code: string): Subdomain | undefined {
@@ -32,7 +35,7 @@ export function getErrorTag(code: string): ErrorTag | undefined {
 export function getDomainOf(errorOrCode: ErrorTag | string): Domain | undefined {
   const code = typeof errorOrCode === 'string' ? errorOrCode : errorOrCode.domain_code;
   const tag = typeof errorOrCode === 'string' ? TAG_BY_CODE.get(errorOrCode) : errorOrCode;
-  return DOMAIN_BY_CODE.get(tag?.domain_code ?? code);
+  return DOMAIN_BY_CODE.get(normalizeDomainCode(tag?.domain_code ?? code));
 }
 
 export function isDeprecated(code: string): boolean {

@@ -1,24 +1,28 @@
-import { Card } from '@innova/ui';
+import { EmptyState } from '@innova/ui';
 import type { ExerciseCardData } from '@innova/ui';
 import type { Item } from '@innova/api-client';
 import { getServerApi } from '@/lib/api.server';
 import { ExerciseBankClient, type BankItemView } from '@/components/teacher/ExerciseBankClient';
+import { wrapMath } from '@/lib/math';
 
-// Server Component: fetches the real item bank from GET /items, then hands a
-// serialisable, ExerciseCard-shaped list to the interactive client filter.
 export const dynamic = 'force-dynamic';
 
 function toBankItem(item: Item): BankItemView {
-  const expected = item.content.expectedAnswer;
+  const rawSolution =
+    item.content.expectedAnswer != null
+      ? String(item.content.expectedAnswer)
+      : (item.content.correct_answer_latex ?? null);
+  const src = item.source;
   const data: ExerciseCardData = {
     id: item.id,
-    prompt: item.content.prompt,
-    canonicalSolution: expected === null || expected === undefined ? '—' : String(expected),
+    prompt: wrapMath(item.content.prompt),
+    canonicalSolution: rawSolution != null ? wrapMath(rawSolution) : '—',
     targetErrorTags: [],
     difficulty: item.difficulty,
-    source: 'SYSTEM',
+    source: src === 'TEACHER_AUTHORED' || src === 'LLM_GENERATED' ? src : 'SYSTEM',
+    usedCount: item.n ?? undefined,
   };
-  return { ...data, topicCode: item.topicCode, topicName: item.topicName };
+  return { ...data, topicCode: item.topicCode, topicName: item.topicName, irtA: item.irtA, irtB: item.irtB };
 }
 
 export default async function ExerciseBankPage(): Promise<JSX.Element> {
@@ -27,22 +31,22 @@ export default async function ExerciseBankPage(): Promise<JSX.Element> {
 
   return (
     <div data-testid="exercise-bank-root">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Banco de ejercicios</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <h1 className="text-2xl font-bold tracking-tight text-[var(--fg-1)]">Banco de ejercicios</h1>
+      <p className="mt-1 text-sm text-[var(--fg-2)]">
         Filtra por tema y dificultad. Asigna o pide variantes con IA.
       </p>
 
       {!items.ok ? (
-        <div className="mt-6">
-          <Card>
-            <p className="text-sm font-bold text-slate-800">No pudimos cargar el banco</p>
-            <p className="mt-1 text-sm text-slate-500">
-              {items.error.kind === 'http' && items.error.status === 401
-                ? 'Tu sesión no está activa. Vuelve a entrar.'
-                : 'Hubo un problema de conexión con el servidor. Intenta de nuevo en un momento.'}
-            </p>
-          </Card>
-        </div>
+        <EmptyState
+          kind="error"
+          title="No pudimos cargar el banco"
+          body={
+            items.error.kind === 'http' && items.error.status === 401
+              ? 'Tu sesión no está activa. Vuelve a entrar.'
+              : 'Hubo un problema de conexión con el servidor. Intenta de nuevo en un momento.'
+          }
+          className="mt-6"
+        />
       ) : (
         <ExerciseBankClient items={items.data.map(toBankItem)} />
       )}

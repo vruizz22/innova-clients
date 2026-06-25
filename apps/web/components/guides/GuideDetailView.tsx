@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { GuideStatus } from '@innova/api-client';
+import { CheckIcon, XIcon } from '@innova/ui';
 import { getBrowserApi } from '@/lib/api.client';
 import { GuideStatusBadge, isGuideFailed, isGuideWorking } from './status';
 
@@ -61,11 +62,20 @@ export function GuideDetailView({
     };
   }, [guideId, status, router]);
 
+  const [pdfBusy, setPdfBusy] = useState(false);
+
   const retry = useCallback(async (): Promise<void> => {
     setRetrying(true);
     const res = await getBrowserApi().ingestGuide(guideId);
     setRetrying(false);
     if (res.ok) setStatus(res.data.status);
+  }, [guideId]);
+
+  const openPdf = useCallback(async (): Promise<void> => {
+    setPdfBusy(true);
+    const res = await getBrowserApi().getGuideSourceUrl(guideId);
+    setPdfBusy(false);
+    if (res.ok) window.open(res.data.url, '_blank', 'noopener,noreferrer');
   }, [guideId]);
 
   const current = stageIndex(status);
@@ -74,11 +84,21 @@ export function GuideDetailView({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">{title}</h1>
-        <GuideStatusBadge status={status} />
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--fg-1)]">{title}</h1>
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void openPdf()}
+            disabled={pdfBusy}
+            className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--fg-2)] transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:opacity-50"
+          >
+            {pdfBusy ? 'Cargando…' : 'Ver PDF ↗'}
+          </button>
+          <GuideStatusBadge status={status} />
+        </div>
       </div>
 
-      <ol className="flex flex-col gap-3">
+      <ol className="sp-stagger flex flex-col gap-3">
         {TIMELINE.map((stage, i) => {
           const done = i < current;
           const active = i === current && !failed;
@@ -89,20 +109,30 @@ export function GuideDetailView({
                 className={[
                   'flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black',
                   failedHere
-                    ? 'bg-rose-500 text-white'
+                    ? 'bg-danger text-white'
                     : done
-                      ? 'bg-emerald-500 text-white'
-                      : active
-                        ? 'bg-sky-500 text-white'
-                        : 'bg-slate-200 text-slate-500',
+                    ? 'bg-mint-500 text-white'
+                    : active
+                    ? 'bg-[var(--primary)] text-[var(--primary-fg)]'
+                    : 'bg-[var(--surface-2)] text-[var(--fg-2)]',
                 ].join(' ')}
               >
-                {failedHere ? '✕' : done ? '✓' : i + 1}
+                {failedHere ? (
+                  <XIcon size={14} strokeWidth={2.5} />
+                ) : done ? (
+                  <CheckIcon size={14} strokeWidth={2.5} />
+                ) : (
+                  i + 1
+                )}
               </span>
               <span
                 className={[
                   'text-sm',
-                  active ? 'font-bold text-slate-900' : done ? 'text-slate-600' : 'text-slate-400',
+                  active
+                    ? 'font-bold text-[var(--fg-1)]'
+                    : done
+                    ? 'text-[var(--fg-2)]'
+                    : 'text-[var(--fg-3)]',
                 ].join(' ')}
               >
                 {stage.label}
@@ -114,16 +144,16 @@ export function GuideDetailView({
       </ol>
 
       {failed ? (
-        <div className="rounded-xl bg-rose-50 px-4 py-3">
-          <p className="text-sm font-bold text-rose-700">No pudimos procesar la guía</p>
-          <p className="mt-1 text-sm text-rose-600">
+        <div className="rounded-xl bg-danger/10 px-4 py-3">
+          <p className="text-sm font-bold text-danger">No pudimos procesar la guía</p>
+          <p className="mt-1 text-sm text-[var(--fg-2)]">
             {failureReason ?? 'Revisa que el PDF esté nítido (300 dpi) y vuelve a intentar.'}
           </p>
           <button
             type="button"
             onClick={() => void retry()}
             disabled={retrying}
-            className="mt-3 rounded-xl bg-rose-600 px-4 py-2 text-sm font-bold text-white hover:bg-rose-700 disabled:opacity-50"
+            className="mt-3 rounded-xl bg-danger px-4 py-2 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
           >
             {retrying ? 'Reintentando…' : 'Reintentar'}
           </button>
@@ -133,7 +163,7 @@ export function GuideDetailView({
       {status === 'REVIEW' ? (
         <Link
           href={`/guides/${guideId}/review`}
-          className="rounded-xl bg-sky-500 px-5 py-3 text-center text-base font-bold text-white hover:bg-sky-600"
+          className="rounded-xl bg-[var(--primary)] px-5 py-3 text-center text-base font-bold text-[var(--primary-fg)] hover:bg-[var(--primary-hover)]"
         >
           Revisar pauta ({questionCount} pregunta{questionCount === 1 ? '' : 's'}) →
         </Link>
@@ -142,14 +172,14 @@ export function GuideDetailView({
       {status === 'PUBLISHED' ? (
         <Link
           href={`/guides/${guideId}/results`}
-          className="rounded-xl bg-emerald-500 px-5 py-3 text-center text-base font-bold text-white hover:bg-emerald-600"
+          className="rounded-xl bg-mint-500 px-5 py-3 text-center text-base font-bold text-white hover:bg-mint-600"
         >
           Ver resultados →
         </Link>
       ) : null}
 
       {isGuideWorking(status) ? (
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-[var(--fg-3)]">
           Esto puede tardar un par de minutos. Puedes salir y volver; seguirá procesando.
         </p>
       ) : null}

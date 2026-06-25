@@ -25,9 +25,9 @@ interface ExerciseCardProps {
 }
 
 const DIFFICULTY: Record<Difficulty, { label: string; cls: string }> = {
-  easy: { label: 'Fácil', cls: 'bg-[#D2F2E0] text-[#194E34]' },
-  medium: { label: 'Media', cls: 'bg-[#FFF4DB] text-[#7A4F00]' },
-  hard: { label: 'Difícil', cls: 'bg-[#FCE3E3] text-[#7a1a1a]' },
+  easy: { label: 'Fácil', cls: 'bg-[var(--success-bg)] text-[var(--success-fg)]' },
+  medium: { label: 'Media', cls: 'bg-[var(--warning-bg)] text-[var(--warning-fg)]' },
+  hard: { label: 'Difícil', cls: 'bg-[rgba(216,96,96,0.20)] text-[var(--fg-1)]' },
 };
 
 const SOURCE_LABEL: Record<ExerciseSource, string> = {
@@ -48,24 +48,28 @@ export function ExerciseCard({
 
   return (
     <article
-      className={['flex flex-col gap-3 rounded-xl border border-[#E5E9F0] bg-white p-5 shadow-card', className]
+      className={[
+        'flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-card',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="math text-lg font-bold text-[#1F2937]">{exercise.prompt}</p>
+        <p className="math text-lg font-bold text-[var(--fg-1)]">{exercise.prompt}</p>
         <div className="flex shrink-0 items-center gap-1.5">
           <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${diff.cls}`}>
             {diff.label}
           </span>
-          <span className="rounded-full bg-[#F7F8FA] px-2 py-0.5 text-[11px] font-semibold text-[#4F5868]">
+          <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[var(--fg-2)]">
             {SOURCE_LABEL[exercise.source]}
           </span>
         </div>
       </div>
 
-      <p className="text-sm text-[#4F5868]">
-        Solución: <span className="math font-semibold text-[#1F2937]">{exercise.canonicalSolution}</span>
+      <p className="text-sm text-[var(--fg-2)]">
+        Solución:{' '}
+        <span className="math font-semibold text-[var(--fg-1)]">{exercise.canonicalSolution}</span>
       </p>
 
       {exercise.targetErrorTags.length > 0 ? (
@@ -76,8 +80,8 @@ export function ExerciseCard({
         </div>
       ) : null}
 
-      <div className="mt-1 flex items-center justify-between gap-2 border-t border-[#E5E9F0] pt-3">
-        <span className="text-[11px] text-[#717A8B]">
+      <div className="mt-1 flex items-center justify-between gap-2 border-t border-[var(--border)] pt-3">
+        <span className="text-[11px] text-[var(--fg-3)]">
           {exercise.usedCount != null ? `Usado ${exercise.usedCount} veces` : ''}
         </span>
         <div className="flex items-center gap-2">
@@ -85,7 +89,7 @@ export function ExerciseCard({
             <button
               type="button"
               onClick={() => onRequestVariant(exercise.id)}
-              className="text-xs font-semibold text-[#2F8DBA] hover:text-[#226E94]"
+              className="text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)]"
             >
               Variante IA
             </button>
@@ -94,7 +98,7 @@ export function ExerciseCard({
             <button
               type="button"
               onClick={() => onEdit(exercise.id)}
-              className="text-xs font-semibold text-[#4F5868] hover:text-[#1F2937]"
+              className="text-xs font-semibold text-[var(--fg-2)] hover:text-[var(--fg-1)]"
             >
               Editar
             </button>
@@ -103,7 +107,7 @@ export function ExerciseCard({
             <button
               type="button"
               onClick={() => onAssign(exercise.id)}
-              className="rounded-lg bg-[#3FA7D6] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#2F8DBA]"
+              className="rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-[var(--primary-fg)] hover:bg-[var(--primary-hover)]"
             >
               Asignar
             </button>

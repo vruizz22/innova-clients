@@ -1,0 +1,658 @@
+<!-- @dsCard group="UI Kit — Teacher" name="v9 Teacher · C8–C12" subtitle="Guides list, New guide, Timeline, Review wizard, Results matrix, Heatmap — all states" viewport="1800x1200" -->
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1800"/>
+<title>SuperProfes v9 · Teacher Screens C8–C12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--p50:#f0f9ff;--p100:#e0f2fe;--p200:#bae6fd;--p500:#0ea5e9;--p600:#0284c7;--p700:#0369a1;--s50:#f0fdf4;--s100:#dcfce7;--s500:#22c55e;--s700:#15803d;--a50:#fff7ed;--a100:#ffedd5;--a500:#f97316;--n50:#f9fafb;--n100:#f3f4f6;--n200:#e5e7eb;--n300:#d1d5db;--n400:#9ca3af;--n500:#6b7280;--n600:#4b5563;--n700:#374151;--n800:#1f2937;--n900:#111827;--mh:#10b981;--mm:#fbbf24;--ml:#f43f5e;--bd:#e5e7eb;--bds:#d1d5db;--sc:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.06);--sp:0 8px 24px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.06)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#dde3eb;font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--n800)}
+.canvas{padding:40px;display:flex;flex-direction:column;gap:56px}
+.sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b;margin-bottom:14px}
+.sprint{display:inline-block;background:var(--p500);color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:20px;padding:2px 8px;margin-right:6px;vertical-align:middle}
+.frames-row{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.frame{display:flex;flex-direction:column;gap:6px}
+.frame-label{font-size:11px;font-weight:500;color:var(--n400);padding-left:2px}
+.artboard{background:#fff;border-radius:16px;box-shadow:var(--sp);overflow:hidden;border:1px solid var(--bd)}
+/* Shell */
+.shell{display:flex;min-height:560px}
+.sidebar{width:236px;background:#fff;border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:9px;padding:16px 18px;border-bottom:1px solid var(--bd)}
+.sb-mark{width:30px;height:30px;background:var(--p500);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif}
+.sb-name{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;color:var(--n800)}
+.sb-name span{color:var(--p500)}
+.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:1px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--n600);cursor:pointer}
+.ni.on{background:var(--p50);color:var(--p700);font-weight:600}
+.ni-ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.ni-bdg{margin-left:auto;background:var(--a500);color:#fff;font-size:9px;font-weight:800;border-radius:20px;padding:1px 5px}
+.sb-foot{padding:8px;border-top:1px solid var(--bd)}
+.content{flex:1;background:var(--n50);overflow:auto}
+.page{max-width:780px;margin:0 auto;padding:28px 24px}
+.page-lg{max-width:1060px;margin:0 auto;padding:28px 24px}
+.page-full{padding:20px 24px}
+/* Type */
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:700;color:var(--n900);letter-spacing:-.02em}
+h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:var(--n800)}
+h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--n700)}
+.cap{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--n400)}
+/* Cards */
+.card{background:#fff;border-radius:12px;border:1px solid var(--bd);box-shadow:var(--sc);padding:16px}
+/* Badges */
+.bdg{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-upl{background:#f1f5f9;color:#475569}
+.b-ext{background:var(--p100);color:var(--p700)}
+.b-gen{background:var(--p100);color:var(--p700)}
+.b-rev{background:#fef3c7;color:#92400e}
+.b-pub{background:var(--s100);color:#047857}
+.b-fail{background:#ffe4e6;color:#be123c}
+.b-arch{background:#f1f5f9;color:var(--n400)}
+.b-extr{background:#f1f5f9;color:#475569}
+.b-nrev{background:#fef3c7;color:#92400e}
+.b-appr{background:var(--s100);color:#047857}
+.b-excl{background:var(--n100);color:var(--n400);text-decoration:line-through}
+.dot-p{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;white-space:nowrap}
+.btn-p{background:var(--p500);color:#fff}
+.btn-s{background:#fff;color:var(--n700);border:1px solid var(--bds)}
+.btn-ok{background:var(--s500);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-lg{padding:11px 20px;font-size:14px;font-weight:700}
+/* Inputs */
+.inp{width:100%;border:1px solid var(--bds);border-radius:8px;padding:8px 11px;font-size:13px;font-family:'Inter',sans-serif;color:var(--n800);background:#fff}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;appearance:none}
+/* Utils */
+.row{display:flex;align-items:center;gap:8px}
+.rowb{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.col{display:flex;flex-direction:column;gap:6px}
+.f1{flex:1}.mw0{min-width:0}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mt1{margin-top:4px}.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}.mt5{margin-top:20px}
+.txt-xs{font-size:11px}.txt-sm{font-size:12px}.txt-muted{color:var(--n500)}.txt-str{font-weight:700;color:var(--n900)}
+.divider{height:1px;background:var(--bd);margin:14px 0}
+/* Progress */
+.prog-track{height:5px;background:var(--n200);border-radius:20px;overflow:hidden}
+.prog-fill{height:100%;border-radius:20px;background:var(--p500)}
+/* Timeline */
+.tl{display:flex;flex-direction:column}
+.tl-step{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.tl-step:not(:last-child)::before{content:'';position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--n200)}
+.tl-step.done::before{background:var(--s500)}
+.tl-step.act::before{background:linear-gradient(var(--p500),var(--n200))}
+.tl-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;background:var(--n200);color:var(--n500);z-index:1}
+.tl-dot.done{background:var(--s500);color:#fff}
+.tl-dot.act{background:var(--p500);color:#fff}
+.tl-dot.fail{background:#ef4444;color:#fff}
+.tl-lbl{font-size:13px;font-weight:600;color:var(--n800);padding-top:1px}
+.tl-lbl.act{color:var(--p700)}
+.tl-lbl.done{color:var(--n600)}
+.tl-lbl.pend{color:var(--n400)}
+.tl-sub{font-size:11px;color:var(--n500);margin-top:2px}
+/* Conf bar */
+.cf-bar{height:3px;border-radius:20px;background:var(--n200);overflow:hidden;margin-top:5px}
+.cf-hi{background:var(--s500)}
+.cf-lo{background:var(--a500)}
+/* Wizard */
+.wiz{display:grid;grid-template-columns:272px 1fr 1fr;height:100%}
+.wiz-panel{border-right:1px solid var(--bd);overflow-y:auto;display:flex;flex-direction:column}
+.wiz-panel:last-child{border-right:none}
+.wiz-head{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.wiz-body{padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.wiz-q{padding:10px;border-radius:8px;border:1px solid var(--bd);cursor:pointer;margin-bottom:6px}
+.wiz-q.sel{border-color:var(--p500);background:var(--p50)}
+.step-row{background:var(--n50);border-radius:8px;padding:10px;border:1px solid var(--bd)}
+.step-row.ckpt{border-color:var(--p200);background:var(--p50)}
+/* Matrix */
+.mtx{border-collapse:collapse;font-size:12px;width:100%}
+.mtx th{padding:7px 5px;background:var(--n50);font-size:10px;font-weight:700;color:var(--n500);border-bottom:1px solid var(--bds);text-align:center}
+.mtx th.sn{text-align:left;padding-left:12px;position:sticky;left:0;z-index:2}
+.mtx td{padding:3px;text-align:center;border-bottom:1px solid var(--n100)}
+.mtx td.nm{padding:5px 12px;font-weight:600;color:var(--n800);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#fff;position:sticky;left:0;z-index:1}
+.mc{width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;cursor:pointer;position:relative}
+.mc-ok{background:#10b981;color:#fff}
+.mc-no{background:#f43f5e;color:#fff}
+.mc-pnd{background:var(--n200);color:var(--n400)}
+.mc-wip{background:var(--p100);color:var(--p700)}
+.mc-ill{background:#fbbf24;color:#451a03}
+.late-dot{position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:var(--a500);border-radius:50%;border:1px solid #fff}
+.ovr-dot{position:absolute;bottom:-3px;left:-3px;width:7px;height:7px;background:var(--p500);border-radius:50%;border:1px solid #fff}
+/* Heatmap */
+.hc{width:52px;height:34px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer}
+.h-hi{background:#10b981;color:#fff}
+.h-md{background:#fbbf24;color:#451a03}
+.h-lo{background:#f43f5e;color:#fff}
+.h-em{background:var(--n100);color:var(--n400)}
+/* Alert boxes */
+.alrt{border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:9px}
+.alrt-err{background:#fff1f2;border:1px solid #fecdd3}
+.alrt-wrn{background:#fffbeb;border:1px solid #fde68a}
+.alrt-inf{background:var(--p50);border:1px solid var(--p200)}
+.alrt-ok{background:var(--s50);border:1px solid var(--s100)}
+/* Drawer */
+.drawer{position:absolute;right:0;top:0;bottom:0;width:400px;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.12);display:flex;flex-direction:column;z-index:10;border-left:1px solid var(--bd)}
+.dw-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.dw-body{padding:18px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+.x-btn{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:var(--n100);color:var(--n500);font-size:12px;border:none;cursor:pointer;flex-shrink:0}
+.math-block{background:var(--n900);border-radius:8px;padding:14px 18px;text-align:center;color:#fff;font-family:'Georgia',serif;font-style:italic;font-size:15px}
+.error-chip{display:inline-flex;align-items:center;gap:5px;background:#fff1f2;border:1px solid #fecdd3;border-radius:20px;padding:3px 8px;font-size:11px;font-weight:600;color:#be123c}
+.error-chip .cnt{background:#fecdd3;border-radius:20px;padding:0 5px;font-size:9px}
+/* Dropzone */
+.dz{border:2px dashed var(--n300);border-radius:16px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer}
+.dz.has{border-color:var(--p500);border-style:solid;background:var(--p50)}
+/* Empty state */
+.empty{text-align:center;padding:44px 20px}
+.empty-ico{font-size:44px;margin-bottom:14px;opacity:.6}
+.empty-ttl{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--n700)}
+.empty-desc{font-size:12px;color:var(--n400);margin-top:5px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="canvas">
+
+<!-- ═══ C8 — GUIDES LIST ══════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title"><span class="sprint">C8</span>Guides list — Lista de guías del profe</p>
+<div class="frames-row">
+
+<!-- Desktop: populated -->
+<div class="frame">
+<div class="frame-label">Desktop · múltiples estados de GuideStatus</div>
+<div class="artboard" style="width:1060px">
+<div class="shell">
+<nav class="sidebar">
+  <div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div>
+  <div class="sb-nav">
+    <div class="ni on"><span class="ni-ico">📚</span>Guías</div>
+    <div class="ni"><span class="ni-ico">🏫</span>Cursos</div>
+    <div class="ni"><span class="ni-ico">🔔</span>Alertas<span class="ni-bdg">3</span></div>
+    <div class="ni"><span class="ni-ico">📊</span>Dashboard</div>
+  </div>
+  <div class="sb-foot"><div class="ni"><span class="ni-ico">👤</span><div class="mw0 f1"><div class="txt-sm trunc" style="font-weight:600;color:var(--n800)">Sra. González</div><div class="txt-xs txt-muted trunc">3°B Matemáticas</div></div></div></div>
+</nav>
+<div class="content">
+<div class="page">
+  <div class="rowb mt2">
+    <div>
+      <h1>Guías</h1>
+      <p class="txt-sm txt-muted mt1">Sube una guía en PDF, revisa la pauta y publícala.</p>
+    </div>
+    <div class="row">
+      <select class="inp sel" style="width:152px;padding:7px 28px 7px 10px;font-size:12px"><option>3°B — Matemáticas</option><option>4°A — Matemáticas</option></select>
+      <button class="btn btn-p">+ Nueva guía</button>
+    </div>
+  </div>
+  <div class="col mt4" style="gap:10px">
+    <!-- PUBLISHED -->
+    <div class="card" style="cursor:pointer;border-color:var(--s500)30">
+      <div class="rowb">
+        <div class="mw0">
+          <div class="rowb" style="gap:8px;margin-bottom:4px"><p class="txt-str trunc">Guía 6 — Fracciones equivalentes</p></div>
+          <div class="row" style="gap:10px;margin-top:3px">
+            <span class="txt-xs txt-muted">12 preguntas</span><span class="txt-xs txt-muted">·</span>
+            <span class="txt-xs txt-muted">entrega 12 jun</span><span class="txt-xs txt-muted">·</span>
+            <span class="txt-xs txt-muted">28 / 32 entregas</span>
+          </div>
+          <div class="prog-track mt2" style="max-width:320px"><div class="prog-fill" style="width:87.5%"></div></div>
+        </div>
+        <span class="bdg b-pub">● Publicada</span>
+      </div>
+    </div>
+    <!-- REVIEW -->
+    <div class="card" style="cursor:pointer;border-color:#fcd34d">
+      <div class="rowb">
+        <div class="mw0"><p class="txt-str trunc">Guía 7 — Números decimales</p><p class="txt-xs txt-muted mt1">8 preguntas · sin entregas aún</p></div>
+        <div class="col" style="align-items:flex-end;gap:4px">
+          <span class="bdg b-rev">⚡ Por revisar</span>
+          <span class="txt-xs txt-muted">Revisar pauta →</span>
+        </div>
+      </div>
+    </div>
+    <!-- EXTRACTING -->
+    <div class="card" style="cursor:pointer">
+      <div class="rowb">
+        <div class="mw0"><p class="txt-str trunc">Guía 8 — Porcentajes y descuentos</p><p class="txt-xs txt-muted mt1">Extrayendo preguntas del PDF…</p></div>
+        <span class="bdg b-ext"><span class="dot-p"></span> Extrayendo…</span>
+      </div>
+    </div>
+    <!-- GENERATION_FAILED -->
+    <div class="card" style="cursor:pointer;border-color:#fca5a5">
+      <div class="rowb">
+        <div class="mw0">
+          <p class="txt-str trunc">Guía 5 — Área y perímetro</p>
+          <p class="txt-xs mt1" style="color:#be123c">Falló la generación de pauta: páginas 3-5 ilegibles.</p>
+        </div>
+        <div class="col" style="align-items:flex-end;gap:5px">
+          <span class="bdg b-fail">✕ Falló pauta</span>
+          <button class="btn btn-s btn-sm">Reintentar</button>
+        </div>
+      </div>
+    </div>
+    <!-- ARCHIVED -->
+    <div class="card" style="cursor:pointer;opacity:.5">
+      <div class="rowb"><div class="mw0"><p class="trunc" style="color:var(--n500)">Guía 4 — Operaciones mixtas</p><p class="txt-xs txt-muted mt1">10 preguntas · 32 entregas</p></div><span class="bdg b-arch">Archivada</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Desktop: empty state -->
+<div class="frame">
+<div class="frame-label">Desktop · estado vacío</div>
+<div class="artboard" style="width:1060px">
+<div class="shell">
+<nav class="sidebar">
+  <div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div>
+  <div class="sb-nav">
+    <div class="ni on"><span class="ni-ico">📚</span>Guías</div>
+    <div class="ni"><span class="ni-ico">🏫</span>Cursos</div>
+    <div class="ni"><span class="ni-ico">🔔</span>Alertas</div>
+    <div class="ni"><span class="ni-ico">📊</span>Dashboard</div>
+  </div>
+</nav>
+<div class="content"><div class="page">
+  <div class="rowb"><div><h1>Guías</h1><p class="txt-sm txt-muted mt1">Sube una guía en PDF, revisa la pauta y publícala.</p></div><button class="btn btn-p">+ Nueva guía</button></div>
+  <div class="card mt4" style="padding:0"><div class="empty">
+    <div class="empty-ico">📄</div>
+    <div class="empty-ttl">Aún no tienes guías</div>
+    <div class="empty-desc">Crea tu primera guía subiendo el PDF que ya usas en clases.<br/>La IA genera la pauta, tú la revisas y publicas.</div>
+    <button class="btn btn-p mt4" style="margin-top:18px">+ Subir mi primera guía</button>
+  </div></div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ═══ C8 — NEW GUIDE + TIMELINE ════════════════════════════════════════ -->
+<div>
+<p class="sec-title"><span class="sprint">C8</span>Nueva guía · Timeline de estados</p>
+<div class="frames-row">
+
+<!-- Form -->
+<div class="frame">
+<div class="frame-label">Nueva guía · formulario con archivo seleccionado</div>
+<div class="artboard" style="width:680px">
+<div class="shell">
+<nav class="sidebar"><div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div><div class="sb-nav"><div class="ni on"><span class="ni-ico">📚</span>Guías</div><div class="ni"><span class="ni-ico">🏫</span>Cursos</div></div></nav>
+<div class="content"><div class="page" style="max-width:none">
+  <div class="row" style="gap:6px;margin-bottom:18px"><a style="color:var(--p500);font-size:12px;text-decoration:none">← Guías</a><span class="txt-muted">/</span><span class="txt-sm txt-muted">Nueva guía</span></div>
+  <h1>Nueva guía</h1>
+  <p class="txt-sm txt-muted mt1">Sube el PDF de tu guía. La IA extrae las preguntas y genera la pauta.</p>
+  <div class="col mt4">
+    <div class="col" style="gap:3px"><label class="cap">Curso</label><select class="inp sel"><option>3°B — Matemáticas 2026</option></select></div>
+    <div class="col" style="gap:3px"><label class="cap">Título</label><input class="inp" value="Guía 7 — Números decimales"/></div>
+    <div class="col" style="gap:3px"><label class="cap">Fecha de entrega</label><input type="date" class="inp" value="2026-06-20"/></div>
+    <div class="dz has">
+      <div style="font-size:32px;margin-bottom:8px">📄</div>
+      <p style="font-weight:700;color:var(--n800)">guia-7-decimales.pdf</p>
+      <p class="txt-xs txt-muted mt1">3.2 MB · 8 páginas · PDF válido ✓</p>
+      <button class="btn btn-sm mt2" style="color:var(--p500);background:none;border:none;cursor:pointer;font-weight:600">Cambiar archivo</button>
+    </div>
+    <button class="btn btn-p btn-lg" style="justify-content:center">Subir y generar pauta →</button>
+  </div>
+</div></div>
+</div>
+</div>
+</div>
+
+<!-- Timeline EXTRACTING -->
+<div class="frame">
+<div class="frame-label">Guide timeline · EXTRACTING · polling activo</div>
+<div class="artboard" style="width:540px">
+<div class="content" style="background:#fff;min-height:500px"><div class="page" style="max-width:none">
+  <div class="rowb mb3"><div><h1>Guía 7 — Números decimales</h1><p class="txt-sm txt-muted mt1">3°B · 8 páginas</p></div><span class="bdg b-ext"><span class="dot-p"></span> Extrayendo…</span></div>
+  <div class="card">
+    <div class="tl">
+      <div class="tl-step done"><div class="tl-dot done">✓</div><div><div class="tl-lbl done">PDF cargado</div><div class="tl-sub">guia-7-decimales.pdf · 3.2 MB · hace 1 min</div></div></div>
+      <div class="tl-step act"><div class="tl-dot act"><span class="dot-p" style="width:7px;height:7px"></span></div><div><div class="tl-lbl act">Leyendo el PDF ←</div><div class="tl-sub">Sonnet 4.6 extrae preguntas y figuras…</div></div></div>
+      <div class="tl-step"><div class="tl-dot">3</div><div><div class="tl-lbl pend">Generando la pauta</div></div></div>
+      <div class="tl-step"><div class="tl-dot">4</div><div><div class="tl-lbl pend">Listo para revisar</div></div></div>
+      <div class="tl-step"><div class="tl-dot">5</div><div><div class="tl-lbl pend">Publicada</div></div></div>
+    </div>
+  </div>
+  <p class="txt-xs txt-muted mt3" style="text-align:center">Puedes salir — seguirá procesando en segundo plano.</p>
+</div></div>
+</div>
+</div>
+
+<!-- Timeline FAILED -->
+<div class="frame">
+<div class="frame-label">Guide timeline · EXTRACTION_FAILED · error accionable</div>
+<div class="artboard" style="width:540px">
+<div class="content" style="background:#fff;min-height:500px"><div class="page" style="max-width:none">
+  <div class="rowb mb3"><div><h1>Guía 8 — Porcentajes</h1><p class="txt-sm txt-muted mt1">3°B · 12 páginas</p></div><span class="bdg b-fail">✕ Falló extracción</span></div>
+  <div class="card">
+    <div class="tl">
+      <div class="tl-step done"><div class="tl-dot done">✓</div><div><div class="tl-lbl done">PDF cargado</div></div></div>
+      <div class="tl-step"><div class="tl-dot fail">✕</div><div><div class="tl-lbl" style="color:#be123c">Lectura del PDF falló</div><div class="tl-sub" style="color:#9f1239">Páginas 3-5 ilegibles. Re-escanea a 300 dpi mínimo.</div></div></div>
+      <div class="tl-step"><div class="tl-dot">3</div><div><div class="tl-lbl pend">Generando la pauta</div></div></div>
+      <div class="tl-step"><div class="tl-dot">4</div><div><div class="tl-lbl pend">Listo para revisar</div></div></div>
+      <div class="tl-step"><div class="tl-dot">5</div><div><div class="tl-lbl pend">Publicada</div></div></div>
+    </div>
+  </div>
+  <div class="alrt alrt-err mt3">
+    <span style="font-size:16px">⚠️</span>
+    <div><p style="font-weight:700;color:#be123c;font-size:12px">No pudimos procesar la guía</p><p class="txt-xs mt1" style="color:#9f1239">Las páginas 3-5 están ilegibles. Usa el PDF digital original o re-escanea a 300 dpi.</p><button class="btn btn-sm mt2" style="background:#be123c;color:#fff">Subir nuevo PDF</button></div>
+  </div>
+</div></div>
+</div>
+</div>
+
+<!-- Timeline REVIEW -->
+<div class="frame">
+<div class="frame-label">Guide timeline · REVIEW · CTA al wizard</div>
+<div class="artboard" style="width:540px">
+<div class="content" style="background:#fff;min-height:500px"><div class="page" style="max-width:none">
+  <div class="rowb mb3"><div><h1>Guía 7 — Números decimales</h1><p class="txt-sm txt-muted mt1">3°B · 8 preguntas</p></div><span class="bdg b-rev">⚡ Por revisar</span></div>
+  <div class="card">
+    <div class="tl">
+      <div class="tl-step done"><div class="tl-dot done">✓</div><div><div class="tl-lbl done">PDF cargado</div><div class="tl-sub">hace 4 min</div></div></div>
+      <div class="tl-step done"><div class="tl-dot done">✓</div><div><div class="tl-lbl done">Lectura completada</div><div class="tl-sub">8 preguntas · 94% confianza</div></div></div>
+      <div class="tl-step done"><div class="tl-dot done">✓</div><div><div class="tl-lbl done">Pauta generada</div><div class="tl-sub">8 pautas · 6 pre-aprobadas · 2 por revisar</div></div></div>
+      <div class="tl-step act"><div class="tl-dot act">4</div><div><div class="tl-lbl act">Listo para revisar ←</div><div class="tl-sub">Confirma pauta y tema antes de publicar</div></div></div>
+      <div class="tl-step"><div class="tl-dot">5</div><div><div class="tl-lbl pend">Publicada</div></div></div>
+    </div>
+  </div>
+  <div class="alrt alrt-inf mt3"><span>ℹ️</span><div><p style="font-weight:700;color:var(--p700);font-size:12px">2 preguntas necesitan tu atención</p><p class="txt-xs mt1" style="color:var(--p600)">Confirma el tema y revisa la pauta antes de publicar.</p></div></div>
+  <button class="btn btn-p btn-lg mt3" style="width:100%;justify-content:center">Revisar pauta (8 preguntas) →</button>
+</div></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ C9 — REVIEW WIZARD ════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title"><span class="sprint">C9</span>Wizard de revisión — Gate ADR-119 · pantalla más crítica del MVP</p>
+<div class="frames-row">
+
+<!-- Full 3-panel wizard -->
+<div class="frame">
+<div class="frame-label">Desktop · 3 paneles · pregunta NEEDS_REVIEW seleccionada · ~72vh</div>
+<div class="artboard" style="width:1280px;height:720px;overflow:hidden">
+<div class="shell" style="height:100%">
+<nav class="sidebar" style="height:100%">
+  <div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div>
+  <div class="sb-nav"><div class="ni on"><span class="ni-ico">📚</span>Guías</div><div class="ni"><span class="ni-ico">🏫</span>Cursos</div><div class="ni"><span class="ni-ico">🔔</span>Alertas</div></div>
+</nav>
+<div class="f1" style="display:flex;flex-direction:column;overflow:hidden;background:var(--n50)">
+  <!-- Top bar -->
+  <div style="padding:12px 18px;border-bottom:1px solid var(--bd);background:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div class="row" style="gap:10px">
+      <a style="font-size:11px;color:var(--p500)">← Guías</a>
+      <span class="txt-muted">/</span>
+      <span style="font-size:12px;font-weight:600;color:var(--n800)">Guía 7 — Números decimales</span>
+      <span class="bdg b-rev">⚡ Por revisar</span>
+    </div>
+    <div class="row" style="gap:6px">
+      <span class="txt-xs txt-muted">5 / 8 resueltas</span>
+      <button class="btn btn-s btn-sm">Aprobar todas ≥85%</button>
+      <button class="btn btn-s btn-sm" style="opacity:.35" disabled>Publicar</button>
+    </div>
+  </div>
+  <!-- 3-panel -->
+  <div class="wiz f1" style="background:#fff;overflow:hidden">
+    <!-- P1: question list -->
+    <div class="wiz-panel">
+      <div class="wiz-head"><span class="cap">Preguntas</span><span class="txt-xs txt-muted">8 total</span></div>
+      <div style="padding:10px;overflow-y:auto;flex:1">
+        <div class="wiz-q"><div class="rowb"><span style="font-size:12px;font-weight:700">Pregunta 1</span><span class="bdg b-appr" style="font-size:9px">Aprobada</span></div><div class="txt-xs txt-muted mt1">Suma de decimales</div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-hi" style="width:92%"></div></div><span class="txt-xs txt-muted">92%</span></div></div>
+        <div class="wiz-q sel"><div class="rowb"><span style="font-size:12px;font-weight:700;color:var(--p700)">Pregunta 2</span><span class="bdg b-nrev" style="font-size:9px">Por revisar</span></div><div class="txt-xs mt1" style="color:var(--p600)">Resta de decimales</div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-lo" style="width:63%"></div></div><span class="txt-xs" style="color:var(--a500)">63%</span></div></div>
+        <div class="wiz-q"><div class="rowb"><span style="font-size:12px;font-weight:700">Pregunta 3</span><span class="bdg b-appr" style="font-size:9px">Aprobada</span></div><div class="txt-xs txt-muted mt1">Multiplicación</div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-hi" style="width:88%"></div></div><span class="txt-xs txt-muted">88%</span></div></div>
+        <div class="wiz-q" style="opacity:.5"><div class="rowb"><span style="font-size:12px;color:var(--n400);text-decoration:line-through">Pregunta 4</span><span class="bdg b-excl" style="font-size:9px">Excluida</span></div><div class="txt-xs txt-muted mt1">Figura sin texto</div></div>
+        <div class="wiz-q"><div class="rowb"><span style="font-size:12px;font-weight:700">Pregunta 5</span><span class="bdg b-extr" style="font-size:9px">Extraída</span></div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-hi" style="width:79%"></div></div><span class="txt-xs txt-muted">79%</span></div></div>
+        <div class="wiz-q"><div class="rowb"><span style="font-size:12px;font-weight:700">Pregunta 6</span><span class="bdg b-extr" style="font-size:9px">Extraída</span></div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-hi" style="width:85%"></div></div><span class="txt-xs txt-muted">85%</span></div></div>
+        <div class="wiz-q"><div class="rowb"><span style="font-size:12px;font-weight:700">Pregunta 8</span><span class="bdg b-nrev" style="font-size:9px">Por revisar</span></div><div class="row mt1" style="gap:6px"><div class="cf-bar f1"><div class="cf-lo" style="width:71%"></div></div><span class="txt-xs" style="color:var(--a500)">71%</span></div></div>
+      </div>
+    </div>
+    <!-- P2: statement + topic -->
+    <div class="wiz-panel">
+      <div class="wiz-head"><span class="cap">Enunciado — Pregunta 2</span><span class="bdg b-nrev" style="font-size:9px">⚡ Por revisar</span></div>
+      <div class="wiz-body">
+        <div class="math-block">Calcula: <em>3.47 − 1.8 = ?</em><div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;font-family:'Inter',sans-serif">Muestra el desarrollo paso a paso.</div></div>
+        <div class="col" style="gap:3px"><label class="cap">Puntos</label><input class="inp" value="1.0" style="width:70px"/></div>
+        <div class="card" style="padding:12px">
+          <div class="rowb mb2"><span class="cap">Tema</span><span class="bdg" style="background:var(--a100);color:var(--a500);font-size:9px">IA 63%</span></div>
+          <div class="col" style="gap:6px">
+            <div class="col" style="gap:2px"><label class="cap" style="font-size:9px">Unidad</label><select class="inp sel" style="font-size:12px"><option>U3 — Números decimales</option></select></div>
+            <div class="col" style="gap:2px"><label class="cap" style="font-size:9px">Tema</label><select class="inp sel" style="font-size:12px"><option>T3.2 — Resta con llevada (63%)</option><option>T3.1 — Suma de decimales</option></select></div>
+          </div>
+          <div class="alrt alrt-wrn mt2" style="padding:8px 10px"><span style="font-size:12px">⚠️</span><div class="txt-xs" style="color:#92400e"><b>validationNotes:</b> Pauta PDF invierte orden vs pauta IA. Revisa.</div></div>
+          <button class="btn btn-s btn-sm mt2" style="width:100%;justify-content:center">Confirmar tema</button>
+        </div>
+      </div>
+    </div>
+    <!-- P3: solution editor -->
+    <div class="wiz-panel">
+      <div class="wiz-head"><div class="col" style="gap:1px"><span class="cap">Pauta · v1 · LLM_GENERATED</span></div><button style="font-size:11px;color:var(--p500);background:none;border:none;cursor:pointer;font-weight:600">Regenerar IA</button></div>
+      <div class="wiz-body">
+        <div class="col" style="gap:2px"><label class="cap">Respuesta final</label><input class="inp" value="1.67" style="width:80px"/></div>
+        <div class="step-row ckpt"><div class="rowb mb1"><span style="font-size:10px;font-weight:700;color:var(--p600)">Paso 1 ✓ checkpoint</span><label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--p600)"><input type="checkbox" checked readonly/>ckpt</label></div><div class="inp" style="background:var(--p50);font-family:Georgia,serif;font-style:italic;font-size:12px">3.47 = 3 + 0.4 + 0.07</div></div>
+        <div class="step-row"><div class="rowb mb1"><span style="font-size:10px;font-weight:700">Paso 2</span><label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--n400)"><input type="checkbox" readonly/>ckpt</label></div><div class="inp" style="font-family:Georgia,serif;font-style:italic;font-size:12px">1.8 = 1 + 0.8 = 1.80</div></div>
+        <div class="step-row ckpt"><div class="rowb mb1"><span style="font-size:10px;font-weight:700;color:var(--p600)">Paso 3 ✓ checkpoint</span><label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--p600)"><input type="checkbox" checked readonly/>ckpt</label></div><div class="inp" style="background:var(--p50);font-family:Georgia,serif;font-style:italic;font-size:12px">3.47 − 1.80 = 1.67</div></div>
+        <button class="btn btn-s btn-sm" style="align-self:flex-start">+ Agregar paso</button>
+        <button class="btn btn-sm" style="background:var(--n900);color:#fff;justify-content:center;align-self:stretch">Guardar pauta</button>
+        <div class="divider"></div>
+        <div class="row" style="gap:6px"><button class="btn btn-s btn-sm f1" style="justify-content:center">Excluir</button><button class="btn btn-ok btn-sm f1" style="justify-content:center">✓ Aprobar</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Publish modal -->
+<div class="frame">
+<div class="frame-label">Modal · Publicar guía · configuración final</div>
+<div class="artboard" style="width:440px">
+<div style="background:rgba(15,23,42,.4);padding:50px 24px;display:flex;align-items:center;justify-content:center;min-height:500px">
+<div class="card" style="width:400px;padding:22px;box-shadow:var(--sp)">
+  <h2>Publicar guía</h2>
+  <p class="txt-sm txt-muted mt1">Tus alumnos podrán ver las preguntas y entregar sus desarrollos.</p>
+  <div class="divider"></div>
+  <div class="col" style="gap:10px">
+    <div class="col" style="gap:3px"><label class="cap">Fecha de entrega</label><input type="date" class="inp" value="2026-06-20"/></div>
+    <div class="col" style="gap:3px"><label class="cap">Reenvíos permitidos</label><input class="inp" value="2" style="width:70px"/></div>
+    <label class="row" style="gap:6px;cursor:pointer;font-size:13px"><input type="checkbox"/>Mostrar la pauta al alumno después de corregir</label>
+  </div>
+  <div class="alrt alrt-wrn mt3"><span>⚠️</span><div class="txt-xs" style="color:#92400e"><b>6 aprobadas · 2 excluidas.</b> Una vez publicada, los alumnos la verán de inmediato. Esta acción no se puede deshacer.</div></div>
+  <div class="row mt4" style="gap:8px"><button class="btn btn-s f1" style="justify-content:center">Cancelar</button><button class="btn btn-p f1" style="justify-content:center">Publicar ahora →</button></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ C11 — RESULTS MATRIX + DRAWER ════════════════════════════════════ -->
+<div>
+<p class="sec-title"><span class="sprint">C11</span>Results matrix — Profe ve Student × Question · drawer + errores comunes</p>
+<div class="frames-row">
+
+<!-- Matrix + drawer -->
+<div class="frame">
+<div class="frame-label">Desktop · Matriz tab · drawer abierto · override de errorTag</div>
+<div class="artboard" style="width:1100px;min-height:580px;position:relative;overflow:hidden">
+<div class="shell" style="min-height:580px">
+<nav class="sidebar"><div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div><div class="sb-nav"><div class="ni on"><span class="ni-ico">📚</span>Guías</div><div class="ni"><span class="ni-ico">🏫</span>Cursos</div><div class="ni"><span class="ni-ico">🔔</span>Alertas</div></div></nav>
+<div class="content" style="position:relative">
+<div class="page-lg">
+  <div class="rowb mb3"><div><a style="font-size:11px;color:var(--p500)">← Guías</a><h1 class="mt1">Guía 7 — Números decimales</h1><p class="txt-sm txt-muted mt1">32 alumnos · 6 preguntas · entrega 12 jun</p></div><span class="bdg b-pub">● Publicada</span></div>
+  <div class="row mb3" style="gap:4px;background:var(--n100);border-radius:8px;padding:3px;width:fit-content">
+    <button class="btn btn-sm" style="background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.07)">Matriz</button>
+    <button class="btn btn-sm" style="background:none;color:var(--n500)">Errores comunes</button>
+  </div>
+  <div class="card" style="padding:0;overflow:auto">
+    <table class="mtx">
+      <thead><tr>
+        <th class="sn" style="min-width:150px">Alumno</th>
+        <th>P1</th><th>P2</th><th>P3</th><th>P5</th><th>P6</th><th>P8</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="nm">Antonia García</td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-pnd">·</div></td></tr>
+        <tr><td class="nm">Benjamín López</td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-wip">⏳</div></td><td><div class="mc mc-ill">!</div></td><td><div class="mc mc-ok">✓</div></td></tr>
+        <tr><td class="nm">Camila Martínez</td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-pnd">·</div></td><td><div class="mc mc-pnd">·</div></td></tr>
+        <tr><td class="nm">Diego Fernández</td><td><div class="mc mc-ok" style="position:relative">✓<span class="late-dot"></span></div></td><td><div class="mc mc-no" style="position:relative">✗<span class="late-dot"></span></div></td><td><div class="mc mc-pnd">·</div></td><td><div class="mc mc-pnd">·</div></td><td><div class="mc mc-pnd">·</div></td><td><div class="mc mc-pnd">·</div></td></tr>
+        <tr><td class="nm">Elena Rodríguez</td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok">✓</div></td><td><div class="mc mc-ok" style="position:relative">✓<span class="ovr-dot"></span></div></td></tr>
+        <tr><td class="nm">Felipe Torres</td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-ill">!</div></td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-wip">⏳</div></td><td><div class="mc mc-no">✗</div></td><td><div class="mc mc-pnd">·</div></td></tr>
+      </tbody>
+    </table>
+    <div class="row" style="padding:10px 14px;border-top:1px solid var(--bd);background:var(--n50);gap:14px;flex-wrap:wrap">
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="mc mc-ok" style="width:16px;height:16px;border-radius:4px;font-size:8px;display:inline-flex;align-items:center;justify-content:center">✓</div>Correcto</span>
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="mc mc-no" style="width:16px;height:16px;border-radius:4px;font-size:8px;display:inline-flex;align-items:center;justify-content:center">✗</div>Incorrecto</span>
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="mc mc-ill" style="width:16px;height:16px;border-radius:4px;font-size:8px;display:inline-flex;align-items:center;justify-content:center">!</div>Ilegible</span>
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="mc mc-wip" style="width:16px;height:16px;border-radius:4px;font-size:8px;display:inline-flex;align-items:center;justify-content:center">⏳</div>Corrigiendo</span>
+      <span class="txt-xs txt-muted">🕐 Atrasada · ✎ Override</span>
+    </div>
+  </div>
+</div>
+  <!-- Drawer overlay -->
+  <div class="drawer">
+    <div class="dw-head">
+      <div><div class="cap">Entrega · Benjamín López</div><p style="font-size:13px;font-weight:700;margin-top:2px">Pregunta 5 · Intento 2</p></div>
+      <button class="x-btn">✕</button>
+    </div>
+    <div class="dw-body">
+      <div class="math-block" style="font-size:13px">Calcula: <em>3.47 − 1.8</em></div>
+      <!-- Photos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="height:100px;background:var(--n100);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--n400)">🖼</div>
+        <div style="height:100px;background:var(--n100);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--n400)">🖼</div>
+      </div>
+      <!-- Transcription -->
+      <div class="card" style="padding:10px">
+        <p class="cap" style="margin-bottom:4px">Transcripción</p>
+        <div style="font-family:Georgia,serif;font-style:italic;font-size:13px;color:var(--n700)">3.47 − 1.8 = 1.48 ✗</div>
+        <p class="txt-xs txt-muted mt1">Confianza 86%</p>
+      </div>
+      <!-- Alignment -->
+      <div class="card" style="padding:10px">
+        <p class="cap" style="margin-bottom:6px">Alineación con la pauta</p>
+        <div class="col" style="gap:4px">
+          <div class="row txt-xs" style="gap:6px"><span style="color:var(--s500)">✓</span><span>Descompuso el minuendo correctamente</span></div>
+          <div class="row txt-xs" style="gap:6px"><span style="color:#ef4444">✗</span><span style="font-family:Georgia,serif;font-style:italic">1.8 = 1.48</span><span class="txt-muted">— error de tabla de restar</span></div>
+          <div class="row txt-xs" style="gap:6px"><span style="color:#f59e0b">?</span><span class="txt-muted">UNALIGNED en paso 3</span></div>
+        </div>
+      </div>
+      <!-- Override -->
+      <div class="card" style="padding:10px">
+        <p class="cap" style="margin-bottom:6px">Error asignado por IA</p>
+        <p style="font-size:12px;font-weight:700">CARRY_ERROR: Error en tabla de restar</p>
+        <p class="cap mt2" style="margin-bottom:4px">Corregir a mano</p>
+        <input class="inp" value="BORROW_OMITTED_TENS" style="font-size:12px"/>
+        <div class="row mt2" style="background:var(--n50);padding:8px;border-radius:7px;justify-content:space-between">
+          <span style="font-size:12px;font-weight:600">BORROW_OMITTED_TENS</span>
+          <button class="btn btn-sm btn-p">Asignar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Errors tab -->
+<div class="frame">
+<div class="frame-label">Desktop · tab Errores comunes · top-N por pregunta</div>
+<div class="artboard" style="width:660px">
+<div class="content" style="background:#fff;min-height:500px"><div class="page-lg">
+  <div class="row mb3" style="gap:4px;background:var(--n100);border-radius:8px;padding:3px;width:fit-content">
+    <button class="btn btn-sm" style="background:none;color:var(--n500)">Matriz</button>
+    <button class="btn btn-sm" style="background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.07)">Errores comunes</button>
+  </div>
+  <div class="col" style="gap:10px">
+    <div class="card" style="padding:14px">
+      <p style="font-size:12px;font-weight:700;margin-bottom:8px">Pregunta 2 — Resta de decimales</p>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <span class="error-chip">BORROW_OMITTED_TENS<span class="cnt">8</span></span>
+        <span class="error-chip">CARRY_ERROR<span class="cnt">5</span></span>
+        <span class="error-chip">PLACE_VALUE_CONFUSION<span class="cnt">3</span></span>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <p style="font-size:12px;font-weight:700;margin-bottom:8px">Pregunta 5 — División con decimales</p>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        <span class="error-chip">DECIMAL_PLACEMENT<span class="cnt">11</span></span>
+        <span class="error-chip">LONG_DIVISION_STEP<span class="cnt">4</span></span>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <p style="font-size:12px;font-weight:700;margin-bottom:8px">Pregunta 8 — Problema de texto</p>
+      <div class="txt-xs txt-muted" style="font-style:italic">Sin errores registrados aún.</div>
+    </div>
+  </div>
+</div></div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ C12 — HEATMAP ══════════════════════════════════════════════════════ -->
+<div>
+<p class="sec-title"><span class="sprint">C12</span>Heatmap de dominio — Student × Unit · p_known promedio</p>
+<div class="frames-row">
+<div class="frame">
+<div class="frame-label">Desktop · 6 alumnos × 6 unidades (muestra) · clic = drill-down por tema</div>
+<div class="artboard" style="width:1100px">
+<div class="shell">
+<nav class="sidebar"><div class="sb-logo"><div class="sb-mark">SP</div><div class="sb-name">Super<span>Profes</span></div></div><div class="sb-nav"><div class="ni"><span class="ni-ico">📚</span>Guías</div><div class="ni on"><span class="ni-ico">🏫</span>Cursos</div><div class="ni"><span class="ni-ico">🔔</span>Alertas</div></div></nav>
+<div class="content"><div class="page-full">
+  <div class="rowb mb4"><div><h1>Heatmap · 3°B Matemáticas</h1><p class="txt-sm txt-muted mt1">32 alumnos · p_known por unidad · clic → desglose por tema · doble-clic → intentos</p></div>
+    <div class="row" style="gap:6px"><select class="inp sel txt-xs" style="width:150px">
+      <option>Todas las guías</option><option>Guía 7 — Decimales</option></select>
+      <button class="btn btn-s btn-sm">Exportar CSV</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:auto">
+    <table class="mtx">
+      <thead><tr>
+        <th class="sn" style="min-width:150px">Alumno</th>
+        <th style="min-width:70px">U1<div style="font-size:9px;font-weight:400;color:var(--n400)">Fracciones</div></th>
+        <th style="min-width:70px">U2<div style="font-size:9px;font-weight:400;color:var(--n400)">Porcentajes</div></th>
+        <th style="min-width:70px">U3<div style="font-size:9px;font-weight:400;color:var(--n400)">Decimales</div></th>
+        <th style="min-width:70px">U4<div style="font-size:9px;font-weight:400;color:var(--n400)">Geometría</div></th>
+        <th style="min-width:70px">U5<div style="font-size:9px;font-weight:400;color:var(--n400)">Datos</div></th>
+        <th style="min-width:70px">U6<div style="font-size:9px;font-weight:400;color:var(--n400)">Álgebra</div></th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="nm">Antonia García</td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.82</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.58</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.74</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.71</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.45</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+        <tr><td class="nm">Benjamín López</td><td style="padding:3px;text-align:center"><div class="hc h-md">0.61</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.32</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.54</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.78</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.52</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+        <tr><td class="nm">Camila Martínez</td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.28</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.35</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.31</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.49</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.22</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+        <tr><td class="nm">Diego Fernández</td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.89</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.76</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.66</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.84</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.72</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+        <tr><td class="nm">Elena Rodríguez</td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.93</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.87</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.91</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.88</div></td><td style="padding:3px;text-align:center"><div class="hc h-hi">0.79</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+        <tr><td class="nm">Felipe Torres</td><td style="padding:3px;text-align:center"><div class="hc h-md">0.43</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.29</div></td><td style="padding:3px;text-align:center"><div class="hc h-lo">0.38</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.55</div></td><td style="padding:3px;text-align:center"><div class="hc h-md">0.48</div></td><td style="padding:3px;text-align:center"><div class="hc h-em">—</div></td></tr>
+      </tbody>
+    </table>
+    <div class="row" style="padding:10px 14px;border-top:1px solid var(--bd);background:var(--n50);gap:14px;flex-wrap:wrap">
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="hc h-hi" style="width:22px;height:18px;font-size:9px">0.7+</div>Logrado ≥0.7</span>
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="hc h-md" style="width:22px;height:18px;font-size:9px">0.4</div>En progreso 0.4–0.7</span>
+      <span class="row txt-xs txt-muted" style="gap:4px"><div class="hc h-lo" style="width:22px;height:18px;font-size:9px">&lt;0.4</div>Por reforzar</span>
+      <span class="txt-xs txt-muted" style="margin-left:auto">Clic → topics · Doble clic → intentos</span>
+    </div>
+  </div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

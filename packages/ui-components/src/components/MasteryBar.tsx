@@ -10,7 +10,7 @@ interface MasteryBarProps {
 function getMasteryColor(p: number): string {
   if (p >= 0.7) return '#3DAA72'; // mint-500
   if (p >= 0.4) return '#E8A33D'; // mastery-medium
-  return '#D86060';               // mastery-weak
+  return '#D86060'; // mastery-weak
 }
 
 function getMasteryLabel(p: number): string {
@@ -32,16 +32,18 @@ export function MasteryBar({
 
   return (
     <div className={['flex flex-col gap-1', className].join(' ')}>
-      {(label != null || showValue) ? (
+      {label != null || showValue ? (
         <div className="flex items-center justify-between text-xs">
-          {label ? <span className="text-[#1F2937] font-medium">{label}</span> : null}
+          {label ? <span className="text-[var(--fg-1)] font-medium">{label}</span> : null}
           {showValue ? (
-            <span className="text-[#4F5868]">{pct}% · {masteryLabel}</span>
+            <span className="text-[var(--fg-2)]">
+              {pct}% · {masteryLabel}
+            </span>
           ) : null}
         </div>
       ) : null}
       <div
-        className="w-full h-2 rounded-full bg-[#E5E9F0] overflow-hidden"
+        className="w-full h-2 rounded-full bg-[var(--surface-2)] overflow-hidden"
         role="progressbar"
         aria-valuenow={pct}
         aria-valuemin={0}

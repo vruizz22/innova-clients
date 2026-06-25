@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import {
+  ChevronRightIcon,
   GradeBandSelector,
   HeatmapCollapsedByUnit,
+  StatCard,
   type HeatmapStudentRow,
   type HeatmapUnit,
 } from '@innova/ui';
 import { GRADE_BANDS, formatHumanName, type Grade } from '@innova/error-catalog';
 import type { Alert, CourseStudentMastery } from '@innova/api-client';
 import { getBrowserApi } from '@/lib/api.client';
+import { MasteryLegend } from '@/components/heatmap/MasteryLegend';
 
 /** A serialisable course row produced by the dashboard RSC. */
 export interface CourseView {
@@ -39,9 +42,10 @@ interface HeatmapModel {
 function toHeatmap(data: readonly CourseStudentMastery[]): HeatmapModel {
   const unitMap = new Map<string, string>();
   for (const student of data) {
-    for (const t of student.topics) if (!unitMap.has(t.topicCode)) unitMap.set(t.topicCode, t.topicName);
+    for (const t of student.topics)
+      if (!unitMap.has(t.topicCode)) unitMap.set(t.topicCode, t.topicName);
   }
-  const units: HeatmapUnit[] = [...unitMap.entries()]
+  const units: HeatmapUnit[] = Array.from(unitMap.entries())
     .sort((a, b) => a[1].localeCompare(b[1]))
     .map(([code, name_es]) => ({ code, name_es }));
   const students: HeatmapStudentRow[] = data.map((s) => ({
@@ -90,6 +94,22 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
       ? mastery.data.find((s) => s.studentId === drill.studentId) ?? null
       : null;
 
+  const courseStats = useMemo(() => {
+    if (mastery.kind !== 'ready') return null;
+    const { data } = mastery;
+    if (data.length === 0) return null;
+    const avgMastery =
+      data.reduce((sum, s) => {
+        const sAvg =
+          s.topics.length === 0
+            ? 0
+            : s.topics.reduce((a, t) => a + t.pKnown, 0) / s.topics.length;
+        return sum + sAvg;
+      }, 0) / data.length;
+    const atRisk = data.filter((s) => s.topics.some((t) => t.pKnown < 0.4)).length;
+    return { avgMastery, atRisk, total: data.length };
+  }, [mastery]);
+
   return (
     <div>
       <div className="mt-4 flex justify-end">
@@ -105,7 +125,7 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
         />
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="sp-stagger mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {visibleCourses.map((c) => (
           <button
             key={c.id}
@@ -113,35 +133,82 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
             data-testid="course-card"
             onClick={() => void openCourse(c.id)}
             className={[
-              'rounded-xl border bg-white p-5 text-left shadow-card transition',
+              'sp-lift rounded-xl border bg-[var(--surface)] p-5 text-left shadow-card transition',
               c.id === courseId
-                ? 'border-sky-500 ring-2 ring-sky-500/30'
-                : 'border-slate-100 hover:border-sky-300',
+                ? 'border-[var(--primary)] ring-2 ring-[color:var(--primary)]/30'
+                : 'border-[var(--border)] hover:border-[var(--primary)]',
             ].join(' ')}
           >
-            <p className="text-base font-bold text-slate-900">{c.name}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{c.gradeLabel}</p>
+            <p className="text-base font-bold text-[var(--fg-1)]">{c.name}</p>
+            <p className="mt-0.5 text-xs text-[var(--fg-2)]">{c.gradeLabel}</p>
           </button>
         ))}
       </div>
 
       {course ? (
         <section className="mt-8">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold text-[var(--fg-1)]">
               Dominio por alumno · {course.name}
             </h2>
-            <span className="text-xs text-slate-500">Click en una celda para ver sus errores</span>
+            <span className="text-xs text-[var(--fg-2)]">Toca una celda para ver sus errores</span>
           </div>
+          {/* Stat row: rendered when mastery is loading (skeleton) or ready */}
+          {mastery.kind === 'loading' || courseStats ? (
+            <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard
+                label="Mastery promedio"
+                value={courseStats ? `${Math.round(courseStats.avgMastery * 100)}%` : undefined}
+                pending={mastery.kind === 'loading'}
+                valueClass={
+                  courseStats
+                    ? courseStats.avgMastery >= 0.7
+                      ? 'text-mastery-strong'
+                      : courseStats.avgMastery >= 0.4
+                        ? 'text-mastery-medium'
+                        : 'text-mastery-weak'
+                    : 'text-[var(--fg-1)]'
+                }
+              />
+              <StatCard
+                label="En riesgo"
+                value={courseStats?.atRisk}
+                of={courseStats?.total}
+                pending={mastery.kind === 'loading'}
+                valueClass={
+                  courseStats && courseStats.atRisk > 0
+                    ? 'text-[var(--warning-fg)]'
+                    : 'text-[var(--fg-1)]'
+                }
+                description="temas < 40%"
+              />
+              <StatCard
+                label="Alertas"
+                value={alerts.length}
+                pending={mastery.kind === 'loading'}
+                valueClass={
+                  alerts.length > 0 ? 'text-[var(--error-fg)]' : 'text-[var(--fg-1)]'
+                }
+                description="sin resolver"
+              />
+              <StatCard
+                label="Alumnos"
+                value={courseStats?.total}
+                pending={mastery.kind === 'loading'}
+              />
+            </div>
+          ) : null}
+
+          <MasteryLegend className="mb-4" />
 
           {alerts.length > 0 ? (
-            <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-              <p className="text-sm font-bold text-amber-800">
+            <div className="mb-4 rounded-xl border border-[var(--error-border)] bg-[var(--error-bg)] p-3">
+              <p className="text-sm font-bold text-[var(--error-fg)]">
                 {alerts.length} alerta{alerts.length === 1 ? '' : 's'} sin resolver
               </p>
               <ul className="mt-1 flex flex-col gap-0.5">
                 {alerts.slice(0, 4).map((a) => (
-                  <li key={a.id} className="text-xs text-amber-700">
+                  <li key={a.id} className="text-xs text-[var(--error-fg)]">
                     <span className="font-semibold">{a.severity}</span> · {a.alertType}
                   </li>
                 ))}
@@ -150,18 +217,19 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
           ) : null}
 
           {mastery.kind === 'loading' ? (
-            <p className="text-sm text-slate-400">Cargando dominio…</p>
+            <p className="text-sm text-[var(--fg-3)]">Cargando dominio…</p>
           ) : mastery.kind === 'error' ? (
-            <p className="text-sm text-rose-600">No pudimos cargar el dominio de este curso.</p>
+            <p className="text-sm text-danger">No pudimos cargar el dominio de este curso.</p>
           ) : heatmap && heatmap.students.length > 0 ? (
-            <div data-testid="classroom-heatmap">
+            <div data-testid="classroom-heatmap" className="sp-rise">
               {courseId ? (
-                <div className="mb-2 flex justify-end">
+                <div className="mb-3 flex justify-end">
                   <Link
                     href={`/courses/${courseId}/heatmap`}
-                    className="text-xs font-medium text-sky-600 hover:underline"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-xs font-semibold text-[var(--fg-1)] shadow-card transition-[transform,border-color,color] duration-[var(--dur-fast)] ease-[var(--ease-standard)] hover:border-[var(--primary)] hover:text-[var(--primary)] active:scale-[0.98]"
                   >
-                    Ver dominio completo (Alumno × Unidad) →
+                    Ver dominio completo · Alumno × Unidad
+                    <ChevronRightIcon size={16} className="text-[var(--fg-3)]" />
                   </Link>
                 </div>
               ) : null}
@@ -171,18 +239,23 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
                 onUnitDrillDown={(topicCode, studentId) => setDrill({ studentId, topicCode })}
               />
               {drillStudent ? (
-                <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-                  <p className="text-sm font-bold text-slate-800">
+                <div className="sp-rise mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                  <p className="text-sm font-bold text-[var(--fg-1)]">
                     Errores frecuentes · {drillStudent.displayName}
                   </p>
                   {drillStudent.errorFrequency.length === 0 ? (
-                    <p className="mt-1 text-sm text-slate-500">Sin errores registrados aún.</p>
+                    <p className="mt-1 text-sm text-[var(--fg-2)]">Sin errores registrados aún.</p>
                   ) : (
                     <ul className="mt-2 flex flex-col gap-1">
                       {drillStudent.errorFrequency.slice(0, 5).map((ef) => (
-                        <li key={ef.errorTagCode} className="flex items-center justify-between text-sm">
-                          <span className="text-slate-700">{formatHumanName(ef.errorTagCode)}</span>
-                          <span className="text-slate-400">
+                        <li
+                          key={ef.errorTagCode}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="text-[var(--fg-1)]">
+                            {ef.errorTagName ?? formatHumanName(ef.errorTagCode)}
+                          </span>
+                          <span className="text-[var(--fg-3)]">
                             {ef.count} · {Math.round(ef.percentage)}%
                           </span>
                         </li>
@@ -193,11 +266,11 @@ export function DashboardClient({ courses }: DashboardClientProps): JSX.Element 
               ) : null}
             </div>
           ) : (
-            <p className="text-sm text-slate-400">Este curso aún no tiene datos de dominio.</p>
+            <p className="text-sm text-[var(--fg-3)]">Este curso aún no tiene datos de dominio.</p>
           )}
         </section>
       ) : (
-        <p className="mt-8 text-sm text-slate-400">Selecciona un curso para ver su heatmap.</p>
+        <p className="mt-8 text-sm text-[var(--fg-3)]">Selecciona un curso para ver su heatmap.</p>
       )}
     </div>
   );

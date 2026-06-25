@@ -14,80 +14,85 @@
 
 :root {
   /* -------- COLOR: Student (calm) ------------------------- */
-  --sky-50:  #F0F7FB;
-  --sky-100: #DCEDF6;
-  --sky-200: #B6DBED;
-  --sky-300: #84C2DD;
-  --sky-400: #58B0D2;
-  --sky-500: #3FA7D6;   /* primary, focus ring */
-  --sky-600: #2F8DBA;
-  --sky-700: #226E94;
-  --sky-800: #18506D;
-  --sky-900: #0F2A3D;
+  --sky-50: #f0f7fb;
+  --sky-100: #dcedf6;
+  --sky-200: #b6dbed;
+  --sky-300: #84c2dd;
+  --sky-400: #58b0d2;
+  --sky-500: #3fa7d6; /* primary, focus ring */
+  --sky-600: #2f8dba;
+  --sky-700: #226e94;
+  --sky-800: #18506d;
+  --sky-900: #0f2a3d;
 
-  --mint-50:  #ECFAF3;
-  --mint-100: #D2F2E0;
-  --mint-200: #A8E5C2;
-  --mint-300: #76D29F;
-  --mint-400: #50BF82;
-  --mint-500: #3DAA72;  /* mastery green */
-  --mint-600: #2D8B5C;
-  --mint-700: #226B47;
-  --mint-800: #194E34;
-  --mint-900: #0F3322;
+  --mint-50: #ecfaf3;
+  --mint-100: #d2f2e0;
+  --mint-200: #a8e5c2;
+  --mint-300: #76d29f;
+  --mint-400: #50bf82;
+  --mint-500: #3daa72; /* mastery green */
+  --mint-600: #2d8b5c;
+  --mint-700: #226b47;
+  --mint-800: #194e34;
+  --mint-900: #0f3322;
 
   /* -------- COLOR: Teacher (grounded) --------------------- */
-  --slate-50:  #F7F8FA;
-  --slate-100: #E5E9F0;
-  --slate-200: #CDD3DD;
-  --slate-300: #A5ADBC;
-  --slate-400: #717A8B;
-  --slate-500: #4F5868;
+  --slate-50: #f7f8fa;
+  --slate-100: #e5e9f0;
+  --slate-200: #cdd3dd;
+  --slate-300: #a5adbc;
+  --slate-400: #717a8b;
+  --slate-500: #4f5868;
   --slate-600: #374050;
-  --slate-700: #232C3A;
-  --slate-800: #1F2937;
-  --slate-900: #0F141B;
+  --slate-700: #232c3a;
+  --slate-800: #1f2937;
+  --slate-900: #0f141b;
 
   /* -------- COLOR: Mastery / Semantic --------------------- */
-  --mastery-strong:  #3DAA72;
-  --mastery-medium:  #E8A33D;
-  --mastery-weak:    #D86060;
+  --mastery-strong: #3daa72;
+  --mastery-medium: #e8a33d;
+  --mastery-weak: #d86060;
 
-  --error-bg:    #FFF4DB;
-  --error-fg:    #7A4F00;
-  --error-border: #F0D9A0;
+  --error-bg: #fff4db;
+  --error-fg: #7a4f00;
+  --error-border: #f0d9a0;
 
-  --info-bg:   #DCEDF6;
-  --info-fg:   #18506D;
+  --info-bg: #dcedf6;
+  --info-fg: #18506d;
 
-  --success-bg: #D2F2E0;
-  --success-fg: #194E34;
+  --success-bg: #d2f2e0;
+  --success-fg: #194e34;
 
-  --warning-bg: #FFF4DB;
-  --warning-fg: #7A4F00;
+  --warning-bg: #fff4db;
+  --warning-fg: #7a4f00;
 
   /* -------- SEMANTIC: foreground / background ------------- */
-  --bg:           #FFFFFF;
-  --bg-subtle:    var(--slate-50);
-  --bg-student:   var(--sky-50);
-  --bg-parent:    var(--mint-50);
+  --bg: #ffffff;
+  --bg-subtle: var(--slate-50);
+  --bg-student: var(--sky-50);
+  --bg-parent: var(--mint-50);
+  --bg-teacher: var(--slate-50);
+  --bg-canvas: var(--bg-subtle); /* working-surface bg — alias of --bg-subtle */
+  --surface: #ffffff; /* cards / raised surfaces */
+  --surface-2: var(--slate-50); /* nested / inset surfaces */
+  --brand-mark-bg: var(--sky-50); /* square behind the logo mark */
 
-  --fg-1:         var(--slate-800);
-  --fg-2:         var(--slate-500);
-  --fg-3:         var(--slate-400);
-  --fg-inverse:   #FFFFFF;
-  --fg-on-sky:    var(--sky-900);
-  --fg-on-mint:   var(--mint-900);
+  --fg-1: var(--slate-800);
+  --fg-2: var(--slate-500);
+  --fg-3: var(--slate-400);
+  --fg-inverse: #ffffff;
+  --fg-on-sky: var(--sky-900);
+  --fg-on-mint: var(--mint-900);
 
-  --border:        var(--slate-100);
+  --border: var(--slate-100);
   --border-strong: var(--slate-200);
 
-  --primary:        var(--sky-500);
-  --primary-hover:  var(--sky-600);
-  --primary-press:  var(--sky-700);
-  --primary-fg:     #FFFFFF;
+  --primary: var(--sky-500);
+  --primary-hover: var(--sky-600);
+  --primary-press: var(--sky-700);
+  --primary-fg: #ffffff;
 
-  --focus-ring:   var(--sky-500);
+  --focus-ring: var(--sky-500);
 
   /* -------- TYPE ------------------------------------------ */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -96,58 +101,109 @@
   --text-display-1: 48px;
   --text-display-2: 36px;
   --text-display-3: 28px;
-  --text-h1:        22px;
-  --text-h2:        18px;
-  --text-body:      16px;
-  --text-body-sm:   14px;
-  --text-caption:   12px;
+  --text-h1: 22px;
+  --text-h2: 18px;
+  --text-body: 16px;
+  --text-body-sm: 14px;
+  --text-caption: 12px;
 
-  --lh-tight:   1.15;
-  --lh-snug:    1.30;
-  --lh-normal:  1.40;
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-normal: 1.4;
   --lh-relaxed: 1.55;
 
-  --ls-display:  -0.02em;
-  --ls-body:      0;
-  --ls-allcaps:   0.04em;
+  --ls-display: -0.02em;
+  --ls-body: 0;
+  --ls-allcaps: 0.04em;
 
-  --fw-regular:  400;
-  --fw-medium:   500;
+  --fw-regular: 400;
+  --fw-medium: 500;
   --fw-semibold: 600;
-  --fw-bold:     700;
+  --fw-bold: 700;
 
   /* -------- SPACING (4px base) ---------------------------- */
-  --sp-1:  4px;
-  --sp-2:  8px;
-  --sp-3:  12px;
-  --sp-4:  16px;
-  --sp-5:  20px;
-  --sp-6:  24px;
-  --sp-8:  32px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
   --sp-10: 40px;
   --sp-14: 56px;
   --sp-20: 80px;
 
   /* -------- RADII ----------------------------------------- */
-  --r-sm:   4px;
-  --r-md:   8px;
-  --r-lg:   12px;
-  --r-xl:   16px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 24px;
   --r-pill: 9999px;
 
   /* -------- SHADOWS --------------------------------------- */
-  --shadow-card: 0 1px 2px rgba(15, 42, 61, 0.04),
-                 0 1px 3px rgba(15, 42, 61, 0.06);
-  --shadow-pop:  0 8px 24px rgba(15, 42, 61, 0.10),
-                 0 2px 6px rgba(15, 42, 61, 0.06);
+  --shadow-card: 0 1px 2px rgba(15, 42, 61, 0.04), 0 1px 3px rgba(15, 42, 61, 0.06);
+  --shadow-pop: 0 8px 24px rgba(15, 42, 61, 0.1), 0 2px 6px rgba(15, 42, 61, 0.06);
 
   /* -------- MOTION ---------------------------------------- */
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast:   120ms;
-  --dur-base:   180ms;
-  --dur-slow:   240ms;
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 240ms;
 
   /* -------- TOUCH ----------------------------------------- */
   --touch-min: 44px;
   --keypad-key: 56px;
+}
+
+/* ============================================================
+   Dark theme — follows the OS (prefers-color-scheme). Only the
+   *semantic* tokens flip; the raw ramps (sky/mint/slate) stay put
+   so brand identity is preserved. Consumers that use the semantic
+   Tailwind aliases (bg-surface, text-ink, border-line, …) or the
+   var()-backed tokens adapt automatically — nothing hardcoded.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e141b; /* page — deep slate, never pure black */
+    --bg-subtle: #131a23;
+    --bg-student: #0d1820; /* canvas tinted toward sky */
+    --bg-parent: #0c1a15; /* canvas tinted toward mint */
+    --bg-teacher: #111722;
+    --bg-canvas: var(--bg-subtle);
+    --surface: #18212c; /* cards sit above the page */
+    --surface-2: #1f2a37; /* nested surfaces */
+    --brand-mark-bg: rgba(63, 167, 214, 0.16);
+
+    --fg-1: #eaf0f6; /* primary text — soft white */
+    --fg-2: #a7b2c0; /* secondary */
+    --fg-3: #74808f; /* tertiary / placeholder (≥4.5:1 on surface) */
+    --fg-inverse: var(--slate-900);
+    --fg-on-sky: var(--sky-100);
+    --fg-on-mint: var(--mint-100);
+
+    --border: rgba(233, 239, 247, 0.1);
+    --border-strong: rgba(233, 239, 247, 0.18);
+
+    --primary: var(--sky-400); /* brighter on dark for AA contrast */
+    --primary-hover: var(--sky-300);
+    --primary-press: var(--sky-500);
+    --primary-fg: var(--slate-900);
+
+    --focus-ring: var(--sky-400);
+
+    /* semantic surfaces — tinted, never full-saturation on dark */
+    --error-bg: rgba(232, 163, 61, 0.15);
+    --error-fg: #f2c982;
+    --error-border: rgba(232, 163, 61, 0.32);
+    --info-bg: rgba(63, 167, 214, 0.15);
+    --info-fg: #9ad3ec;
+    --success-bg: rgba(61, 170, 114, 0.15);
+    --success-fg: #82d2a6;
+    --warning-bg: rgba(232, 163, 61, 0.15);
+    --warning-fg: #f2c982;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+  }
 }

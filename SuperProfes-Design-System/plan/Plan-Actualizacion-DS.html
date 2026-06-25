@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Plan de actualización — SuperProfes Design System</title>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  :root { --page: 920px; }
+  html, body { background: var(--slate-50); }
+  body { padding: var(--sp-10) var(--sp-6); }
+
+  .doc {
+    max-width: var(--page);
+    margin: 0 auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  /* ---- Masthead ---- */
+  .masthead {
+    padding: var(--sp-10) var(--sp-10) var(--sp-8);
+    border-bottom: 1px solid var(--border);
+    background:
+      linear-gradient(180deg, var(--sky-50) 0%, var(--bg) 100%);
+  }
+  .wordmark {
+    font-weight: var(--fw-bold);
+    letter-spacing: -0.025em;
+    font-size: var(--text-h2);
+    margin-bottom: var(--sp-6);
+  }
+  .wordmark .s { color: var(--slate-900); }
+  .wordmark .p { color: var(--sky-500); }
+  .eyebrow {
+    color: var(--sky-700);
+    margin-bottom: var(--sp-3);
+  }
+  .masthead h1 {
+    margin: 0 0 var(--sp-4);
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .lede {
+    color: var(--fg-2);
+    max-width: 64ch;
+    font-size: var(--text-h2);
+    line-height: var(--lh-relaxed);
+    margin: 0;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-6);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    font-size: var(--text-caption);
+    font-weight: var(--fw-semibold);
+    color: var(--fg-2);
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: var(--r-pill); }
+
+  /* ---- Body ---- */
+  .body { padding: var(--sp-10); }
+  section { margin-bottom: var(--sp-14); }
+  section:last-child { margin-bottom: 0; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-5);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--sky-500);
+    font-weight: var(--fw-bold);
+    font-size: var(--text-h1);
+  }
+  .sec-head h2 { margin: 0; }
+  .sec-sub { color: var(--fg-2); margin: calc(-1 * var(--sp-3)) 0 var(--sp-5); max-width: 70ch; }
+
+  p { max-width: 72ch; }
+  .body p { color: var(--fg-1); }
+
+  /* ---- Tables ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-body-sm);
+    margin-top: var(--sp-4);
+  }
+  th, td {
+    text-align: left;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    font-size: var(--text-caption);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-allcaps);
+    text-transform: uppercase;
+    color: var(--fg-2);
+    background: var(--slate-50);
+    border-bottom: 1px solid var(--border-strong);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td code, p code, li code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.86em;
+    background: var(--slate-50);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 1px 5px;
+    color: var(--slate-700);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--r-pill);
+    font-size: 11px;
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .tag-new   { background: var(--success-bg); color: var(--success-fg); }
+  .tag-drift { background: var(--warning-bg); color: var(--warning-fg); }
+  .tag-fix   { background: color-mix(in oklch, var(--mastery-weak) 18%, white); color: #5A1F1F; }
+
+  /* ---- Phase cards ---- */
+  .phases { display: grid; gap: var(--sp-4); }
+  .phase {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-6);
+    background: var(--bg);
+    box-shadow: var(--shadow-card);
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--sp-5);
+    align-items: start;
+  }
+  .phase-badge {
+    width: 56px; height: 56px;
+    border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: var(--fw-bold);
+    font-size: var(--text-h1);
+    font-variant-numeric: tabular-nums;
+    background: var(--sky-50);
+    color: var(--sky-700);
+    border: 1px solid var(--sky-200);
+  }
+  .phase h3 { margin: 0 0 var(--sp-2); }
+  .phase .effort { color: var(--fg-2); font-size: var(--text-caption); font-weight: var(--fw-semibold); }
+  .phase ul { margin: var(--sp-3) 0 0; padding-left: var(--sp-5); }
+  .phase li { margin-bottom: var(--sp-2); color: var(--fg-1); }
+  .phase li:last-child { margin-bottom: 0; }
+
+  .outcome {
+    margin-top: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--mint-50);
+    border-radius: var(--r-md);
+    font-size: var(--text-body-sm);
+    color: var(--mint-900);
+  }
+  .outcome b { font-weight: var(--fw-semibold); }
+
+  /* ---- Decisions / callout ---- */
+  .callout {
+    border: 1px solid var(--error-border);
+    background: var(--error-bg);
+    border-radius: var(--r-lg);
+    padding: var(--sp-6);
+  }
+  .callout h3 { margin: 0 0 var(--sp-3); color: var(--error-fg); }
+  .callout ol { margin: 0; padding-left: var(--sp-5); }
+  .callout li { margin-bottom: var(--sp-3); color: var(--error-fg); }
+  .callout li:last-child { margin-bottom: 0; }
+
+  .note { font-size: var(--text-caption); color: var(--fg-3); margin-top: var(--sp-4); }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .doc { border: none; box-shadow: none; border-radius: 0; max-width: none; }
+    .phase, .card { break-inside: avoid; }
+    section { break-inside: avoid; }
+  }
+  @media (max-width: 640px) {
+    .phase { grid-template-columns: 1fr; }
+    .phase-badge { width: 44px; height: 44px; }
+  }
+</style>
+</head>
+<body>
+<article class="doc">
+
+  <header class="masthead">
+    <div class="wordmark"><span class="s">Super</span><span class="p">Profes</span></div>
+    <div class="eyebrow t-allcaps">Plan de actualización · Design System</div>
+    <h1 class="t-display-2">Reconciliar el design system con el codebase <code style="font-size:0.7em">innova-clients</code></h1>
+    <p class="lede">El codebase ya avanzó por delante de la especificación: nuevas superficies, 12+ pantallas y una capa de tokens consumible que el design system aún no refleja. Este plan cierra esa brecha en 5 fases, sin tocar nada todavía.</p>
+    <div class="meta-row">
+      <span class="chip"><span class="dot" style="background:var(--mint-500)"></span>9 pantallas nuevas</span>
+      <span class="chip"><span class="dot" style="background:var(--mint-500)"></span>2 superficies nuevas</span>
+      <span class="chip"><span class="dot" style="background:var(--mastery-medium)"></span>4 drifts de token</span>
+      <span class="chip"><span class="dot" style="background:var(--mastery-weak)"></span>1 archivo fuera de escala</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- 0 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">00</span><h2 class="t-h1">Punto de partida</h2></div>
+      <p>El design system se escribió como especificación, antes de que existiera código real. El README lo deja anotado como <em>open issue #1</em>: <em>"No real client codebase yet. Designs are spec-derived. Reconcile when <code>innova-clients</code> ships."</em> Ese momento llegó. La carpeta local ya contiene la implementación, y al compararla con el DS del proyecto aparece una brecha concreta y acotada.</p>
+      <p>La buena noticia: <strong>los fundamentos coinciden</strong>. El <code>colors_and_type.css</code> es byte-idéntico entre ambos, así que la paleta, la tipografía Inter y la escala de espaciado no requieren migración. El trabajo está en <strong>incorporar lo nuevo</strong> y <strong>resolver pequeños desajustes</strong> en la capa de tokens consumible por código.</p>
+    </section>
+
+    <!-- 1 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">01</span><h2 class="t-h1">Qué hay en el codebase que el DS no tiene</h2></div>
+      <p class="sec-sub">Inventario del delta, comparando <code>ui_kits/</code> del proyecto contra la carpeta local.</p>
+      <table>
+        <thead><tr><th style="width:140px">Superficie</th><th>Nuevo en el codebase</th><th style="width:90px">Estado</th></tr></thead>
+        <tbody>
+          <tr><td><b>admin</b></td><td><code>status.html</code> — una <b>5ª superficie</b> (estado del sistema) que el DS no documenta en absoluto.</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>landing</b></td><td><code>landing/index.html</code> real (478 líneas, SEO/OG completo). El README todavía la describe como un "Astro kit" abstracto.</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>teacher</b></td><td>7 pantallas: <code>alerts-inbox</code>, <code>assign-practice</code>, <code>attempt-detail</code>, <code>classrooms</code>, <code>items</code>, <code>skills</code>, <code>student-profile</code>. El DS solo tiene <code>index.html</code>.</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>parent</b></td><td><code>onboarding.html</code> y <code>web.html</code> (variante desktop).</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>practice</b></td><td><code>ocr-upload.html</code> (captura de cuaderno) y <code>web.html</code>.</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>auth</b></td><td><code>mobile.html</code> (variante teléfono del flujo de acceso).</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+          <tr><td><b>tokens</b></td><td>Capa consumible por código: <code>tokens.ts</code>, <code>index.ts</code> (+ <code>.js</code>) que exportan <code>SP_TOKENS</code> y <code>DESIGN_CSS_PATH</code>.</td><td><span class="tag tag-new">NUEVO</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 2 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">02</span><h2 class="t-h1">Drift de tokens</h2></div>
+      <p class="sec-sub">El <code>tokens.ts</code> del codebase no está alineado con la fuente de verdad (<code>colors_and_type.css</code>). Estos desajustes hay que resolverlos antes de importar pantallas, para no propagar valores divergentes.</p>
+      <table>
+        <thead><tr><th style="width:200px">Token</th><th>Conflicto</th><th style="width:110px">Resolución</th></tr></thead>
+        <tbody>
+          <tr><td><code>colors.canvas</code></td><td>Apunta a <code>var(--bg-canvas)</code>, pero el CSS <b>no define</b> esa variable (tiene <code>--bg</code> y <code>--bg-subtle</code>). Referencia colgante.</td><td><span class="tag tag-fix">DECIDIR</span></td></tr>
+          <tr><td><code>radius.xl</code></td><td>Codebase dice <code>18px</code>; el CSS dice <code>--r-xl: 16px</code>. Valores en conflicto.</td><td><span class="tag tag-drift">ALINEAR</span></td></tr>
+          <tr><td><code>radius.2xl</code></td><td>Existe en código (<code>24px</code>) pero <b>falta</b> como <code>--r-2xl</code> en el CSS.</td><td><span class="tag tag-drift">AÑADIR</span></td></tr>
+          <tr><td><code>radius.*</code> / <code>spacing.*</code></td><td>Hardcodean píxeles (<code>'12px'</code>, <code>'24px'</code>) mientras que <code>colors.*</code> sí referencian <code>var(--…)</code>. Inconsistencia estructural: dos fuentes de verdad.</td><td><span class="tag tag-drift">UNIFICAR</span></td></tr>
+          <tr><td><code>DESIGN_CSS_PATH</code></td><td>Ruta absoluta hardcodeada <code>'/design-system/colors_and_type.css'</code>. Frágil ante cambios de despliegue.</td><td><span class="tag tag-drift">REVISAR</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">03</span><h2 class="t-h1">Adherencia</h2></div>
+      <p class="sec-sub">Pantallas nuevas que se salen de la escala del DS y conviene corregir al incorporarlas.</p>
+      <table>
+        <thead><tr><th style="width:200px">Archivo</th><th>Valores fuera de escala</th></tr></thead>
+        <tbody>
+          <tr><td><code>admin/status.html</code></td><td>Radios <code>14px</code> (la escala es 4/8/12/16), bordes de <code>1.5px</code> (el DS manda 1px en producto) y colores ad-hoc <code>#FFEFCD</code> / <code>#FAD9D9</code> que no existen en la paleta semántica.</td></tr>
+        </tbody>
+      </table>
+      <p class="note">El resto de pantallas nuevas debe pasar por la misma verificación contra <code>_adherence.oxlintrc.json</code> al importarlas; este es solo el hallazgo confirmado hasta ahora.</p>
+    </section>
+
+    <!-- 4 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">04</span><h2 class="t-h1">Plan de actualización</h2></div>
+      <p class="sec-sub">Cinco fases en orden de dependencia: primero la base de tokens, luego el contenido, al final la documentación.</p>
+
+      <div class="phases">
+
+        <div class="phase">
+          <div class="phase-badge">1</div>
+          <div>
+            <h3 class="t-h2">Reconciliar la capa de tokens</h3>
+            <span class="effort">Base · debe ir primero</span>
+            <ul>
+              <li>Decidir el valor canónico de <code>--r-xl</code> (16 vs 18) y alinear código y CSS.</li>
+              <li>Añadir <code>--r-2xl: 24px</code> al CSS, o eliminar <code>radius.2xl</code> de <code>tokens.ts</code>.</li>
+              <li>Definir <code>--bg-canvas</code> en el CSS o reapuntar <code>colors.canvas</code> a un token existente.</li>
+              <li>Hacer que <code>radius</code> y <code>spacing</code> referencien <code>var(--…)</code> igual que <code>colors</code> — una sola fuente de verdad.</li>
+            </ul>
+            <div class="outcome"><b>Resultado:</b> el CSS vuelve a ser la única fuente de verdad; <code>SP_TOKENS</code> solo lo expone a TypeScript.</div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-badge">2</div>
+          <div>
+            <h3 class="t-h2">Importar las pantallas nuevas</h3>
+            <span class="effort">Mayor volumen de contenido</span>
+            <ul>
+              <li>Copiar al proyecto las 7 pantallas de <code>teacher/</code>, las variantes <code>web/mobile/onboarding/ocr-upload</code> y la <code>landing</code> real.</li>
+              <li>Etiquetar cada una con <code>@dsCard</code> para que aparezcan en la pestaña Design System, agrupadas por superficie.</li>
+              <li>Verificar que cada pantalla carga tokens desde el CSS reconciliado (sin valores locales duplicados).</li>
+            </ul>
+            <div class="outcome"><b>Resultado:</b> el DS muestra el producto real, no una muestra parcial.</div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-badge">3</div>
+          <div>
+            <h3 class="t-h2">Documentar la superficie <code>admin</code></h3>
+            <span class="effort">Superficie nueva</span>
+            <ul>
+              <li>Sumar <code>admin</code> como 5ª superficie en el README junto a student / parent / teacher / auth.</li>
+              <li>Definir su rol de paleta (probablemente la slate "grounded" del teacher) y patrones de estado del sistema.</li>
+              <li>Crear su tarjeta y README de UI kit replicando la estructura de las demás.</li>
+            </ul>
+            <div class="outcome"><b>Resultado:</b> ninguna superficie del producto queda sin especificar.</div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-badge">4</div>
+          <div>
+            <h3 class="t-h2">Pasada de adherencia</h3>
+            <span class="effort">Calidad · transversal</span>
+            <ul>
+              <li>Corregir <code>admin/status.html</code>: radios y bordes a la escala, colores ad-hoc a tokens semánticos (<code>--warning-bg</code>, <code>--error-bg</code>).</li>
+              <li>Pasar todas las pantallas importadas por las reglas de <code>_adherence.oxlintrc.json</code>.</li>
+              <li>Registrar como nuevos <em>open issues</em> cualquier desviación intencional que valga la pena conservar.</li>
+            </ul>
+            <div class="outcome"><b>Resultado:</b> el código nuevo cumple las mismas reglas que la spec.</div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-badge">5</div>
+          <div>
+            <h3 class="t-h2">Actualizar README y open issues</h3>
+            <span class="effort">Cierre</span>
+            <ul>
+              <li>Cerrar el open issue #1 ("No real client codebase yet") — ya está reconciliado.</li>
+              <li>Reescribir la sección de landing: de "Astro kit" abstracto a la implementación real.</li>
+              <li>Revisar los issues de Inter (Google Fonts → self-host) y de Lucide a la luz de lo que el codebase ya usa.</li>
+            </ul>
+            <div class="outcome"><b>Resultado:</b> la documentación describe el sistema que realmente existe.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section>
+      <div class="sec-head"><span class="sec-num">05</span><h2 class="t-h1">Decisiones que necesito de ti</h2></div>
+      <div class="callout">
+        <h3 class="t-h2">Antes de aplicar la Fase 1</h3>
+        <ol>
+          <li><b>Radio XL:</b> ¿el canónico es <code>16px</code> (CSS actual) o <code>18px</code> (codebase)? Define cuál se queda.</li>
+          <li><b><code>--bg-canvas</code>:</b> ¿es un fondo nuevo que hay que añadir a la paleta, o <code>colors.canvas</code> debería apuntar a <code>--bg-subtle</code>?</li>
+          <li><b>Superficie admin:</b> ¿hereda la paleta slate del teacher, o quieres tratarla como una superficie con su propia identidad?</li>
+          <li><b>Alcance:</b> ¿importo las pantallas tal cual (rápido) o las normalizo a tokens al traerlas (más prolijo, más lento)?</li>
+        </ol>
+      </div>
+      <p class="note">Este documento es solo el plan — no se ha modificado nada del design system todavía. Dime por dónde empezamos y lo ejecuto fase por fase.</p>
+    </section>
+
+  </div>
+</article>
+</body>
+</html>

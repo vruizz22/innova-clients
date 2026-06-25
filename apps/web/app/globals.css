@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  /* Let native controls, scrollbars and form widgets follow the OS theme. */
+  color-scheme: light dark;
+}
+
 html,
 body {
   margin: 0;
@@ -14,6 +19,115 @@ body {
   font-feature-settings: 'tnum' 1, 'cv11' 1, 'ss01' 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prominent KaTeX render for the question statement in the review wizard.
+   KaTeX sizes in em, so bumping the wrapper font-size scales the whole formula. */
+.latex-lg {
+  font-size: 1.3rem;
+}
+.latex-lg .katex-display {
+  margin: 0;
+}
+
+/* Origin-aware popover entrance (account menu, etc.). Scales from the trigger,
+   strong ease-out under 200ms — never from scale(0). */
+@keyframes sp-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.profile-menu {
+  animation: sp-pop-in 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-menu {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Content entrance — fade + small rise from below. GPU-only (opacity/transform),
+   strong ease-out, under 300ms. Reduced-motion is handled by the global rule
+   above (animation-duration → 0.01ms). For lists, add .sp-stagger on the parent
+   to cascade children 1–6 by ~50ms each. */
+@keyframes sp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sp-rise {
+  animation: sp-rise 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.sp-stagger > * {
+  animation: sp-rise 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.sp-stagger > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.sp-stagger > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+.sp-stagger > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+.sp-stagger > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+.sp-stagger > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.sp-stagger > *:nth-child(n + 6) {
+  animation-delay: 250ms;
+}
+
+/* Hover lift for interactive cards. Transform/shadow only, gated behind a real
+   pointer so touch taps don't trigger a stuck hover state. */
+@media (hover: hover) and (pointer: fine) {
+  .sp-lift {
+    transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sp-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-pop);
+  }
+}
+
+/* Press feedback for actionable controls (Emil Kowalski): the UI must feel like it
+   heard the press. Transform-only, snappy ease-out; scales children with it. Reserve
+   for occasional actions (buttons), NOT for high-frequency list/nav selection. Under
+   reduced-motion the global rule collapses the duration, so the press still registers
+   instantly without animation. */
+.sp-press {
+  /* Longhand (not the `transition` shorthand) so this composes with Tailwind's
+     `transition-colors` instead of clobbering its property list — press scale AND
+     hover color changes both animate. */
+  transition-property: transform, color, background-color, border-color, box-shadow;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.sp-press:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 /* Tabular, slashed-zero numerals for vertical math. */

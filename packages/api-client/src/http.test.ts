@@ -31,6 +31,24 @@ describe('request', () => {
     expect((init.headers as Record<string, string>)['Authorization']).toBe('Bearer tok');
   });
 
+  it('unwraps the backend ResponseInterceptor envelope before validating', async () => {
+    // The live NestJS backend wraps payloads: { statusCode, data, timestamp, path, traceId }.
+    const envelope = {
+      statusCode: 200,
+      data: { id: 'a', n: 1 },
+      timestamp: '2026-06-16T00:00:00.000Z',
+      path: '/thing',
+      traceId: 't1',
+    };
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(envelope));
+    const result = await request(configWith(fetchImpl as unknown as typeof fetch), {
+      method: 'GET',
+      path: '/thing',
+      schema,
+    });
+    expect(result).toEqual({ ok: true, data: { id: 'a', n: 1 } });
+  });
+
   it('omits Authorization when no token is available', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ id: 'a', n: 1 }));
     await request(configWith(fetchImpl as unknown as typeof fetch, null), {

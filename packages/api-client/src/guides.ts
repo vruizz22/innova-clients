@@ -97,6 +97,14 @@ export const guidesListSchema = z.object({
 export type GuidesList = z.infer<typeof guidesListSchema>;
 
 // ------------------------------------------------------------- guide detail ----
+/** A {id, code, name} reference to a curriculum topic or a taxonomy domain/subdomain. */
+export const taxonomyRefSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+});
+export type TaxonomyRef = z.infer<typeof taxonomyRefSchema>;
+
 export const guideSolutionSchema = z.object({
   id: z.string(),
   version: z.number(),
@@ -123,7 +131,11 @@ export const guideQuestionSchema = z.object({
   topicId: z.string().nullable(),
   topicConfidence: z.number().nullable().optional(),
   topicSource: z.string().nullable().optional(),
-  topic: z.object({ id: z.string(), code: z.string(), name: z.string() }).nullable().optional(),
+  topic: taxonomyRefSchema.nullable().optional(),
+  // Taxonomy classification (domain/subdomain) — the primary topic shown in the
+  // wizard since v9.1; derived from the error catalog, not the curriculum topics.
+  domain: taxonomyRefSchema.nullable().optional(),
+  subdomain: taxonomyRefSchema.nullable().optional(),
   solutions: z.array(guideSolutionSchema),
 });
 export type GuideQuestion = z.infer<typeof guideQuestionSchema>;
@@ -158,7 +170,31 @@ export interface UpdateGuideQuestionInput {
   readonly label?: string;
   readonly points?: number;
   readonly topicId?: string;
+  readonly subdomainId?: string;
   readonly status?: 'APPROVED' | 'EXCLUDED';
+}
+
+// ----------------------------------------------------------- taxonomy ----
+/** GET /skills/taxonomy → domains, each with its subdomains (classification catalog). */
+export const taxonomyDomainSchema = taxonomyRefSchema.extend({
+  subdomains: z.array(taxonomyRefSchema),
+});
+export const taxonomySchema = z.array(taxonomyDomainSchema);
+export type TaxonomyDomain = z.infer<typeof taxonomyDomainSchema>;
+
+/** GET /skills/error-tags → live ACTIVE catalog matches for the manual-override typeahead. */
+export const catalogErrorSchema = z.object({
+  code: z.string(),
+  name: z.string().nullable(),
+  subdomainCode: z.string().nullable(),
+  domainCode: z.string().nullable(),
+});
+export const catalogErrorListSchema = z.array(catalogErrorSchema);
+export type CatalogError = z.infer<typeof catalogErrorSchema>;
+export interface SearchCatalogErrorsInput {
+  readonly q?: string;
+  readonly domainCode?: string;
+  readonly limit?: number;
 }
 
 export interface UpdateGuideSolutionInput {
@@ -174,6 +210,9 @@ export const guideSchema = z.object({
   title: z.string(),
 });
 export type Guide = z.infer<typeof guideSchema>;
+
+export const guideSourceUrlSchema = z.object({ url: z.string() });
+export type GuideSourceUrl = z.infer<typeof guideSourceUrlSchema>;
 
 export const guideQuestionAckSchema = z.object({
   id: z.string(),
@@ -279,6 +318,9 @@ export const guideResultQuestionSchema = z.object({
   score: z.number().nullable(),
   isCorrect: z.boolean().nullable(),
   errorTagCode: z.string().nullable(),
+  // nullish (not nullable) so the schema tolerates the rollout window before
+  // the backend Fase A ships this field; tighten to .nullable() post-deploy.
+  errorTagName: z.string().nullish(),
   solution: guideSolutionSchema.nullable(),
 });
 export const guideResultsSchema = z.object({
@@ -376,3 +418,30 @@ export const overrideErrorAckSchema = z.object({
   isOverridden: z.boolean(),
 });
 export type OverrideErrorAck = z.infer<typeof overrideErrorAckSchema>;
+
+// -------------------------------------------------- scan-page (endpoint #7) --
+
+/** Response from GET /student/guides/:id/scan-page-url */
+export const scanPageUploadUrlSchema = z.object({
+  photoKey: z.string(),
+  presignedUrl: z.string(),
+});
+export type ScanPageUploadUrl = z.infer<typeof scanPageUploadUrlSchema>;
+
+/** One question matched/skipped in the scan-page response. */
+export const scanPageSubmissionSchema = z.object({
+  questionId: z.string(),
+  sequence: z.number(),
+  submissionId: z.string().nullable(),
+  skipped: z.boolean(),
+  reason: z.string().optional(),
+});
+export type ScanPageSubmission = z.infer<typeof scanPageSubmissionSchema>;
+
+/** Response from POST /student/guides/:id/scan-page */
+export const scanPageResultSchema = z.object({
+  photoKey: z.string(),
+  matched: z.number(),
+  submissions: z.array(scanPageSubmissionSchema),
+});
+export type ScanPageResult = z.infer<typeof scanPageResultSchema>;

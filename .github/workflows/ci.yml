@@ -15,11 +15,11 @@ jobs:
     name: Typecheck, lint, unit, build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: pnpm
@@ -27,18 +27,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Now gating: front reports tsc 0 errors locally (R5+). If this turns
+      # red it is a real type error to fix, not pipeline tolerance.
       - name: Typecheck
         run: pnpm typecheck
-        continue-on-error: true
 
       - name: Lint
         run: pnpm lint
-        continue-on-error: true
 
       - name: Unit tests (Vitest)
         run: pnpm test:unit
 
-      # apps/web is scaffolded in M9; keep tolerant until it lands.
+      # TODO(R9): drop `continue-on-error` once the web build is verified to be stable and CI
+      # is green after the (guides) route-group fix. Until then keep tolerant
+      # so CI does not block on the unverified production build.
       - name: Build web
         env:
           NEXT_PUBLIC_API_URL: https://api.superprofes.app

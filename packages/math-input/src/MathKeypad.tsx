@@ -17,8 +17,9 @@ export interface MathKeypadProps {
   disabled?: boolean;
 }
 
-const DIGIT = 'bg-white text-slate-800 hover:bg-slate-50 active:bg-slate-100 border-slate-200';
-const OP = 'bg-sky-50 text-sky-700 hover:bg-sky-100 active:bg-sky-200 border-sky-200';
+const DIGIT =
+  'bg-[var(--surface)] text-[var(--fg-1)] hover:bg-[var(--surface-2)] active:bg-[var(--surface-2)] border-[var(--border)]';
+const OP = 'bg-[var(--info-bg)] text-sky-700 hover:bg-sky-100 active:bg-sky-200 border-sky-200';
 const CTRL = 'bg-amber-50 text-amber-700 hover:bg-amber-100 active:bg-amber-200 border-amber-200';
 
 // 4-col layout: digits + the arithmetic operators a student needs to write a full
@@ -60,7 +61,12 @@ function keyClass(key: KeypadKey): string {
  * contrast for accessibility. Buttons use `type="button"` so they never submit
  * the surrounding form. Native keyboards still work via `inputmode="decimal"`.
  */
-export function MathKeypad({ onChar, onBackspace, onClear, disabled }: MathKeypadProps): JSX.Element {
+export function MathKeypad({
+  onChar,
+  onBackspace,
+  onClear,
+  disabled,
+}: MathKeypadProps): JSX.Element {
   function press(key: KeypadKey): void {
     if (disabled) return;
     if (key.kind === 'char') onChar(key.value);
@@ -77,7 +83,9 @@ export function MathKeypad({ onChar, onBackspace, onClear, disabled }: MathKeypa
             type="button"
             disabled={disabled}
             onClick={() => press(key)}
-            aria-label={key.kind === 'char' ? key.label : key.kind === 'backspace' ? 'Borrar' : 'Limpiar'}
+            aria-label={
+              key.kind === 'char' ? key.label : key.kind === 'backspace' ? 'Borrar' : 'Limpiar'
+            }
             className={[
               'h-14 rounded-xl border text-xl font-bold tabular-nums transition-colors',
               'disabled:opacity-40 disabled:pointer-events-none',
@@ -93,7 +101,10 @@ export function MathKeypad({ onChar, onBackspace, onClear, disabled }: MathKeypa
         disabled={disabled}
         onClick={() => press({ kind: 'backspace' })}
         aria-label="Borrar último carácter"
-        className={['col-span-2 h-12 rounded-xl border text-base font-semibold transition-colors', CTRL].join(' ')}
+        className={[
+          'col-span-2 h-12 rounded-xl border text-base font-semibold transition-colors',
+          CTRL,
+        ].join(' ')}
       >
         ⌫ Borrar
       </button>
@@ -102,7 +113,10 @@ export function MathKeypad({ onChar, onBackspace, onClear, disabled }: MathKeypa
         disabled={disabled}
         onClick={() => press({ kind: 'clear' })}
         aria-label="Limpiar la línea"
-        className={['col-span-2 h-12 rounded-xl border text-base font-semibold transition-colors', CTRL].join(' ')}
+        className={[
+          'col-span-2 h-12 rounded-xl border text-base font-semibold transition-colors',
+          CTRL,
+        ].join(' ')}
       >
         Limpiar
       </button>

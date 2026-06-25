@@ -87,9 +87,7 @@ export const CheckCircleIcon = icon(
   </>
 );
 
-export const ChevronRightIcon = icon(
-  <polyline points="9 18 15 12 9 6" />
-);
+export const ChevronRightIcon = icon(<polyline points="9 18 15 12 9 6" />);
 
 export const SearchIcon = icon(
   <>
@@ -134,10 +132,57 @@ export const FileIcon = icon(
   </>
 );
 
-export const CheckIcon = icon(
-  <polyline points="20 6 9 17 4 12" />
+export const CheckIcon = icon(<polyline points="20 6 9 17 4 12" />);
+
+export const ShieldIcon = icon(<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />);
+
+export const CircleIcon = icon(<circle cx="12" cy="12" r="10" />);
+
+export const ClockIcon = icon(
+  <>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </>
 );
 
-export const ShieldIcon = icon(
-  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+export const PencilIcon = icon(
+  <>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+  </>
 );
+
+export const UploadIcon = icon(
+  <>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </>
+);
+
+export const ImageIcon = icon(
+  <>
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="9" cy="9" r="2" />
+    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+  </>
+);
+
+export const ArrowLeftIcon = icon(
+  <>
+    <line x1="19" y1="12" x2="5" y2="12" />
+    <polyline points="12 19 5 12 12 5" />
+  </>
+);
+
+export const ChevronLeftIcon = icon(<polyline points="15 18 9 12 15 6" />);
+
+export const PlusIcon = icon(
+  <>
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </>
+);
+
+// Spinner — pair with className="animate-spin" for in-flight states.
+export const LoaderIcon = icon(<path d="M21 12a9 9 0 1 1-6.219-8.56" />);

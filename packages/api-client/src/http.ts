@@ -44,6 +44,26 @@ export interface RequestOptions<T> {
   readonly signal?: AbortSignal;
 }
 
+/**
+ * The NestJS backend wraps every successful response in a standard envelope
+ * (ResponseInterceptor): `{ statusCode, data, timestamp, path, traceId }`.
+ * Unwrap it so callers validate the real payload, not the envelope. Only unwraps
+ * when the full envelope signature is present, so a plain payload that merely
+ * happens to carry a `data` field is left untouched.
+ */
+function unwrapEnvelope(raw: unknown): unknown {
+  if (
+    raw !== null &&
+    typeof raw === 'object' &&
+    'data' in raw &&
+    'statusCode' in raw &&
+    'timestamp' in raw
+  ) {
+    return (raw as { readonly data: unknown }).data;
+  }
+  return raw;
+}
+
 function buildUrl(
   baseUrl: string,
   path: string,
@@ -118,7 +138,7 @@ export async function request<T>(
     };
   }
 
-  const parsed = options.schema.safeParse(raw);
+  const parsed = options.schema.safeParse(unwrapEnvelope(raw));
   if (!parsed.success) {
     return {
       ok: false,

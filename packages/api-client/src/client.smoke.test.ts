@@ -12,6 +12,9 @@ describe('api-client v9 dashboard methods', () => {
       'getGuideResultsMatrix',
       'getSubmissionDetail',
       'overrideSubmissionError',
+      'getAdminStatus',
+      'recommendNextExercise',
+      'getAttemptDetail',
     ] as const) {
       expect(typeof (api as Record<string, unknown>)[m]).toBe('function');
     }

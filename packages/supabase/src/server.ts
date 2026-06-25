@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from './database.types';
+import { withSharedDomain } from './cookie-domain';
 
 /**
  * Server Supabase client (Server Components, Route Handlers, Server Actions).
@@ -21,13 +22,13 @@ export function createClient() {
         setAll(cookiesToSet) {
           try {
             for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
+              cookieStore.set(name, value, withSharedDomain(options));
             }
           } catch {
             // Called from a Server Component — ignore; middleware handles refresh.
           }
         },
       },
-    },
+    }
   );
 }
