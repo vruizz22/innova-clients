@@ -1,0 +1,27 @@
+# Dependencies & package manager
+node_modules
+pnpm-lock.yaml
+.pnpm-store
+
+# Build outputs / caches
+.next
+dist
+build
+.turbo
+out
+coverage
+*.tsbuildinfo
+
+# Generated / copied artifacts (not hand-edited)
+landing/public/design-system
+packages/error-catalog/src/generated
+packages/api-client/src/generated
+
+# Astro components need prettier-plugin-astro (not installed) — handled by eslint-plugin-astro
+*.astro
+
+# Misc
+.vercel
+.env*
+*.min.js
+*.min.css

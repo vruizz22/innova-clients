@@ -22,7 +22,8 @@
     "test:e2e": "pnpm --filter @innova/web exec playwright test",
     "gen:openapi": "npx @openapitools/openapi-generator-cli generate -i https://raw.githubusercontent.com/vruizz22/innova-backend-serverless/main/docs/openapi.json -g typescript-axios -o packages/api-client",
     "codegen:error-tags": "node packages/error-catalog/scripts/codegen.mjs",
-    "format": "turbo run format"
+    "format": "turbo run format",
+    "format:check": "turbo run format:check"
   },
   "devDependencies": {
     "turbo": "^1.10.0",
