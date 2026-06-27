@@ -1,643 +1,247 @@
 # innova-clients
 
-> Monorepo Turborepo de todas las aplicaciones cliente de **Innova EdTech** — detección de errores matemáticos procedurales, 3°–6° básico chileno.
+> Turborepo monorepo with the client applications and shared packages of the **SuperProfe / Innova**
+> platform. Live in production at **https://app.superprofes.app** (and the public landing at
+> **https://superprofes.app**).
 >
-> Turborepo · pnpm · Next.js 14 App Router · Expo SDK 51 · Astro · TypeScript strict · AWS Amplify · Cloudflare Pages · EAS
+> Turborepo · pnpm · Next.js 14 (App Router) · TypeScript strict · Supabase Auth (`@supabase/ssr`) · Vercel · EAS (mobile)
 
 ---
 
-## Tabla de contenidos
+## Table of contents
 
-- [innova-clients](#innova-clients)
-  - [Tabla de contenidos](#tabla-de-contenidos)
-  - [1. Visión general](#1-visión-general)
-  - [2. Arquitectura](#2-arquitectura)
-  - [3. Apps y plataformas](#3-apps-y-plataformas)
-    - [apps/practice (Expo Router)](#appspractice-expo-router)
-    - [apps/teacher (Next.js 14 App Router)](#appsteacher-nextjs-14-app-router)
-    - [apps/parent (Expo Router)](#appsparent-expo-router)
-    - [apps/landing (Astro)](#appslanding-astro)
-  - [4. Stack tecnológico](#4-stack-tecnológico)
-  - [5. Estructura del monorepo](#5-estructura-del-monorepo)
-  - [6. Metodología y flujo de trabajo](#6-metodología-y-flujo-de-trabajo)
-    - [6.1 GSD / BMAD](#61-gsd--bmad)
-    - [6.2 AI usage logs](#62-ai-usage-logs)
-    - [6.3 Gitflow](#63-gitflow)
-    - [6.4 Quality gates](#64-quality-gates)
-    - [6.5 Reglas obligatorias](#65-reglas-obligatorias)
-  - [7. Variables de entorno](#7-variables-de-entorno)
-    - [Next.js apps (apps/teacher)](#nextjs-apps-appsteacher)
-    - [Expo apps (apps/practice, apps/parent)](#expo-apps-appspractice-appsparent)
-  - [8. Setup local](#8-setup-local)
-    - [Prerrequisitos](#prerrequisitos)
-    - [Instalación](#instalación)
-    - [Correr apps individualmente](#correr-apps-individualmente)
-    - [Comandos globales (Turborepo)](#comandos-globales-turborepo)
-  - [9. Tests y cobertura](#9-tests-y-cobertura)
-    - [Suites clave](#suites-clave)
-    - [Configuración MSW (Mock Service Worker)](#configuración-msw-mock-service-worker)
-  - [10. Despliegue](#10-despliegue)
-    - [Web apps (apps/teacher) → AWS Amplify](#web-apps-appsteacher--aws-amplify)
-    - [Astro landing → Cloudflare Pages](#astro-landing--cloudflare-pages)
-    - [Mobile apps (apps/practice, apps/parent) → Expo EAS](#mobile-apps-appspractice-appsparent--expo-eas)
-    - [Re-deploy tras cambios](#re-deploy-tras-cambios)
-    - [CI/CD (GitHub Actions)](#cicd-github-actions)
-  - [11. Decisión de deploy: AWS Amplify vs Vercel](#11-decisión-de-deploy-aws-amplify-vs-vercel)
-    - [Por qué Amplify sobre Vercel](#por-qué-amplify-sobre-vercel)
-  - [12. Diseño y UI/UX](#12-diseño-y-uiux)
-    - [Stack visual](#stack-visual)
-    - [Tokens de diseño](#tokens-de-diseño)
-    - [Accesibilidad](#accesibilidad)
-  - [13. Privacidad y cumplimiento NNA](#13-privacidad-y-cumplimiento-nna)
-  - [14. Roadmap](#14-roadmap)
-  - [15. Recursos](#15-recursos)
-  - [16. Licencia](#16-licencia)
+- [1. Overview](#1-overview)
+- [2. Architecture](#2-architecture)
+- [3. Apps and packages](#3-apps-and-packages)
+- [4. Tech stack](#4-tech-stack)
+- [5. Environment variables](#5-environment-variables)
+- [6. Local setup](#6-local-setup)
+- [7. Testing](#7-testing)
+- [8. Production deployment](#8-production-deployment)
+- [9. Conventions](#9-conventions)
+- [10. License](#10-license)
 
 ---
 
-## 1. Visión general
+## 1. Overview
 
-Este monorepo contiene las **aplicaciones cliente** que exponen la plataforma Innova a sus tres tipos de usuario:
+This monorepo holds the front end of SuperProfe. The current shipping app is a **single Next.js 14 App Router
+application** (`apps/web`) that serves both the public landing and the authenticated product, with role-based
+route groups for student, teacher, parent and admin. Shared logic (API client, Supabase helpers, design
+tokens, UI components, math input, error catalog) lives in versioned workspace packages so the web app and the
+future Expo mobile apps consume the same code.
 
-| Usuario | App | Necesidad |
-|---------|-----|-----------|
-| Alumno | `apps/practice` | Hacer ejercicios paso a paso o escanear worksheet; ver feedback inmediato |
-| Profesor | `apps/teacher` | Ver heatmap de dominio por skill, alertas de alumnos en riesgo, asignar práctica |
-| Apoderado | `apps/parent` | Ver asignaciones del hijo, progreso de dominio, recibir notificaciones push |
-| Público | `apps/landing` | Página institucional de Innova |
+It talks to:
 
-**Integración de plataformas por usuario:**
-
-| App | Web | iOS | Android | Desktop |
-|-----|-----|-----|---------|---------|
-| `apps/practice` | ✅ MVP | ✅ MVP | ✅ MVP | post-MVP |
-| `apps/teacher` | ✅ MVP | — | — | post-MVP |
-| `apps/parent` | ✅ MVP | ✅ MVP | ✅ MVP | post-MVP |
-| `apps/landing` | ✅ MVP | — | — | — |
+- `https://api.superprofes.app` — the core backend (`innova-backend-serverless`).
+- Supabase — authentication (`@supabase/ssr`, httpOnly cookies) shared across `*.superprofes.app`.
+- S3 (via backend presigned URLs) — worksheet and submission photo uploads.
 
 ---
 
-## 2. Arquitectura
+## 2. Architecture
 
 ```mermaid
-flowchart LR
-  subgraph APPS["Client Applications"]
-    PRACTICE["Practice App\nExpo Router\nweb + iOS + Android\nAlumno"]
-    TEACHER["Teacher Dashboard\nNext.js 14\nweb\nProfesor"]
-    PARENT["Parent App\nExpo Router\nweb + iOS + Android\nApoderado"]
-    LANDING["Landing\nAstro\nweb\nPublico"]
+flowchart TD
+  subgraph MONO["innova-clients (Turborepo + pnpm)"]
+    WEB["apps/web — Next.js 14 App Router"]
+    subgraph PKGS["packages/*"]
+      API["@innova/api-client"]
+      SUPA["@innova/supabase"]
+      UI["@innova/ui"]
+      TOK["@innova/design-tokens"]
+      MATH["@innova/math-input"]
+      CAT["@innova/error-catalog"]
+    end
   end
 
-  subgraph PACKAGES["Shared Packages"]
-    MATH_INPUT["math-input\nstep keyboard\nweb + native"]
-    UPLOAD_SCAN["upload-scanner\ncamera + S3 presigned\nweb + native"]
-    TELEMETRY["telemetry\n2s buffer + flush\nno PII"]
-    API_CLIENT["api-client\nZod schemas\nOpenAPI generated"]
-    ERROR_RENDER["error-renderer\nstep diff visualization"]
-    UI["ui\nTailwind + shadcn"]
+  subgraph EXT["Backend + services"]
+    BE["api.superprofes.app"]
+    SB["Supabase Auth + DB"]
+    S3[("S3 uploads (presigned)")]
   end
 
-  subgraph INFRA["Deploy Targets"]
-    AMPLIFY["AWS Amplify\nNext.js SSR + ISR"]
-    CF["Cloudflare Pages\nAstro static"]
-    EAS["Expo EAS\nBuild + Update OTA"]
-  end
-
-  subgraph BACKEND["innova-backend-serverless"]
-    AGW["API Gateway + Lambda"]
-    S3U[("S3 uploads")]
-    COG["Cognito JWT"]
-  end
-
-  PRACTICE --> MATH_INPUT
-  PRACTICE --> UPLOAD_SCAN
-  PRACTICE --> TELEMETRY
-  PRACTICE --> API_CLIENT
-  TEACHER --> API_CLIENT
-  TEACHER --> ERROR_RENDER
-  TEACHER --> UI
-  PARENT --> API_CLIENT
-  PARENT --> UI
-
-  PRACTICE --> EAS
-  PARENT --> EAS
-  TEACHER --> AMPLIFY
-  LANDING --> CF
-
-  API_CLIENT --> AGW
-  UPLOAD_SCAN --> S3U
-  AGW --> COG
+  WEB --> API --> BE
+  WEB --> SUPA --> SB
+  WEB --> UI --> TOK
+  WEB --> MATH
+  WEB --> CAT
+  WEB -->|presigned PUT| S3
 ```
 
-> Diagramas UML formales en `docs/drawio/`. Guía de construcción en Draw.io: `docs/drawio/01-how-to-draw-high-level-architecture.md`.
-
----
-
-## 3. Apps y plataformas
-
-### apps/practice (Expo Router)
-
-Flujos principales:
-
-1. Alumno entra a asignación → selecciona ejercicio.
-2. **Input digital**: `packages/math-input` renderiza teclado numérico + filas de steps. Cada step se guarda en telemetry buffer.
-3. Submit final → `POST /api/attempts` con `rawSteps[]`.
-4. Feedback: `is_correct`, label del tipo de error (human-readable), animación de ánimo.
-5. **Input foto**: `packages/upload-scanner` abre cámara, strip EXIF, presigned S3 upload. Poll `/api/attempts/:id/status` hasta que OCR + clasificación terminen.
-
-### apps/teacher (Next.js 14 App Router)
-
-Vistas:
-
-1. **Heatmap de classroom**: grilla (alumno × skill) con color por `p_known`. Verde ≥0.7, amarillo 0.4–0.7, rojo <0.4.
-2. **Panel de alertas**: `TeacherAlert` sin resolver, ordenados por urgencia. Botón "Marcar resuelto".
-3. **Drill-down alumno**: historial de intentos, frecuencia de errores por tipo, evolución de `p_known`.
-4. **Asignar práctica**: seleccionar alumno/grupo → genera `PracticeAssignment` con ítems recomendados por Fisher information.
-
-### apps/parent (Expo Router)
-
-Vistas:
-
-1. Lista de `PracticeAssignment` activas del hijo.
-2. Barras de progreso de dominio por skill (sin mostrar números crudos — solo colores y etiquetas amigables).
-3. Push notification cuando se crea nueva asignación (`expo-notifications`).
-4. Tap en ejercicio → abre `apps/practice` (in-app webview o redirect).
-
-### apps/landing (Astro)
-
-Página institucional estática: propuesta de valor, cómo funciona, contacto. Deployed en aws S3 con cloudfront.
-
----
-
-## 4. Stack tecnológico
-
-| Capa | Tecnología | Versión | Razón |
-|------|-----------|---------|-------|
-| Monorepo | Turborepo + pnpm | latest | Pipeline de tasks, caché de builds, workspace protocol |
-| Lenguaje | TypeScript strict | 5.x | `noImplicitAny`, `exactOptionalPropertyTypes` |
-| Web framework | Next.js 14 App Router | 14+ | SSR/ISR/Streaming, Server Components |
-| Mobile framework | Expo SDK + Expo Router | 51+ | Web + iOS + Android desde un codebase |
-| Static site | Astro | 4+ | Zero JS by default, ideal para landing |
-| Auth | AWS Cognito + Amplify Auth | — | Mismo ecosystem que backend |
-| Estilos | Tailwind CSS v3 | 3.x | Utility-first, tree-shakeable |
-| UI primitives | shadcn/ui + Radix UI | — | Headless, accesible, customizable |
-| Validación | Zod | 3+ | Runtime validation + inferred types |
-| HTTP client | fetch nativo + wrapper tipado | — | Sin axios, `api-client` package custom |
-| Charts | recharts | 2.x | Lightweight, para heatmap y barras |
-| Notif. push | expo-notifications | — | iOS + Android + web |
-| Tests unit | Vitest + React Testing Library | latest | Fast, ESM-native |
-| Tests E2E | Playwright | latest | Web flows, Chromium + WebKit |
-| Mocking API | MSW (Mock Service Worker) | 2+ | Mocks a nivel de red, compartido unit+e2e |
-| Coverage | v8 provider | — | Gate ≥75% en `packages/*` |
-| Deploy web | AWS Amplify Gen 2 | — | Next.js SSR nativo, mismo ecosystem AWS |
-| Deploy static | Cloudflare Pages | — | Free, global CDN, zero cold start |
-| Deploy mobile | Expo EAS | — | EAS Build + EAS Update OTA |
-| Package manager | pnpm | 9+ | Workspace, eficiencia disco |
-
----
-
-## 5. Estructura del monorepo
+`apps/web/app/` route groups:
 
 ```
-innova-clients/
-├── turbo.json                       # pipeline de tasks (build, test, lint)
-├── pnpm-workspace.yaml
-├── package.json                     # root scripts
-├── apps/
-│   ├── practice/                    # Expo Router (web + iOS + Android)
-│   │   ├── app/                     # Expo Router file-based routing
-│   │   │   ├── (auth)/
-│   │   │   ├── (student)/
-│   │   │   │   ├── index.tsx        # lista de asignaciones
-│   │   │   │   └── exercise/[id].tsx
-│   │   │   └── _layout.tsx
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── app.json
-│   │   └── package.json
-│   ├── teacher/                     # Next.js 14 App Router
-│   │   ├── app/
-│   │   │   ├── (auth)/
-│   │   │   ├── dashboard/
-│   │   │   │   ├── classroom/[id]/  # heatmap + alertas
-│   │   │   │   └── student/[id]/   # drill-down alumno
-│   │   │   └── layout.tsx
-│   │   ├── components/
-│   │   │   ├── MasteryHeatmap.tsx
-│   │   │   ├── AlertsPanel.tsx
-│   │   │   └── ErrorFrequencyChart.tsx
-│   │   ├── next.config.js
-│   │   └── package.json
-│   ├── parent/                      # Expo Router (web + iOS + Android)
-│   │   ├── app/
-│   │   └── package.json
-│   └── landing/                     # Astro
-│       ├── src/pages/
-│       └── package.json
-├── packages/
-│   ├── math-input/                  # teclado matemático step-by-step
-│   │   ├── src/
-│   │   │   ├── MathInput.tsx        # web
-│   │   │   └── MathInput.native.tsx # native
-│   │   └── package.json
-│   ├── upload-scanner/              # cámara + presigned S3
-│   │   ├── src/
-│   │   └── package.json
-│   ├── telemetry/                   # buffer 2s + flush
-│   │   ├── src/
-│   │   │   ├── buffer.ts
-│   │   │   └── flush.ts
-│   │   └── package.json
-│   ├── api-client/                  # cliente HTTP tipado
-│   │   ├── src/
-│   │   │   ├── attempts.ts
-│   │   │   ├── mastery.ts
-│   │   │   └── alerts.ts
-│   │   └── package.json
-│   ├── error-renderer/              # visualiza diff de steps
-│   │   └── package.json
-│   └── ui/                          # design system
-│       ├── src/
-│       │   └── components/
-│       └── package.json
-├── e2e/                             # Playwright specs globales
-│   ├── teacher-heatmap.spec.ts
-│   ├── practice-submit.spec.ts
-│   └── parent-assignment.spec.ts
-└── .github/
-    └── workflows/
-        ├── ci.yml
-        ├── deploy-web.yml
-        └── deploy-mobile.yml
+app/
+├── page.tsx          # public landing (superprofes.app)
+├── (auth)/           # login / register / password reset (Supabase)
+├── (student)/        # student practice + scan flow
+├── (teacher)/        # teacher dashboard: heatmaps, alerts, guides, assignments
+├── (parent)/         # parent summaries
+├── (admin)/          # error-catalog admin
+├── (guides)/         # role-adaptive guide views (upload, review, submit)
+└── (account)/        # account settings
 ```
 
 ---
 
-## 6. Metodología y flujo de trabajo
+## 3. Apps and packages
 
-### 6.1 GSD / BMAD
+**Apps**
 
-Artefactos en `docs/` (repo raíz `innova/`):
+| Path | Framework | Purpose |
+|------|-----------|---------|
+| `apps/web` | Next.js 14 (App Router, React 18) | Landing + role-based product (student/teacher/parent/admin) |
 
-| Archivo | Propósito |
-|---------|-----------|
-| `docs/roadmap.md` | Milestones M0–M6 con fechas |
-| `docs/milestones.md` | Sprints, DoR, DoD |
-| `docs/requirements.md` | RF/NFR trazables |
+> The env template also covers Expo mobile apps (`apps/mobile-student`, `apps/mobile-parent`) and an Astro
+> landing; mobile ships via EAS and is on the roadmap. The web app currently serves the landing from `/`.
 
-### 6.2 AI usage logs
+**Packages (`packages/*`, all `@innova/*`)**
 
-Cada sesión de Claude Code → log en `docs/ai-logs/YYYY-MM-DD-<tema>.md`. Incluir: Prompt · Output resumido · Decisión · Tradeoffs.
-
-### 6.3 Gitflow
-
-```
-main (protegida) <── feature/<app-scope>
-                  <── fix/<scope>
-```
-
-- `main` protegida: PR obligatorio, ≥2 reviewers, CI verde.
-- Conventional Commits en inglés: `feat(practice): add step-by-step math input`, `fix(telemetry): flush on unload event`
-- Squash and merge.
-
-### 6.4 Quality gates
-
-| Gate | Criterio | Bloquea merge |
-|------|---------|---------------|
-| `pnpm -r run type-check` | 0 errores TS | ✅ |
-| `pnpm -r run lint` | 0 errores ESLint | ✅ |
-| `pnpm -r run test:coverage` | ≥75% en `packages/*` | ✅ |
-| `pnpm -r run build` | exit 0 | ✅ |
-| Playwright E2E (en push) | happy paths OK | ✅ |
-| Reviewers | 2 aprobados | ✅ |
-
-### 6.5 Reglas obligatorias
-
-- **Nunca `localStorage` para session tokens** — httpOnly cookies (web) / `expo-secure-store` (native).
-- **Nunca analytics que capturen PII** (no GA4 user_id, no Amplitude, no Mixpanel).
-- Solo `student_uuid` en payloads de API — nunca nombre ni email.
-- `useEffect` para data fetching está prohibido en Next.js App Router — usar async Server Components.
-- Todos los componentes React: definir interfaz `Props` explícita.
+| Package | Responsibility |
+|---------|----------------|
+| `@innova/api-client` | Typed client for the backend API (Zod schemas + inferred types) |
+| `@innova/supabase` | `createBrowserClient` / `createServerClient` / middleware helpers (`@supabase/ssr`) |
+| `@innova/ui` | Design system (shadcn/ui base + Tailwind tokens), consumed as a package |
+| `@innova/design-tokens` | Colors, spacing, typography tokens |
+| `@innova/math-input` | Math keyboard + WYSIWYG math field (MathLive) for web and native |
+| `@innova/error-catalog` | Shared error taxonomy types + human-readable error rendering |
 
 ---
 
-## 7. Variables de entorno
+## 4. Tech stack
 
-Validadas en build-time. **Nunca commitear `.env.local` ni `.env`.**
+| Concern | Choice |
+|---------|--------|
+| Monorepo | Turborepo (`turbo.json`: `dev`, `build`, `lint`, `typecheck`, `test`, `format`) |
+| Package manager | pnpm 10 (workspace protocol, `pnpm-workspace.yaml`) |
+| Web framework | Next.js 14 App Router, React 18, Server Components |
+| Language | TypeScript strict (`noImplicitAny`, `strictNullChecks`, `exactOptionalPropertyTypes`) |
+| Auth | Supabase via `@supabase/ssr` (httpOnly cookies, cookie domain `.superprofes.app`) |
+| Validation | Zod at form and API boundaries |
+| Styling | Tailwind CSS + design tokens; dark mode via semantic tokens |
+| Math UI | MathLive (`@innova/math-input`) |
+| Tests | Vitest + React Testing Library (unit), Playwright (E2E) |
+| Web deploy | Vercel (native Git integration) |
+| Mobile deploy | Expo EAS Build + EAS Update (on demand) |
 
-### Next.js apps (apps/practice, apps/teacher)
+---
+
+## 5. Environment variables
+
+Template in `.env.example`. `NEXT_PUBLIC_*` and `EXPO_PUBLIC_*` are exposed to the client; never prefix a
+secret with them. `SUPABASE_SERVICE_ROLE_KEY` is server-only. In production these live **in Vercel**, not in
+GitHub.
 
 ```env
+# apps/web (Next.js)
 NEXT_PUBLIC_API_URL=https://api.superprofes.app
-NEXT_PUBLIC_LANDING_URL=https://superprofes.app
-NEXT_PUBLIC_PRACTICE_URL=https://practice.superprofes.app
-NEXT_PUBLIC_TEACHER_URL=https://profe.superprofes.app
-NEXT_PUBLIC_PARENT_URL=https://superprofes.app
-NEXT_PUBLIC_COGNITO_USER_POOL_ID=
-NEXT_PUBLIC_COGNITO_CLIENT_ID=
-```
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=            # server-only, NEVER NEXT_PUBLIC_
+NEXT_PUBLIC_S3_UPLOAD_BUCKET=innova-ocr-uploads-prod
+NEXT_PUBLIC_SITE_URL=https://app.superprofes.app
+NEXT_PUBLIC_COOKIE_DOMAIN=.superprofes.app   # shared session across subdomains
 
-El classroom se resuelve desde `/classrooms/mine` o `/classrooms/student/mine`; no configurar `NEXT_PUBLIC_CLASSROOM_ID`.
-
-### Landing Astro
-
-```env
-PUBLIC_LANDING_URL=https://superprofes.app
-PUBLIC_PRACTICE_URL=https://practice.superprofes.app
-PUBLIC_TEACHER_URL=https://profe.superprofes.app
-PUBLIC_PARENT_URL=https://superprofes.app
-PUBLIC_API_URL=https://api.superprofes.app
-```
-
-### Expo app (apps/mobile)
-
-```env
+# Expo mobile apps
 EXPO_PUBLIC_API_URL=https://api.superprofes.app
-EXPO_PUBLIC_COGNITO_CLIENT_ID=
-EXPO_PUBLIC_COGNITO_REGION=us-east-1
+EXPO_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 ---
 
-## 8. Setup local
+## 6. Local setup
 
-### Prerrequisitos
+### Prerequisites
 
-- Node.js ≥20 (recomendado vía `nvm`)
-- pnpm ≥9: `corepack enable && corepack prepare pnpm@latest --activate`
-- Para Expo mobile:
-  - iOS: Xcode + iOS Simulator
-  - Android: Android Studio + Emulator (o dispositivo físico)
-  - `eas-cli`: `pnpm add -g eas-cli`
+- Node.js ≥20 (via `nvm`)
+- pnpm 10 (`corepack enable && corepack prepare pnpm@10.10.0 --activate`)
+- A running backend (`../innova-backend-serverless` on `http://localhost:3000`) and a Supabase project
 
-### Instalación
+### Steps
 
 ```bash
-# 1. Clonar
-git clone git@github.com:<org>/innova-clients.git
-cd innova-clients
-
-# 2. Instalar todas las dependencias del workspace
+# 1. Install the whole workspace
 pnpm install
 
-# 3. Variables de entorno
-cp apps/teacher/.env.example apps/teacher/.env.local
-cp apps/practice/.env.example apps/practice/.env.local
-cp apps/parent/.env.example apps/parent/.env.local
-# editar cada archivo con API_URL, COGNITO_* vars
+# 2. Environment
+cp .env.example .env            # fill Supabase + API URL (point to local or prod backend)
+
+# 3. Run the web app (Turborepo)
+pnpm dev                        # turbo run dev --parallel
+# apps/web → http://localhost:3000 (or the next free port if backend uses 3000)
+
+# 4. Quality checks
+pnpm typecheck
+pnpm lint
+pnpm test
 ```
 
-### Correr apps individualmente
+Run a single workspace with a filter, e.g. `pnpm --filter @innova/web dev` or
+`pnpm --filter @innova/ui test`.
+
+---
+
+## 7. Testing
 
 ```bash
-# Teacher dashboard (web)
-pnpm --filter apps/teacher dev
-# → http://localhost:3000
-
-# Practice app (Expo web)
-pnpm --filter apps/practice start
-# → http://localhost:8081
-
-# Practice app (iOS simulator)
-pnpm --filter apps/practice ios
-
-# Practice app (Android emulator)
-pnpm --filter apps/practice android
-
-# Parent app (Expo web)
-pnpm --filter apps/parent start
-
-# Landing (Astro)
-pnpm --filter apps/landing dev
-# → http://localhost:4321
+pnpm test                       # unit (Vitest) across the workspace
+pnpm --filter @innova/api-client test    # a single package
+pnpm exec playwright test       # E2E web flows (Playwright)
 ```
 
-### Comandos globales (Turborepo)
-
-```bash
-pnpm -r run build           # build de todos los apps y packages
-pnpm -r run test            # unit tests en todos
-pnpm -r run test:coverage   # con cobertura
-pnpm -r run lint            # lint en todos
-pnpm -r run type-check      # type-check en todos
-```
+Shared packages carry unit tests with a ≥75% coverage target; apps carry Playwright E2E smoke tests for the
+critical flows (teacher heatmap + resolve alert, student submit attempt, guide upload/review/submit). UI PRs
+run Playwright smoke and attach screenshots (see `docs/SMOKE_TESTING.md`).
 
 ---
 
-## 9. Tests y cobertura
+## 8. Production deployment
 
-```bash
-# Unit tests (Vitest)
-pnpm -r run test
+Web is deployed by **Vercel's native Git integration** (not GitHub Actions). The authoritative runbook is
+`../docs/DEPLOY_RUNBOOK.md` §3.
 
-# Con cobertura (gate ≥75% en packages/)
-pnpm --filter "./packages/**" run test:coverage
+### Web (Vercel)
 
-# E2E Playwright (teacher dashboard)
-pnpm --filter apps/teacher run test:e2e
+- Vercel project `superprofes-web`, importing `vruizz22/innova-clients`, **Root Directory `apps/web`**,
+  framework Next.js, build `turbo run build`, install `pnpm install`.
+- Domains: `app.superprofes.app` and/or `superprofes.app` (DNS: `CNAME → cname.vercel-dns.com` for the
+  subdomain, `A 76.76.21.21` for the apex, as Vercel instructs).
+- Environment variables set in Vercel (Production + Preview): `NEXT_PUBLIC_API_URL`,
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_COOKIE_DOMAIN`.
+- Merging the release PR (`develop` → `main`) makes Vercel redeploy automatically.
 
-# E2E en modo UI interactivo
-pnpm --filter apps/teacher exec playwright test --ui
+### Mobile (EAS)
 
-# Watch mode para desarrollo
-pnpm --filter packages/telemetry run test --watch
-```
+- `.github/workflows/deploy-mobile.yml` runs EAS Build + EAS Update **on demand** (triggered by a
+  `mobile-v*` tag, not on every merge, to save build minutes). Secrets: `EAS_TOKEN`, `EXPO_PUBLIC_*`.
 
-### Suites clave
+### CI
 
-| Suite | App/Package | Qué verifica |
-|-------|------------|-------------|
-| `buffer.test.ts` | `packages/telemetry` | Flush en 2s, flush en 50 eventos, retry 3x |
-| `no-pii.test.ts` | `packages/telemetry` | Eventos no contienen `student_name`, `email`, `@` |
-| `MathInput.test.tsx` | `packages/math-input` | `onStepSubmit` con step_index + duration_ms correctos |
-| `AttemptForm.test.tsx` | `apps/practice` | Submit con `rawSteps[]`, feedback correcto/incorrecto |
-| `classroom-heatmap.spec.ts` | `apps/teacher` (E2E) | Heatmap colors por `p_known`, badge de alertas |
-| `alert-resolution.spec.ts` | `apps/teacher` (E2E) | Marcar alerta → desaparece + toast confirmación |
+`.github/workflows/ci.yml` runs typecheck + lint + unit (Vitest) + Playwright smoke on every PR.
+`.github/workflows/deploy-web.yml` is gated to `workflow_dispatch` so there is no double deploy alongside
+Vercel's native integration.
 
-Spec completo: `docs/prompt/03-innova-clients-testing.md`
+### Verify
 
-### Configuración MSW (Mock Service Worker)
-
-Handlers compartidos en `packages/api-client/src/mocks/handlers.ts`. Importar en `setupTests.ts` de cada app/package.
+- `https://superprofes.app` (landing) and `https://app.superprofes.app` (app) load.
+- A real login against Supabase + `https://api.superprofes.app` succeeds.
 
 ---
 
-## 10. Despliegue
+## 9. Conventions
 
-### Web apps (apps/teacher) → AWS Amplify
-
-```bash
-# Deploy manual (override)
-amplify push --yes
-
-# O via GitHub Actions (automático en merge a main)
-# .github/workflows/deploy-web.yml
-```
-
-Amplify detecta automáticamente Next.js 14 App Router, SSR, ISR. Variables de entorno configuradas en Amplify Console → Environment Variables.
-
-### Astro landing → Cloudflare Pages
-
-```bash
-pnpm --filter apps/landing build
-# Cloudflare Pages detecta el push a main y deploya dist/ automáticamente
-```
-
-Configurar en Cloudflare Dashboard: Build command = `pnpm build`, Output directory = `dist`.
-
-### Mobile apps (apps/practice, apps/parent) → Expo EAS
-
-```bash
-# Login EAS (primera vez)
-eas login
-
-# Configurar proyecto (primera vez)
-eas init
-
-# Build producción (iOS + Android)
-eas build --platform all --profile production
-
-# Actualización OTA (solo cambios JS, sin re-build nativo)
-eas update --branch main --message "descripción del update"
-
-# Submit a App Store / Play Console
-eas submit --platform ios
-eas submit --platform android
-```
-
-### Re-deploy tras cambios
-
-```bash
-git pull origin main
-
-# Web: Amplify hace deploy automático en push a main
-
-# Mobile OTA (sin nuevo build nativo):
-eas update --branch main --message "fix: improve step input validation"
-
-# Mobile con cambios nativos (requiere nuevo build):
-eas build --platform all --profile production
-eas submit --platform all
-```
-
-### CI/CD (GitHub Actions)
-
-`.github/workflows/ci.yml` — en cada PR:
-
-1. `pnpm -r run type-check` → `pnpm -r run lint` → `pnpm -r run test:coverage`
-2. `pnpm -r run build` (verifica sin errores de build)
-3. Playwright E2E (en push)
-
-`.github/workflows/deploy-web.yml` — en merge a main:
-
-1. Build teacher app
-2. Deploy a AWS Amplify via Amplify CLI
-
-`.github/workflows/deploy-mobile.yml` — en merge a main:
-
-1. `eas update --branch main` para OTA a practice + parent
+- TypeScript strict, no `any` (use `unknown` + type guards / generics). All API responses typed via
+  `@innova/api-client`.
+- Next.js App Router: data fetching in async Server Components, not `useEffect`.
+- Session tokens via `@supabase/ssr` httpOnly cookies (web) / SecureStore (native) — never `localStorage`.
+- COPPA / Law 21.180: no third-party analytics that capture PII; telemetry carries only `student_uuid`.
+- Gitflow with `develop` integration branch and protected `main`; Conventional Commits in English.
 
 ---
 
-## 11. Decisión de deploy: AWS Amplify vs Vercel
+## 10. License
 
-**Decisión: AWS Amplify Gen 2** para apps Next.js. **Cloudflare Pages** para Astro. **Expo EAS** para mobile.
-
-### Por qué Amplify sobre Vercel
-
-| Criterio | AWS Amplify | Vercel |
-|---------|------------|--------|
-| Next.js 14 App Router / SSR / ISR | ✅ soporte nativo | ✅ excelente |
-| Integración Cognito | ✅ mismo ecosystem, sin cross-cloud auth | ⚠️ requiere config adicional |
-| Integración S3 presigned URLs | ✅ IAM nativo | ⚠️ cross-cloud |
-| Costo MVP | ✅ Free tier: 1000 build min + 15 GB storage + 5 GB data out | ⚠️ $20/mes mínimo por team |
-| Vendor lock-in | ✅ dentro del ecosistema AWS ya elegido | ❌ agrega segundo vendor |
-| DX (Developer Experience) | ✅ buena, CLI maduro | ✅ excelente |
-
-**Por qué Cloudflare Pages para Astro:**
-
-- Sitio 100% estático → zero cold starts, global CDN, literalmente free.
-- Amplify cobraría por requests de CDN en un sitio que no necesita SSR.
-
-**Por qué EAS para mobile:**
-
-- OTA updates sin re-submit a stores → iteración más rápida en MVP.
-- EAS Build provee builds reproducibles en cloud (sin necesitar Mac propio para iOS).
-
-Documentado como ADR-011 en `docs/architecture.md`.
-
----
-
-## 12. Diseño y UI/UX
-
-### Stack visual
-
-| Tecnología | Uso |
-|-----------|-----|
-| Tailwind CSS v3 | Utility-first, todas las apps web |
-| shadcn/ui + Radix UI | Componentes accesibles (Dialog, DropdownMenu, Badge) para apps Next.js |
-| NativeWind | Tailwind en Expo (mobile) |
-| Lucide React | Iconos tree-shakeable |
-| recharts | Heatmap y barras de progreso (teacher dashboard) |
-| expo-haptics | Feedback táctil en practice app |
-
-### Tokens de diseño
-
-Definidos en `packages/ui/src/tokens.css`:
-
-- `--color-mastery-high`: verde (#16a34a) — p_known ≥ 0.7
-- `--color-mastery-mid`: amarillo (#ca8a04) — p_known 0.4–0.7
-- `--color-mastery-low`: rojo (#dc2626) — p_known < 0.4
-
-### Accesibilidad
-
-- Touch targets mínimos 44×44px (WCAG 2.1 AA + COPPA friendly)
-- High contrast mode support en `packages/math-input`
-- `aria-label` en todos los botones del teclado matemático
-- `role="status"` en toasts de feedback
-
----
-
-## 13. Privacidad y cumplimiento NNA
-
-Los alumnos son menores de edad. Aplica:
-
-| Regulación | Medida implementada |
-|-----------|-------------------|
-| COPPA (USA) | Sin analytics que capturen user_id. Sin cookies de terceros en apps de alumnos. |
-| Ley 21.180 (Chile) | Solo `student_uuid` en payloads — nunca nombre ni RUT. |
-| Session security | httpOnly cookies (web) + `expo-secure-store` (native) — nunca `localStorage` |
-| Datos de menores | No se comparten con terceros analíticos (no GA4 user_id, no Amplitude) |
-| Upload de fotos | EXIF stripped en `packages/upload-scanner` antes del presigned PUT |
-| Telemetry | Solo `attempt_id`, `event_type`, `payload` matemático — cero identificadores personales |
-
----
-
-## 14. Roadmap
-
-| Milestone | Fecha | Entregable |
-|-----------|-------|-----------|
-| M0 | 29 abr | Especificaciones, ADRs, taxonomía de errores |
-| M1 | 30 abr | Instructions + prompts + drawio |
-| M2 | 3 may | Backend skeleton (Entrega 2) |
-| M3 | 17 may | AI engine |
-| **M4 — Frontend** | **7 jun (Entrega 3)** | `apps/practice` (web + Expo) + `apps/teacher` + `apps/parent` + packages core |
-| M5 | 12 jun | Integration pilot (~20 alumnos, 1 curso piloto) |
-| **M6 — Hardening** | **19 jun (Entrega 4)** | E2E Playwright completo, monitoring, pitch incubadora |
-
----
-
-## 15. Recursos
-
-- Especificaciones backend: `.github/instructions/07-implementacion-backend.md`
-- Deployment y DevOps: `.github/instructions/08-deployment-y-devops.md`
-- Costos y escalabilidad: `.github/instructions/09-costos-y-escalabilidad.md`
-- Testing spec completo: `docs/prompt/03-innova-clients-testing.md`
-- Prompt de implementación: `docs/prompt/03-innova-clients.md`
-- ADRs (incluye ADR-011 Amplify vs Vercel): `docs/architecture.md`
-
----
-
-## 16. Licencia
-
-Innova - Team 23. Internal GPL-3.0 License.
+Innova — Team 23. Internal GPL-3.0 license.
